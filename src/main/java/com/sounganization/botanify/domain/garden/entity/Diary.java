@@ -1,10 +1,10 @@
-package com.sounganization.botanify.domain.community.entity;
+package com.sounganization.botanify.domain.garden.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
 import jakarta.persistence.*;
 
 @Entity
-public class Post extends Timestamped {
+public class Diary extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,8 +15,9 @@ public class Post extends Timestamped {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private Integer viewCounts;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plant_id")
+    private Plant plant;
 
     @Column(nullable = false)
     private Long userId;
