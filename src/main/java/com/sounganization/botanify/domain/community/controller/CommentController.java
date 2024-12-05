@@ -1,6 +1,6 @@
 package com.sounganization.botanify.domain.community.controller;
 
-import com.sounganization.botanify.domain.terrarium.dto.PlantPostRequest;
+import com.sounganization.botanify.domain.garden.dto.PlantRegisterReqDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
     @PostMapping
-    public ResponseEntity<?> test(@Valid @RequestBody PlantPostRequest request) {
+    public ResponseEntity<?> test(@Valid @RequestBody PlantRegisterReqDto request) {
         return ResponseEntity.ok().build();
     }
 }
