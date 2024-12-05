@@ -1,6 +1,6 @@
-package com.sounganization.botanify.domain.terrarium.service;
+package com.sounganization.botanify.domain.garden.service;
 
-import com.sounganization.botanify.domain.terrarium.repository.PlantRepository;
+import com.sounganization.botanify.domain.garden.repository.PlantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.sounganization.botanify.domain.terrarium.controller;
+package com.sounganization.botanify.domain.garden.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/diaries")
+@RequestMapping("/api/v1/plants")
 @RequiredArgsConstructor
-public class DiaryController {
+public class PlantController {
 
     @PostMapping
     public ResponseEntity<?> test() {

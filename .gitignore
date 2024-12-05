@@ -38,4 +38,4 @@ out/
 
 ### Custom ###
 src/main/resources/application-dev.yml
-data/db
+/data/db.mv.db
