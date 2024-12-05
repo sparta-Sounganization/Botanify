@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Botanify
+  jpa:
+    open-in-view: false
