@@ -29,4 +29,9 @@ public abstract class Timestamped {
 
     @Column
     private Boolean deletedYn = Boolean.FALSE;
+
+    public void softDelete() {
+        deletedAt = LocalDateTime.now();
+        deletedYn = Boolean.TRUE;
+    }
 }
