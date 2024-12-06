@@ -1,7 +1,11 @@
 package com.sounganization.botanify.domain.garden.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 public class Species {
     @Id
@@ -13,4 +17,5 @@ public class Species {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
 }
