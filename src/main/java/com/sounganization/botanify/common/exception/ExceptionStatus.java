@@ -30,8 +30,10 @@ public enum ExceptionStatus {
     // diary
 
     // post
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글이 존재하지 않습니다."),
 
     // comment
+    INVALID_COMMENT_CONTENT(HttpStatus.BAD_REQUEST, "댓글 내용을 입력해주세요."),
 
     ;
     private final HttpStatus status;
