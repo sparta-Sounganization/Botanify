@@ -1,6 +1,8 @@
 package com.sounganization.botanify.domain.garden.controller;
 
+import com.sounganization.botanify.common.exception.GlobalExceptionHandler;
 import com.sounganization.botanify.domain.garden.dto.req.PlantReqDto;
+import com.sounganization.botanify.domain.garden.dto.res.PlantResDto;
 import com.sounganization.botanify.domain.garden.entity.Plant;
 import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.service.PlantService;
@@ -22,12 +24,9 @@ public class PlantController {
 
     //식물 등록
     @PostMapping
-    public ResponseEntity<Plant> createPlant(@RequestBody PlantReqDto plantReqDto) {
-        if (plantReqDto.getSpecies() == null) {
-            throw new IllegalArgumentException("종을 선택해주세요.");
-        } else {
-            Plant createdPlant = plantService.createPlant(plantReqDto.getPlantName(), LocalDate.now(), plantReqDto.getSpecies().getId());
-            return ResponseEntity.ok(createdPlant);}
+    public ResponseEntity<PlantResDto> createPlant(@RequestBody PlantReqDto plantReqDto) {
+        Plant createdPlant = plantService.createPlant(plantReqDto.getPlantName(), LocalDate.now(), plantReqDto.getSpeciesId());
+        return ResponseEntity.created(null).body(new PlantResDto(201, "식물 등록 성공", createdPlant.getId()));
 
     }
 }

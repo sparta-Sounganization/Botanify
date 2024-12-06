@@ -16,7 +16,7 @@ public class PlantReqDto {
         private String plantName;
 
         @NotNull @Positive
-        private Species species;
+        private Long speciesId;
 
         private LocalDate adoptionDate;
 }

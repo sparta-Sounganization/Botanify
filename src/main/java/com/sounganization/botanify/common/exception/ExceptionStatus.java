@@ -26,6 +26,7 @@ public enum ExceptionStatus {
     INVALID_UPDATE_REQUEST(HttpStatus.UNAUTHORIZED,"수정할 정보가 없습니다."),
 
     // plant
+    SPECIES_NOT_FOUND(HttpStatus.NOT_FOUND,"종을 찾을 수 없습니다."),
 
     // diary
 

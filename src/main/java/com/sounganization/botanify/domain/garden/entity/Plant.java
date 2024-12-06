@@ -5,6 +5,7 @@ import com.sounganization.botanify.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @Builder
 public class Plant extends Timestamped {
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -31,5 +33,6 @@ public class Plant extends Timestamped {
 
     @Column(nullable = false)
     private Long userId;
+
 
 }

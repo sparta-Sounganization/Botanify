@@ -1,5 +1,7 @@
 package com.sounganization.botanify.domain.garden.service;
 
+import com.sounganization.botanify.common.exception.CustomException;
+import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.garden.entity.Plant;
 import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.repository.PlantRepository;
@@ -19,7 +21,9 @@ public class PlantService {
 
     public Plant createPlant(String plantName, LocalDate adoptionDate, long speciesId) {
         //임시 Species 객체 생성
-        Species species = new Species();
+        Species species = speciesRepository.findById(speciesId).orElseThrow(()
+                -> new CustomException(ExceptionStatus.SPECIES_NOT_FOUND));
+
         species.setId(speciesId);
         species.setSpeciesName("임시 종");
         species.setDescription("임시 설명");
@@ -27,6 +31,7 @@ public class PlantService {
                 .plantName(plantName)
                 .adoptionDate(adoptionDate)
                 .species(species)
+                .userId(1L)
                 .build());
     }
 }
