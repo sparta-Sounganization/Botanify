@@ -10,3 +10,7 @@ spring:
     properties:
       hibernate:
         show_sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/botanify
+    username: admin
+    password: admin
