@@ -1,5 +1,6 @@
 package com.sounganization.botanify.common.exception;
 
+import com.sounganization.botanify.common.dto.res.ExceptionResDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public enum ExceptionStatus {
     private final HttpStatus status;
     private final String message;
 
-    public ResponseEntity<ExceptionResponse> toResponseEntity() {
-        return ResponseEntity.status(this.status).body(new ExceptionResponse(this.status.value(), this.message));
+    public ResponseEntity<ExceptionResDto> toResponseEntity() {
+        return ResponseEntity.status(this.status).body(new ExceptionResDto(this.status.value(), this.message));
     }
 }
