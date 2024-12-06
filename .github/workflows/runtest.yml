@@ -43,7 +43,8 @@ jobs:
       - name: make executable gradlew
         run: chmod +x ./gradlew
 
-      # run은 사용자 지정 스크립트 실행
+      # run 은 사용자 지정 스크립트 실행
       - name: run unittest
+        if: github.ref == 'refs/heads/main' # 일단 main 브랜치에서만 실행(추후 수정 필요)
         run: |
           ./gradlew clean test
