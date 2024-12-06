@@ -1,4 +1,4 @@
-package com.sounganization.botanify.domain.garden.dto;
+package com.sounganization.botanify.domain.garden.dto.req;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
-public class PlantRegisterReqDto {
+public class PlantReqDto {
         @NotBlank(message = "공백일 수 없습니다.")
         private String plantName;
 
