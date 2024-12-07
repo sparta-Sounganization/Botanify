@@ -34,6 +34,7 @@ public enum ExceptionStatus {
 
     // comment
     INVALID_COMMENT_CONTENT(HttpStatus.BAD_REQUEST, "댓글 내용을 입력해주세요."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.")
 
     ;
     private final HttpStatus status;
