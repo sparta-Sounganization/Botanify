@@ -25,4 +25,11 @@ public class CommentMapper {
                 .id(comment.getId())
                 .build();
     }
+
+    public static CommentResDto toUpdateResDto(Comment comment) {
+        return CommentResDto.builder()
+                .message("댓글이 수정되었습니다.")
+                .id(comment.getId())
+                .build();
+    }
 }
