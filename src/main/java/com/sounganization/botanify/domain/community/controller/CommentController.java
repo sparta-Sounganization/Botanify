@@ -57,4 +57,15 @@ public class CommentController {
                 .status(HttpStatus.OK)
                 .body(responseDto);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long id,
+            @RequestParam Long userId // 임시로 더미 userId를 받음
+    ) {
+        commentService.deleteComment(id, userId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 }
