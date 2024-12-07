@@ -35,9 +35,28 @@ public class CommentService {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
         }
 
-        Comment comment = CommentMapper.toEntity(requestDto, post, userId);
+        Comment comment = CommentMapper.toEntity(requestDto, post, userId, null);
         Comment savedComment = commentRepository.save(comment);
 
         return CommentMapper.toResDto(savedComment);
+    }
+
+    @Transactional
+    public CommentResDto createReply(Long parentCommentId, CommentReqDto requestDto, Long userId) {
+
+        // todo - userId 존재 확인(mock 확인)
+        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
+
+        Comment parentComment = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
+
+        if (requestDto.getContent() == null || requestDto.getContent().trim().isEmpty()) {
+            throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
+        }
+
+        Comment reply = CommentMapper.toEntity(requestDto, parentComment.getPost(), userId, parentComment);
+        Comment savedReply = commentRepository.save(reply);
+
+        return CommentMapper.toResDto(savedReply);
     }
 }
