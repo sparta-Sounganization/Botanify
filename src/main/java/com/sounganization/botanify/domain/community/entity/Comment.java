@@ -1,6 +1,8 @@
 package com.sounganization.botanify.domain.community.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
+import com.sounganization.botanify.common.exception.CustomException;
+import com.sounganization.botanify.common.exception.ExceptionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,4 +42,11 @@ public class Comment extends Timestamped {
 
     @Column(nullable = false)
     private Long userId;
+
+    public void update(String content) {
+        if(content == null || content.trim().isEmpty()) {
+            throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
+        }
+        this.content = content;
+    }
 }
