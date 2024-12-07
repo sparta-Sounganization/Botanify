@@ -29,4 +29,18 @@ public class CommentController {
                 .status(HttpStatus.CREATED)
                 .body(responseDto);
     }
+
+    @PostMapping("/{parentCommentId}/replies")
+    public ResponseEntity<CommentResDto> createReply(
+            @PathVariable Long parentCommentId,
+            @Valid @RequestBody CommentReqDto requestDto,
+            @RequestParam Long userId // 임시로 더미 userId를 받음
+    ) {
+
+        CommentResDto responseDto = commentService.createReply(parentCommentId, requestDto, userId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(responseDto);
+    }
 }
