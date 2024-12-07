@@ -43,4 +43,18 @@ public class CommentController {
                 .status(HttpStatus.CREATED)
                 .body(responseDto);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentResDto> updateComment(
+            @PathVariable Long id,
+            @Valid @RequestBody CommentReqDto requestDto,
+            @RequestParam Long userId // 임시로 더미 userId를 받음
+    ) {
+
+        CommentResDto responseDto = commentService.updateComment(id, requestDto, userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseDto);
+    }
 }
