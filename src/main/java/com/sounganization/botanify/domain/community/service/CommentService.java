@@ -78,4 +78,21 @@ public class CommentService {
 
         return CommentMapper.toUpdateResDto(comment);
     }
+
+    @Transactional
+    public void deleteComment(Long commentId, Long userId) {
+
+        // todo - userId 존재 확인(mock 확인)
+        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
+
+        // 댓글 작성자 확인
+        if (!comment.getUserId().equals(userId)) {
+            throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
+        }
+
+        comment.softDelete();
+    }
 }
