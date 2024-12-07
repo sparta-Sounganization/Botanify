@@ -59,4 +59,23 @@ public class CommentService {
 
         return CommentMapper.toResDto(savedReply);
     }
+
+    @Transactional
+    public CommentResDto updateComment(Long commentId, CommentReqDto requestDto, Long userId) {
+
+        // todo - userId 존재 확인(mock 확인)
+        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
+
+        // 댓글 작성자 확인
+        if(!comment.getUserId().equals(userId)){
+            throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
+        }
+
+        comment.update(requestDto.getContent());
+
+        return CommentMapper.toUpdateResDto(comment);
+    }
 }
