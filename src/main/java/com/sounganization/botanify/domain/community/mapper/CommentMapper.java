@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 public class CommentMapper {
 
-    public static Comment toEntity(CommentReqDto requestDto, Post post, Long userId) {
+    public static Comment toEntity(CommentReqDto requestDto, Post post, Long userId, Comment parentComment) {
         return Comment.builder()
                 .content(requestDto.getContent())
                 .post(post)
                 .userId(userId)
-                .parentComment(null)
+                .parentComment(parentComment)
                 .childComments(new ArrayList<>())
                 .build();
     }
