@@ -49,4 +49,14 @@ public class Comment extends Timestamped {
         }
         this.content = content;
     }
+
+    public void softDelete() {
+        // 부모 댓글 soft delete
+        super.softDelete();
+
+        // 모든 자식 댓글을 재귀적으로 soft delete
+        if (!childComments.isEmpty()) {
+            childComments.forEach(Comment::softDelete);
+        }
+    }
 }
