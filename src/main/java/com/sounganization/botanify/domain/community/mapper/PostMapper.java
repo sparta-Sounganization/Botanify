@@ -1,6 +1,7 @@
 package com.sounganization.botanify.domain.community.mapper;
 
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
+import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostResDto;
 import com.sounganization.botanify.domain.community.entity.Post;
 import org.mapstruct.Mapper;
@@ -23,4 +24,11 @@ public interface PostMapper {
         );
     }
 
+    default PostListResDto postToPostListResDto(Post post) {
+        return new PostListResDto(
+                post.getTitle(),
+                post.getContent(),
+                post.getViewCounts()
+        );
+    }
 }
