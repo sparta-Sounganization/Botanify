@@ -3,6 +3,7 @@ package com.sounganization.botanify.domain.community.service;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
+import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
 import com.sounganization.botanify.domain.community.dto.res.PageDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostResDto;
@@ -72,6 +73,23 @@ public class PostService {
         List<Comment> comments = commentRepository.findCommentsWithChildrenByPostId(postId);
 
         return new PostWithCommentResDto(post, comments);
+    }
+
+    // 게시글 수정
+    @Transactional
+    public PostResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
+        // 게시글 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
+
+        // 게시글 수정
+        post.updatePost(postUpdateReqDto.getTitle(), postUpdateReqDto.getContent());
+
+        // DB 저장
+        Post savedPost = postRepository.save(post);
+
+        //entity -> dto
+        return postMapper.postToPostResDto(savedPost, HttpStatus.CREATED.value(),"게시글이 수정되었습니다");
     }
 
 }

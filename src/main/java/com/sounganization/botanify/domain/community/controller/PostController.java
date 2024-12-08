@@ -1,6 +1,7 @@
 package com.sounganization.botanify.domain.community.controller;
 
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
+import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
 import com.sounganization.botanify.domain.community.dto.res.PageDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostResDto;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,6 +43,14 @@ public class PostController {
     public ResponseEntity<PostWithCommentResDto> getPost(@PathVariable Long postId) {
         PostWithCommentResDto postWithCommentResDto = postService.getPost(postId);
         return ResponseEntity.ok(postWithCommentResDto);
+    }
+
+    //게시글 수정
+    @PutMapping("/{postId}")
+    public ResponseEntity<PostResDto> updatePost(@PathVariable Long postId ,@Valid @RequestBody PostUpdateReqDto postUpdateReqDto) {
+        Long userId = 1L;
+        PostResDto postResDto = postService.updatePost(postId,postUpdateReqDto, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(postResDto);
     }
 
 }

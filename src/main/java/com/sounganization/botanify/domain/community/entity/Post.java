@@ -21,7 +21,7 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
 
-    private Integer viewCounts=0;  //조회수 기본값 0 설정
+    private Integer viewCounts = 0;  //조회수 기본값 0 설정
 
     @Column(nullable = false)
     private Long userId;
@@ -35,5 +35,15 @@ public class Post extends Timestamped {
     //조회수 증가
     public void incrementViewCounts() {
         viewCounts++;
+    }
+
+    //게시글 수정
+    public void updatePost(String title, String content) {
+        if (title != null) {
+            this.title = title;
+        }
+        if (content != null) {
+            this.content = content;
+        }
     }
 }
