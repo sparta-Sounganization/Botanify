@@ -26,10 +26,12 @@ public enum ExceptionStatus {
     INVALID_UPDATE_REQUEST(HttpStatus.UNAUTHORIZED,"수정할 정보가 없습니다."),
 
     // plant
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND,"게시글을 찾을 수 없습니다."),
 
     // diary
 
     // post
+
 
     // comment
 
