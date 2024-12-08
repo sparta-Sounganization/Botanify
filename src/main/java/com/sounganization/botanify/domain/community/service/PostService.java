@@ -42,7 +42,7 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         //entity -> dto
-        return postMapper.postToPostResDto(savedPost, HttpStatus.CREATED.value(),"게시글이 등록되었습니다");
+        return postMapper.postToPostResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 등록되었습니다");
     }
 
     // 게시글 조회 - 다건 조회
@@ -62,8 +62,7 @@ public class PostService {
     // 게시글 조회 - 단건조회
     public PostWithCommentResDto getPost(Long postId) {
         // 게시글 조회
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
+        Post post = getPostOrThrow(postId);
 
         // 조회수 증가
         post.incrementViewCounts();
@@ -79,8 +78,7 @@ public class PostService {
     @Transactional
     public PostResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
         // 게시글 조회
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
+        Post post = getPostOrThrow(postId);
 
         // 게시글 수정
         post.updatePost(postUpdateReqDto.getTitle(), postUpdateReqDto.getContent());
@@ -89,7 +87,24 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         //entity -> dto
-        return postMapper.postToPostResDto(savedPost, HttpStatus.CREATED.value(),"게시글이 수정되었습니다");
+        return postMapper.postToPostResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 수정되었습니다");
+    }
+
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(Long postId, Long userId) {
+        Post post = getPostOrThrow(postId);
+
+        // 작성자 검증 나중에
+
+        postRepository.delete(post); // 삭제 수행
+
+    }
+
+    // 게시글 확인 메서드
+    private Post getPostOrThrow(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
     }
 
 }

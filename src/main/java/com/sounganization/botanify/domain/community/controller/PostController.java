@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
-    
+
     private final PostService postService;
 
     //게시글 작성
@@ -47,10 +47,18 @@ public class PostController {
 
     //게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<PostResDto> updatePost(@PathVariable Long postId ,@Valid @RequestBody PostUpdateReqDto postUpdateReqDto) {
+    public ResponseEntity<PostResDto> updatePost(@PathVariable Long postId, @Valid @RequestBody PostUpdateReqDto postUpdateReqDto) {
         Long userId = 1L;
-        PostResDto postResDto = postService.updatePost(postId,postUpdateReqDto, userId);
+        PostResDto postResDto = postService.updatePost(postId, postUpdateReqDto, userId);
         return ResponseEntity.status(HttpStatus.OK).body(postResDto);
+    }
+
+    //게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
+        Long userId = 6L;
+        postService.deletePost(postId, userId);
+        return ResponseEntity.noContent().build();
     }
 
 }
