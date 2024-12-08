@@ -4,6 +4,7 @@ import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.res.PageDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostResDto;
+import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,13 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size) {
         PageDto<PostListResDto> postListResDto = postService.getPosts(page, size);
         return ResponseEntity.ok(postListResDto);
+    }
+
+    //게시글 조회 - 단건조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostWithCommentResDto> getPost(@PathVariable Long postId) {
+        PostWithCommentResDto postWithCommentResDto = postService.getPost(postId);
+        return ResponseEntity.ok(postWithCommentResDto);
     }
 
 }

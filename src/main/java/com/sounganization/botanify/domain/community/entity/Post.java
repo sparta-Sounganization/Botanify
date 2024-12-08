@@ -31,4 +31,9 @@ public class Post extends Timestamped {
         this.content = content;
         this.userId = userId;
     }
+
+    //조회수 증가
+    public void incrementViewCounts() {
+        viewCounts++;
+    }
 }
