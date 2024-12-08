@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Diary extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

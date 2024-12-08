@@ -78,13 +78,31 @@ public class DiaryService {
         // todo - userId 에 대한 diary 소유 여부 확인
         if (false) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
 
-        Diary diary = diaryRepository.findByIdCustom(id);
+        Diary oldDiary = diaryRepository.findByIdCustom(id);
 
-        // note - 일일이 필드 접근하는 것 마음에 들지 않음, 수정 방법 찾아보기
-        diary.setTitle(reqDiary.getTitle());
-        diary.setContent(reqDiary.getContent());
+        oldDiary = oldDiary.toBuilder()
+                .title(reqDiary.getTitle())
+                .content(reqDiary.getContent())
+                .build();
 
-        return diaryRepository.save(diary);
+        return diaryRepository.save(oldDiary);
+    }
+
+    @Transactional
+    public Diary updateDiaryLegacy(Long userId, Long id, Diary reqDiary) {
+
+        // todo - userId 에 대한 존재 확인
+        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
+
+        // todo - userId 에 대한 diary 소유 여부 확인
+        if (false) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
+
+        Diary oldDiary = diaryRepository.findByIdCustom(id);
+
+        oldDiary.setTitle(reqDiary.getTitle());
+        oldDiary.setContent(reqDiary.getContent());
+
+        return oldDiary;
     }
 
     /**
