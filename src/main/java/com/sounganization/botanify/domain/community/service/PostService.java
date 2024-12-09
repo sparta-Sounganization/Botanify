@@ -90,9 +90,15 @@ public class PostService {
     public void deletePost(Long postId, Long userId) {
         Post post = getPostOrThrow(postId);
 
+        //이미 삭제된 게시글인지 확인
+        if(post.isDeletedYn()){
+            throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
+        }
+
         // 작성자 검증 나중에
 
-        postRepository.delete(post); // 삭제 수행
+        //삭제
+        post.softDelete();
 
     }
 
@@ -101,5 +107,4 @@ public class PostService {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
     }
-
 }
