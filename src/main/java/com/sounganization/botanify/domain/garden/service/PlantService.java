@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +28,7 @@ public class PlantService {
     private final SpeciesRepository speciesRepository;
     private final DiaryRepository diaryRepository;
 
+    @Transactional
     public Plant createPlant(String plantName, LocalDate adoptionDate, long speciesId) {
         //임시 Species 객체 생성
         Species species = speciesRepository.findById(speciesId).orElseThrow(()
@@ -43,17 +45,23 @@ public class PlantService {
                 .build());
     }
 
+    @Transactional(readOnly = true)
     public PlantResDto getPlant(Long id) {
+        Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
+        Species species = plant.getSpecies();
+        if (species == null) {
+            throw new CustomException(ExceptionStatus.SPECIES_NOT_FOUND);
+        }
 
-        Plant plant  = plantRepository.findById(id).orElseThrow(()
-                -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
-        Species species = speciesRepository.findById(plant.getId()).orElseThrow(()
-                -> new CustomException(ExceptionStatus.SPECIES_NOT_FOUND));
-        List<DiaryResDto> diaries = diaryRepository.findById(plant.getId()).stream()
-                .map(diary -> new DiaryResDto(diary.getTitle(), diary.getContent()))
+        List<DiaryResDto> diaries = diaryRepository.findByPlantId(plant.getId()).stream()
+                .map(diary -> {
+                    if (diary.getPlant() == null) {
+                        throw new CustomException(ExceptionStatus.DIARY_NOT_FOUND);
+                    }
+                    return new DiaryResDto(diary.getTitle(), diary.getContent());
+                })
                 .collect(Collectors.toList());
 
         return new PlantResDto(200, "식물 조회 성공", plant.getId(), plant.getPlantName(), plant.getAdoptionDate(), species.getSpeciesName(), diaries);
-
     }
 }
