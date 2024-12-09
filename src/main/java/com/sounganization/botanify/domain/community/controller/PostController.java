@@ -50,7 +50,7 @@ public class PostController {
     public ResponseEntity<PostResDto> updatePost(@PathVariable Long postId, @Valid @RequestBody PostUpdateReqDto postUpdateReqDto) {
         Long userId = 1L;
         PostResDto postResDto = postService.updatePost(postId, postUpdateReqDto, userId);
-        return ResponseEntity.status(HttpStatus.OK).body(postResDto);
+        return ResponseEntity.ok(postResDto);
     }
 
     //게시글 삭제
