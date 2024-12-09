@@ -6,10 +6,9 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Diary extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +26,14 @@ public class Diary extends Timestamped {
 
     @Column(nullable = false)
     private Long userId;
+
+    public void addRelations(Plant plant, Long userId) {
+        this.plant = plant;
+        this.userId = userId;
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

@@ -32,13 +32,13 @@ public class DiaryService {
         // todo - userId 에 대한 존재 확인
         if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
 
-        // todo - userId 에 대한 plant 소유 여부 확인
-        if (false) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
-
         Plant plant = plantRepository.findByIdCustom(plantId);
 
-        reqDiary.setUserId(userId);
-        reqDiary.setPlant(plant);
+        // userId 에 대한 plant 소유 여부 확인
+        if (!Objects.equals(userId, plant.getUserId())) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
+
+        // 별도로 취득한 연관 정보 추가
+        reqDiary.addRelations(plant, userId);
 
         return diaryRepository.save(reqDiary);
     }
@@ -55,10 +55,12 @@ public class DiaryService {
         // todo - userId 에 대한 존재 확인
         if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
 
-        // todo - userId 에 대한 diary 소유 여부 확인
-        if (false) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
+        Diary diary = diaryRepository.findByIdCustom(id);
 
-        return diaryRepository.findByIdCustom(id);
+        // userId 에 대한 diary 소유 여부 확인
+        if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
+
+        return diary;
     }
 
     /**
@@ -75,16 +77,14 @@ public class DiaryService {
         // todo - userId 에 대한 존재 확인
         if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
 
-        // todo - userId 에 대한 diary 소유 여부 확인
-        if (false) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
-
         Diary diary = diaryRepository.findByIdCustom(id);
 
-        // note - 일일이 필드 접근하는 것 마음에 들지 않음, 수정 방법 찾아보기
-        diary.setTitle(reqDiary.getTitle());
-        diary.setContent(reqDiary.getContent());
+        // userId 에 대한 diary 소유 여부 확인
+        if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
 
-        return diaryRepository.save(diary);
+        diary.update(reqDiary.getTitle(), reqDiary.getContent());
+
+        return diary;
     }
 
     /**
@@ -99,12 +99,11 @@ public class DiaryService {
         // todo - userId 에 대한 존재 확인
         if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
 
-        // todo - userId 에 대한 diary 소유 여부 확인
-        if (false) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
-
         Diary diary = diaryRepository.findByIdCustom(id);
 
+        // userId 에 대한 diary 소유 여부 확인
+        if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
+
         diary.softDelete();
-        diaryRepository.save(diary);
     }
 }
