@@ -1,5 +1,6 @@
 package com.sounganization.botanify.domain.garden.dto.req;
 
+import com.sounganization.botanify.domain.garden.entity.Species;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
