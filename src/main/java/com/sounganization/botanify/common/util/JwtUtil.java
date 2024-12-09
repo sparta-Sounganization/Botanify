@@ -78,7 +78,7 @@ public class JwtUtil {
                     .getBody();
         } catch (ExpiredJwtException e) {
             throw new CustomException(ExceptionStatus.TOKEN_EXPIRED);
-        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
+        } catch (UnsupportedJwtException | MalformedJwtException e) {
             throw new CustomException(ExceptionStatus.INVALID_TOKEN);
         } catch (Exception e) {
             throw new CustomException(ExceptionStatus.INTERNAL_SERVER_ERROR);
