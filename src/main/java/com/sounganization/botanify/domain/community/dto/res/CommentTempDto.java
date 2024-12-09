@@ -11,14 +11,14 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentResDto {
+public class CommentTempDto {
     private Long commentId;
     private Long userId;
     private String username;
     private String content;
-    private List<CommentResDto> childComments;
+    private List<CommentTempDto> childComments;
 
-    public CommentResDto(Comment comment) {
+    public CommentTempDto(Comment comment) {
         this.commentId = comment.getId();
         this.userId = comment.getUserId();
         this.content = comment.getContent();
@@ -26,7 +26,7 @@ public class CommentResDto {
 
         this.childComments = new ArrayList<>();}
 
-    public void addChildComment(CommentResDto childComment) {
+    public void addChildComment(CommentTempDto childComment) {
         this.childComments.add(childComment);
     }
 
