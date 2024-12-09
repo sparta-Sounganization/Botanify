@@ -10,25 +10,27 @@ import org.mapstruct.Mapper;
 public interface PostMapper {
 
     default Post postReqDtoToPost(PostReqDto postReqDto, Long userId) {
-        return new Post (
-        postReqDto.getTitle(),
-        postReqDto.getContent(),
-        userId);
+        return Post.builder()
+                .title(postReqDto.getTitle())
+                .content(postReqDto.getContent())
+                .viewCounts(0)
+                .userId(userId)
+                .build();
     }
 
     default PostResDto postToPostResDto(Post post, int statusCode, String message) {
-        return new PostResDto(
-                statusCode,
-                message,
-                post.getId()
-        );
+        return PostResDto.builder()
+                .status(statusCode)
+                .message(message)
+                .postId(post.getId())
+                .build();
     }
 
     default PostListResDto postToPostListResDto(Post post) {
-        return new PostListResDto(
-                post.getTitle(),
-                post.getContent(),
-                post.getViewCounts()
-        );
+        return PostListResDto.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .viewCounts(post.getViewCounts())
+                .build();
     }
 }

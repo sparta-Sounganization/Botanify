@@ -2,11 +2,15 @@ package com.sounganization.botanify.domain.community.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Getter
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 public class Post extends Timestamped {
     @Id
@@ -20,17 +24,10 @@ public class Post extends Timestamped {
     private String content;
 
     @Column(nullable = false)
-
-    private Integer viewCounts = 0;  //조회수 기본값 0 설정
+    private Integer viewCounts;
 
     @Column(nullable = false)
     private Long userId;
-
-    public Post(String titile, String content, Long userId) {
-        this.title = titile;
-        this.content = content;
-        this.userId = userId;
-    }
 
     //조회수 증가
     public void incrementViewCounts() {
