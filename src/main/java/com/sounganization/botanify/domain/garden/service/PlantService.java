@@ -72,4 +72,11 @@ public class PlantService {
         plant.setPlantName(plantName);
         plant.setAdoptionDate(adoptionDate);
     }
+
+    @Transactional
+    public void deletePlant(Long id) {
+        Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
+        plant.setDeletedYn(true);
+        plantRepository.save(plant);
+    }
 }

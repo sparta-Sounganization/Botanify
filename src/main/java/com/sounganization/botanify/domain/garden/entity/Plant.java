@@ -33,5 +33,6 @@ public class Plant extends Timestamped {
     @Column(nullable = false)
     private Long userId;
 
-
+    @Column(nullable = false)
+    private boolean deletedYn = false;
 }

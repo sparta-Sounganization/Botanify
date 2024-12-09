@@ -47,4 +47,10 @@ public class PlantController {
         plantService.updatePlant(id, plantReqDto.getPlantName(), plantReqDto.getAdoptionDate());
         return ResponseEntity.ok("식물 정보가 수정되었습니다.");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePlant(@PathVariable Long id) {
+        plantService.deletePlant(id);
+        return ResponseEntity.ok("식물 정보가 삭제되었습니다.");
+    }
 }
