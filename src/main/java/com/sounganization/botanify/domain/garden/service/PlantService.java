@@ -30,7 +30,7 @@ public class PlantService {
 
     @Transactional
     public Plant createPlant(String plantName, LocalDate adoptionDate, long speciesId) {
-        //임시 Species 객체 생성
+
         Species species = speciesRepository.findById(speciesId).orElseThrow(()
                 -> new CustomException(ExceptionStatus.SPECIES_NOT_FOUND));
 
@@ -63,5 +63,13 @@ public class PlantService {
                 .collect(Collectors.toList());
 
         return new PlantResDto(200, "식물 조회 성공", plant.getId(), plant.getPlantName(), plant.getAdoptionDate(), species.getSpeciesName(), diaries);
+    }
+
+    @Transactional
+    public void updatePlant(Long id, String plantName, LocalDate adoptionDate) {
+        Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
+
+        plant.setPlantName(plantName);
+        plant.setAdoptionDate(adoptionDate);
     }
 }

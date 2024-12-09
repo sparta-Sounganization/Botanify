@@ -3,16 +3,14 @@ package com.sounganization.botanify.domain.garden.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sounganization.botanify.common.entity.Timestamped;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Entity
 @Builder
 public class Plant extends Timestamped {

@@ -41,4 +41,10 @@ public class PlantController {
         PlantResDto plantResDto = plantService.getPlant(id);
         return ResponseEntity.ok(plantResDto);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updatePlant(@PathVariable Long id, @RequestBody PlantReqDto plantReqDto) {
+        plantService.updatePlant(id, plantReqDto.getPlantName(), plantReqDto.getAdoptionDate());
+        return ResponseEntity.ok("식물 정보가 수정되었습니다.");
+    }
 }

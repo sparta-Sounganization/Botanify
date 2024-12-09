@@ -1,5 +1,6 @@
 package com.sounganization.botanify.domain.garden.dto.res;
 
+import com.sounganization.botanify.domain.garden.entity.Species;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,4 +27,5 @@ public class PlantResDto {
         this.speciesName = speciesName;
         this.diaries = diaries;
     }
+
 }
