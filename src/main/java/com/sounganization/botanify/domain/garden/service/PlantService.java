@@ -13,9 +13,13 @@ import com.sounganization.botanify.domain.garden.repository.SpeciesRepository;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.print.attribute.standard.PageRanges;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -46,20 +50,17 @@ public class PlantService {
     }
 
     @Transactional(readOnly = true)
-    public PlantResDto getPlant(Long id) {
+    public PlantResDto getPlant(Long id, int page, int size) {
         Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
         Species species = plant.getSpecies();
         if (species == null) {
             throw new CustomException(ExceptionStatus.SPECIES_NOT_FOUND);
         }
 
-        List<DiaryResDto> diaries = diaryRepository.findByPlantId(plant.getId()).stream()
-                .map(diary -> {
-                    if (diary.getPlant() == null) {
-                        throw new CustomException(ExceptionStatus.DIARY_NOT_FOUND);
-                    }
-                    return new DiaryResDto(diary.getTitle(), diary.getContent());
-                })
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Diary> diaryPage = diaryRepository.findByPlantId(plant.getId(), pageable);
+        List<DiaryResDto> diaries = diaryPage.stream()
+                .map(diary -> new DiaryResDto(diary.getTitle(), diary.getContent()))
                 .collect(Collectors.toList());
 
         return new PlantResDto(200, "식물 조회 성공", plant.getId(), plant.getPlantName(), plant.getAdoptionDate(), species.getSpeciesName(), diaries);
