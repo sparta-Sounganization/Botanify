@@ -2,10 +2,16 @@ package com.sounganization.botanify.domain.garden.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Plant extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
