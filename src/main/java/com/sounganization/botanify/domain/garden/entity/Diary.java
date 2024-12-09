@@ -2,8 +2,10 @@ package com.sounganization.botanify.domain.garden.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Diary extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

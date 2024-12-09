@@ -8,12 +8,10 @@ import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.service.PlantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/plants")
@@ -26,7 +24,21 @@ public class PlantController {
     @PostMapping
     public ResponseEntity<PlantResDto> createPlant(@RequestBody PlantReqDto plantReqDto) {
         Plant createdPlant = plantService.createPlant(plantReqDto.getPlantName(), LocalDate.now(), plantReqDto.getSpeciesId());
-        return ResponseEntity.created(null).body(new PlantResDto(201, "식물 등록 성공", createdPlant.getId()));
+        Species species = createdPlant.getSpecies();
+        return ResponseEntity.created(null).body(new PlantResDto(
+                201,
+                "식물 등록 성공",
+                createdPlant.getId(),
+                createdPlant.getPlantName(),
+                createdPlant.getAdoptionDate(),
+                species.getSpeciesName(),
+                List.of()
+        ));
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PlantResDto> getPlant(@PathVariable Long id) {
+        PlantResDto plantResDto = plantService.getPlant(id);
+        return ResponseEntity.ok(plantResDto);
     }
 }

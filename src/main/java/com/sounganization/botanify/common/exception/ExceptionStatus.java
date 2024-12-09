@@ -27,8 +27,10 @@ public enum ExceptionStatus {
 
     // plant
     SPECIES_NOT_FOUND(HttpStatus.NOT_FOUND,"종을 찾을 수 없습니다."),
+    PLANT_NOT_FOUND(HttpStatus.NOT_FOUND,"식물을 찾을 수 없습니다."),
 
     // diary
+    DIARY_NOT_FOUND(HttpStatus.NOT_FOUND,"다이어리를 찾을 수 없습니다."),
 
     // post
 

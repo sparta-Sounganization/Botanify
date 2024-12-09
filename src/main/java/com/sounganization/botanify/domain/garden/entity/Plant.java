@@ -12,6 +12,7 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @Entity
 @Builder
 public class Plant extends Timestamped {
