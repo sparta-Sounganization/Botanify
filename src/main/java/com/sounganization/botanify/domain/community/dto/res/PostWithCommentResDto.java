@@ -3,55 +3,31 @@ package com.sounganization.botanify.domain.community.dto.res;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
+@Builder
 @AllArgsConstructor
-
+@NoArgsConstructor
 public class PostWithCommentResDto {
-    private final String title;
-    private final String content;
-    private final Integer viewCounts;
+    private String title;
+    private String content;
+    private Integer viewCounts;
+    private List<CommentTempDto> comments;
 
-    private final List<CommentTempDto> comments;
-
-    public PostWithCommentResDto(Post post, List<Comment> comments) {
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.viewCounts = post.getViewCounts();
-
-        this.comments = buildCommentTree(comments);
-    }
-
-    // 댓글 트리 구조로 변환하는 메서드
-    private List<CommentTempDto> buildCommentTree(List<Comment> comments) {
-        Map<Long, CommentTempDto> commentMap = new HashMap<>();
-        List<CommentTempDto> rootComments = new ArrayList<>();
-
-        // 댓글을 맵에 저장
-        for (Comment comment : comments) {
-            CommentTempDto commentDto = new CommentTempDto(comment);
-            commentMap.put(comment.getId(), commentDto);
-        }
-
-        // 트리 구조로 부모-자식 관계 설정
-        for (Comment comment : comments) {
-            if (comment.getParentComment() != null) {
-                // 자식 댓글은 부모 댓글의 childComments에 추가
-                CommentTempDto parentDto = commentMap.get(comment.getParentComment().getId());
-                CommentTempDto childDto = commentMap.get(comment.getId());
-                parentDto.addChildComment(childDto);
-            } else {
-                // 최상위 댓글은 rootComments에 추가
-                rootComments.add(commentMap.get(comment.getId()));
-            }
-        }
-
-        return rootComments;
+    public static PostWithCommentResDto from(Post post, List<Comment> comments) {
+        return PostWithCommentResDto.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .viewCounts(post.getViewCounts())
+                .comments(comments.stream()
+                        .map(CommentTempDto::from)
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

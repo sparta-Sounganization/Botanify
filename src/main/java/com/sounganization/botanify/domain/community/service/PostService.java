@@ -21,7 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -55,18 +58,38 @@ public class PostService {
     }
 
     // 게시글 조회 - 단건조회
+    @Transactional
     public PostWithCommentResDto readPost(Long postId) {
         // 게시글 조회
         Post post = getPostOrThrow(postId);
 
         // 조회수 증가
         post.incrementViewCounts();
-        postRepository.save(post);
 
         // 댓글과 대댓글 조회
-        List<Comment> comments = commentRepository.findCommentsWithChildrenByPostId(postId);
+        List<Comment> comments = commentRepository.findCommentsByPostId(postId);
 
-        return new PostWithCommentResDto(post, comments);
+        // 댓글의 부모-자식 관계를 정리 (중복 제거)
+        Map<Long, Comment> commentMap = new HashMap<>();
+        List<Comment> uniqueComments = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            if (comment.getParentComment() == null) {
+                // 부모 댓글이면 새로운 리스트에 추가
+                uniqueComments.add(comment);
+            } else {
+                // 자식 댓글의 부모 댓글에 추가
+                Comment parent = comment.getParentComment();
+                // 이미 부모 댓글에 자식 댓글이 있는지 확인
+                if (!parent.getChildComments().contains(comment)) {
+                    parent.getChildComments().add(comment);
+                }
+            }
+            commentMap.put(comment.getId(), comment);
+        }
+
+        // 댓글 리스트를 DTO로 변환하여 반환
+        return PostWithCommentResDto.from(post, uniqueComments);
     }
 
     // 게시글 수정

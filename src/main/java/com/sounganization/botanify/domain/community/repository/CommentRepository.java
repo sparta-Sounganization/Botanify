@@ -8,8 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    //게시글의 댓글 조회
-    @Query("SELECT c FROM Comment c LEFT JOIN FETCH c.childComments WHERE c.post.id = :postId")
-    List<Comment> findCommentsWithChildrenByPostId(@Param("postId") Long postId);
-
-}
+       //게시글 댓글 조회
+        @Query("""
+        SELECT c
+        FROM Comment c
+        LEFT JOIN FETCH c.parentComment
+        LEFT JOIN FETCH c.childComments
+        WHERE c.post.id = :postId
+        ORDER BY c.parentComment.id NULLS FIRST, c.id
+    """)
+        List<Comment> findCommentsByPostId(@Param("postId") Long postId);
+    }
