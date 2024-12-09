@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,20 +27,21 @@ public class PostController {
         PostResDto postResDto = postService.createPost(postReqDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(postResDto);
     }
+    //파라미터에서 dto 안받고 title 분해해서 받기 , 입력값만 넘겨주기, 근데 많으면 서비스용 dto만들기
 
     //게시글 조회 - 다건조회
     @GetMapping
-    public ResponseEntity<PageDto<PostListResDto>> getPosts(
+    public ResponseEntity<PageDto<PostListResDto>> readPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        PageDto<PostListResDto> postListResDto = postService.getPosts(page, size);
+        PageDto<PostListResDto> postListResDto = postService.readPosts(page, size);
         return ResponseEntity.ok(postListResDto);
     }
 
     //게시글 조회 - 단건조회
     @GetMapping("/{postId}")
-    public ResponseEntity<PostWithCommentResDto> getPost(@PathVariable Long postId) {
-        PostWithCommentResDto postWithCommentResDto = postService.getPost(postId);
+    public ResponseEntity<PostWithCommentResDto> readPost(@PathVariable Long postId) {
+        PostWithCommentResDto postWithCommentResDto = postService.readPost(postId);
         return ResponseEntity.ok(postWithCommentResDto);
     }
 

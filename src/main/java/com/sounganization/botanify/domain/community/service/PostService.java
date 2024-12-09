@@ -46,7 +46,7 @@ public class PostService {
     }
 
     // 게시글 조회 - 다건 조회
-    public PageDto<PostListResDto> getPosts(int page, int size) {
+    public PageDto<PostListResDto> readPosts(int page, int size) {
         //pageable
         Pageable pageable = PageRequest.of(page, size, Sort.by("updatedAt").descending());
 
@@ -60,7 +60,7 @@ public class PostService {
     }
 
     // 게시글 조회 - 단건조회
-    public PostWithCommentResDto getPost(Long postId) {
+    public PostWithCommentResDto readPost(Long postId) {
         // 게시글 조회
         Post post = getPostOrThrow(postId);
 
