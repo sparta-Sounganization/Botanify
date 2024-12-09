@@ -41,6 +41,8 @@ public enum ExceptionStatus {
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "성장 일지를 찾을 수 없습니다."),
     DIARY_NOT_OWNED(HttpStatus.UNAUTHORIZED, "성장 일지의 주인이 아닙니다."),
     // post
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND,"게시글을 찾을 수 없습니다."),
+    POST_ALREADY_DELETED(HttpStatus.CONFLICT,"이미 삭제된 게시글입니다."),
 
     // comment
 

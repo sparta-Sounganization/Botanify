@@ -7,9 +7,8 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class PostResDto {
-    private final Integer status;
-    private final String message;
-    private final Long postId;
-
+public class PostListResDto {
+    private final String title;
+    private final String content;
+    private final Integer viewCounts;
 }
