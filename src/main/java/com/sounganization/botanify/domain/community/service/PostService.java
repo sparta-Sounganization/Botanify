@@ -35,13 +35,13 @@ public class PostService {
     public PostResDto createPost(PostReqDto postReqDto, Long userId) {
 
         //dto -> entity
-        Post post = postMapper.postReqDtoToPost(postReqDto, userId);
+        Post post = postMapper.reqDtoToEntity(postReqDto, userId);
 
         // DB 저장
         Post savedPost = postRepository.save(post);
 
         //entity -> dto
-        return postMapper.postToPostResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 등록되었습니다");
+        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 등록되었습니다");
     }
 
     // 게시글 조회 - 다건 조회
@@ -51,7 +51,7 @@ public class PostService {
 
         Page<Post> posts = postRepository.findAll(pageable);
 
-        return posts.map(post -> postMapper.postToPostListResDto(post));
+        return posts.map(post -> postMapper.entityToResDto(post));
     }
 
     // 게시글 조회 - 단건조회
@@ -82,7 +82,7 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         //entity -> dto
-        return postMapper.postToPostResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 수정되었습니다");
+        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 수정되었습니다");
     }
 
     // 게시글 삭제

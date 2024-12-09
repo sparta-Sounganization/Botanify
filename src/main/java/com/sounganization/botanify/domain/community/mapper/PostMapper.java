@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "Spring")
 public interface PostMapper {
 
-    default Post postReqDtoToPost(PostReqDto postReqDto, Long userId) {
+    default Post reqDtoToEntity(PostReqDto postReqDto, Long userId) {
         return Post.builder()
                 .title(postReqDto.getTitle())
                 .content(postReqDto.getContent())
@@ -18,7 +18,7 @@ public interface PostMapper {
                 .build();
     }
 
-    default PostResDto postToPostResDto(Post post, int statusCode, String message) {
+    default PostResDto entityToResDto(Post post, int statusCode, String message) {
         return PostResDto.builder()
                 .status(statusCode)
                 .message(message)
@@ -26,7 +26,7 @@ public interface PostMapper {
                 .build();
     }
 
-    default PostListResDto postToPostListResDto(Post post) {
+    default PostListResDto entityToResDto(Post post) {
         return PostListResDto.builder()
                 .title(post.getTitle())
                 .content(post.getContent())
