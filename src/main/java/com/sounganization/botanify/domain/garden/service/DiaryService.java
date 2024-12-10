@@ -10,9 +10,9 @@ import com.sounganization.botanify.domain.garden.entity.Plant;
 import com.sounganization.botanify.domain.garden.mapper.DiaryMapper;
 import com.sounganization.botanify.domain.garden.repository.DiaryRepository;
 import com.sounganization.botanify.domain.garden.repository.PlantRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -33,22 +33,15 @@ public class DiaryService {
      */
     @Transactional
     public MessageResDto createDiary(Long userId, Long plantId, DiaryReqDto reqDto) {
-
-        Diary reqDiary = diaryMapper.toEntity(reqDto);
-
-        // todo - userId 에 대한 존재 확인
-        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
-
+        // plant 획득 및 소유권 검증
         Plant plant = plantRepository.findByIdCustom(plantId);
-
-        // userId 에 대한 plant 소유 여부 확인
         if (!Objects.equals(userId, plant.getUserId())) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
-
-        // 별도로 취득한 연관 정보 추가
+        // 요청 DTO 를 diary 로 변환 후 연관 설정
+        Diary reqDiary = diaryMapper.toEntity(reqDto);
         reqDiary.addRelations(plant, userId);
-
+        // 저장 (영속화)
         Diary resDiary = diaryRepository.save(reqDiary);
-
+        // id 전달하여 반환
         return diaryMapper.toCreatedDto(resDiary.getId());
     }
 
@@ -59,16 +52,11 @@ public class DiaryService {
      * @param id 불러오고자 하는 일지 id
      * @return 불러 온 일지 엔티티
      */
+    @Transactional(readOnly = true)
     public DiaryResDto readDiary(Long userId, Long id) {
-
-        // todo - userId 에 대한 존재 확인
-        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
-
-        Diary diary = diaryRepository.findByIdCustom(id);
-
-        // userId 에 대한 diary 소유 여부 확인
-        if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
-
+        // diary 획득 및 소유권 검증
+        Diary diary = findAuthoredDiaryPersist(userId, id);
+        // DTO 로 변환하여 반환
         return diaryMapper.toDto(diary);
     }
 
@@ -82,19 +70,11 @@ public class DiaryService {
      */
     @Transactional
     public MessageResDto updateDiary(Long userId, Long id, DiaryReqDto reqDto) {
-
-        Diary reqDiary = diaryMapper.toEntity(reqDto);
-
-        // todo - userId 에 대한 존재 확인
-        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
-
-        Diary diary = diaryRepository.findByIdCustom(id);
-
-        // userId 에 대한 diary 소유 여부 확인
-        if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
-
-        diary.update(reqDiary.getTitle(), reqDiary.getContent());
-
+        // diary 획득 및 소유권 검증 (영속화)
+        Diary diary = findAuthoredDiaryPersist(userId, id);
+        // 요청 Dto 에서 바로 diary 갱신
+        diary.update(reqDto.title(), reqDto.content());
+        // id 전달하여 반환
         return diaryMapper.toUpdatedDto(diary.getId());
     }
 
@@ -106,15 +86,25 @@ public class DiaryService {
      */
     @Transactional
     public void deleteDiary(Long userId, Long id) {
-
-        // todo - userId 에 대한 존재 확인
-        if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
-
-        Diary diary = diaryRepository.findByIdCustom(id);
-
-        // userId 에 대한 diary 소유 여부 확인
-        if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
-
+        // diary 획득 및 소유권 검증 (영속화)
+        Diary diary = findAuthoredDiaryPersist(userId, id);
+        // SoftDelete 전용 메서드를 이용한 삭제 필드 갱신
         diary.softDelete();
+    }
+
+    /**
+     * 사용자 id와 일지 id를 받아서,
+     * 사용자의 소유인 일지를 찾아서 반환하고, 그렇지 않은 경우 해당하는 예외를 던지는 서브루틴
+     * @param userId 사용자 id
+     * @param id 조회 및 소유권 확인하고자 하는 일지 id
+     * @return 소유권이 확인된 존재하는 일지 엔티티
+     */
+    @Transactional
+    protected Diary findAuthoredDiaryPersist(Long userId, Long id) {
+        // diary 획득
+        Diary diary = diaryRepository.findByIdCustom(id);
+        // 소유권 검증
+        if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
+        return diary;
     }
 }
