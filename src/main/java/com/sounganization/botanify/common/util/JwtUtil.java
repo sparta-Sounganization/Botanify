@@ -3,6 +3,8 @@ package com.sounganization.botanify.common.util;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
+import com.sounganization.botanify.domain.user.dto.req.UserReqDto;
+import com.sounganization.botanify.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -88,13 +90,23 @@ public class JwtUtil {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
 
+        Long id = Long.valueOf(claims.getSubject());
+        String email = ""; // 이메일은 토큰에 저장하지 않음
         String username = claims.get("username", String.class);
+        String password = ""; // 비밀번호는 토큰에 저장하지 않음
+        String city = claims.get("city", String.class);
+        String town = claims.get("town", String.class);
+        String address = ""; // 상세 주소는 토큰에 저장하지 않음
         String role = claims.get("role", String.class);
 
+        UserReqDto userReqDto = new UserReqDto(
+                id, email, username, password, city, town, address, UserRole.valueOf(role));
+        UserDetailsImpl userDetails = new UserDetailsImpl(userReqDto);
+
         return new UsernamePasswordAuthenticationToken(
-                username,
+                userDetails,
                 null,
-                Collections.singletonList(new SimpleGrantedAuthority(role))
+                userDetails.getAuthorities()
         );
     }
 }
