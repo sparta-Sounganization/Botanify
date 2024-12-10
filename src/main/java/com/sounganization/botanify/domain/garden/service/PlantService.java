@@ -58,7 +58,7 @@ public class PlantService {
         }
 
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Diary> diaryPage = diaryRepository.findByPlantId(plant.getId(), pageable);
+        Page<Diary> diaryPage = diaryRepository.findByPlantIdAndDeletedYnFalse(plant.getId(), pageable);
         List<DiaryResDto> diaries = diaryPage.stream()
                 .map(diary -> new DiaryResDto(diary.getTitle(), diary.getContent()))
                 .collect(Collectors.toList());
@@ -77,7 +77,7 @@ public class PlantService {
     @Transactional
     public void deletePlant(Long id) {
         Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
-        plant.setDeletedYn(true);
+        plant.softDelete();
         plantRepository.save(plant);
     }
 }

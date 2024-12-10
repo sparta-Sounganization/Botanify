@@ -1,6 +1,5 @@
 package com.sounganization.botanify.domain.garden.controller;
 
-import com.sounganization.botanify.common.exception.GlobalExceptionHandler;
 import com.sounganization.botanify.domain.garden.dto.req.PlantReqDto;
 import com.sounganization.botanify.domain.garden.dto.res.PlantResDto;
 import com.sounganization.botanify.domain.garden.entity.Plant;
@@ -37,7 +36,7 @@ public class PlantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlantResDto> getPlant(@PathVariable Long id) {
+    public ResponseEntity<PlantResDto> readPlant(@PathVariable Long id) {
         PlantResDto plantResDto = plantService.getPlant(id, 0, 10);
         return ResponseEntity.ok(plantResDto);
     }
