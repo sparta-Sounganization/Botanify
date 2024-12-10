@@ -1,6 +1,8 @@
 package com.sounganization.botanify.common.filter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.sounganization.botanify.common.dto.res.ExceptionResDto;
+import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.common.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -9,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -57,5 +60,22 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"status\": 200, \"message\": \"로그인이 성공되었습니다.\"}");
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request,
+                                              HttpServletResponse response,
+                                              AuthenticationException failed)
+            throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        ExceptionStatus status = ExceptionStatus.INVALID_CREDENTIALS;
+        String errorResponse = new ObjectMapper().writeValueAsString(
+                new ExceptionResDto(status.getStatus().value(), status.getMessage())
+        );
+
+        response.getWriter().write(errorResponse);
     }
 }
