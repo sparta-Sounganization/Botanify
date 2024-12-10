@@ -3,6 +3,7 @@ package com.sounganization.botanify.common.util;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
+import com.sounganization.botanify.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -88,11 +89,24 @@ public class JwtUtil {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
 
+        Long userId = Long.parseLong(claims.getSubject());
         String username = claims.get("username", String.class);
         String role = claims.get("role", String.class);
+        String city = claims.get("city", String.class);
+        String town = claims.get("town", String.class);
+
+        // Create UserDetailsImpl object
+        UserDetailsImpl userDetails = UserDetailsImpl.builder()
+                .id(userId)
+                .username(username)
+                .password("") // password not needed for authentication
+                .role(UserRole.valueOf(role))
+                .city(city)
+                .town(town)
+                .build();
 
         return new UsernamePasswordAuthenticationToken(
-                username,
+                userDetails,
                 null,
                 Collections.singletonList(new SimpleGrantedAuthority(role))
         );
