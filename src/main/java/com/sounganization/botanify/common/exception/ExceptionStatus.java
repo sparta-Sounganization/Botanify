@@ -14,10 +14,18 @@ public enum ExceptionStatus {
     BAD_REQUEST(HttpStatus.BAD_REQUEST,"잘못된 요청입니다."),
     BODY_NOT_FOUND(HttpStatus.BAD_REQUEST,"요청 본문을 찾을 수 없습니다."),
 
+    // token
+    TOKEN_NOT_PROVIDED(HttpStatus.UNAUTHORIZED, "토큰이 제공되지 않았습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+
     // auth
     DUPLICATED_EMAIL(HttpStatus.CONFLICT,"이미 존재하는 이메일입니다."),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다."),
+    PASSWORDS_DO_NOT_MATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     INVALID_ROLE(HttpStatus.UNAUTHORIZED,"유효하지 않은 사용자 권한입니다."),
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED,"로그인이 필요합니다."),
+    ACCOUNT_DELETED(HttpStatus.FORBIDDEN, "해당 계정은 삭제되었습니다."),
 
     // user
     DELETED_USER(HttpStatus.FORBIDDEN,"탈퇴된 사용자입니다."),

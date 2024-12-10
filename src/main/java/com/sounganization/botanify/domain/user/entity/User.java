@@ -1,13 +1,21 @@
 package com.sounganization.botanify.domain.user.entity;
 
+import com.sounganization.botanify.common.entity.Timestamped;
+import com.sounganization.botanify.domain.user.dto.req.UserReqDto;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
-public class User {
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Builder 사용을 위해 추가, 무분별한 접근을 막기 위해 추가
+public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private long id;
 
     @Column(nullable = false, unique = true, length = 100)
@@ -33,4 +41,27 @@ public class User {
     @Column(nullable = false)
     private String address;
 
+    @Builder
+    public User(String email, String username, String password, UserRole role, String city, String town, String address) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.city = city;
+        this.town = town;
+        this.address = address;
+    }
+
+    public UserReqDto toDto() {
+        return new UserReqDto(
+                this.id,
+                this.email,
+                this.username,
+                this.password,
+                this.city,
+                this.town,
+                this.address,
+                this.role
+        );
+    }
 }
