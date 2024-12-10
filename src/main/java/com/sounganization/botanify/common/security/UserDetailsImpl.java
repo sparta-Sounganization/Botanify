@@ -2,9 +2,8 @@ package com.sounganization.botanify.common.security;
 
 import com.sounganization.botanify.domain.user.dto.req.UserReqDto;
 import com.sounganization.botanify.domain.user.enums.UserRole;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,8 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Getter
-@Builder
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
     private final Long id;

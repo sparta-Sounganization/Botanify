@@ -6,15 +6,13 @@ import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -89,26 +87,20 @@ public class JwtUtil {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
 
-        Long userId = Long.parseLong(claims.getSubject());
+        Long id = Long.valueOf(claims.getSubject());
         String username = claims.get("username", String.class);
-        String role = claims.get("role", String.class);
+        String password = ""; // 비밀번호는 토큰에 저장하지 않음
         String city = claims.get("city", String.class);
         String town = claims.get("town", String.class);
+        String role = claims.get("role", String.class);
 
-        // Create UserDetailsImpl object
-        UserDetailsImpl userDetails = UserDetailsImpl.builder()
-                .id(userId)
-                .username(username)
-                .password("") // password not needed for authentication
-                .role(UserRole.valueOf(role))
-                .city(city)
-                .town(town)
-                .build();
+        UserDetailsImpl userDetails = new UserDetailsImpl(
+                id, username, password, city, town, UserRole.valueOf(role));
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
-                Collections.singletonList(new SimpleGrantedAuthority(role))
+                userDetails.getAuthorities()
         );
     }
 }

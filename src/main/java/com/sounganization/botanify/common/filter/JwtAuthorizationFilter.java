@@ -1,8 +1,5 @@
 package com.sounganization.botanify.common.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sounganization.botanify.common.dto.res.ExceptionResDto;
-import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.handler.JwtAuthorizationHandler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,10 +16,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtAuthorizationHandler jwtAuthorizationHandler;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Skip filter for auth endpoints
         if (request.getServletPath().startsWith("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
@@ -30,16 +27,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         try {
             jwtAuthorizationHandler.handleAuthorization(request);
-            filterChain.doFilter(request, response);
-        } catch (CustomException e) {
-            response.setStatus(e.getStatus().getStatus().value());
-            response.setContentType("application/json");
-            response.getWriter().write(new ObjectMapper().writeValueAsString(
-                    new ExceptionResDto(
-                            e.getStatus().getStatus().value(),
-                            e.getStatus().getMessage()
-                    )
-            ));
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("{\"status\": 403, \"message\": \"접근 거부된 페이지입니다.\"}");
+            return;
         }
+
+        filterChain.doFilter(request, response);
     }
 }
