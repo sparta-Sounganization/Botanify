@@ -2,7 +2,6 @@ package com.sounganization.botanify.common.security;
 
 import com.sounganization.botanify.domain.user.dto.req.UserReqDto;
 import com.sounganization.botanify.domain.user.enums.UserRole;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

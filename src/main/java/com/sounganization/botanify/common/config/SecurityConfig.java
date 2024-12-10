@@ -43,7 +43,6 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthorizationFilter(
                         jwtAuthorizationHandler), UsernamePasswordAuthenticationFilter.class);
 
-
         return http.build();
     }
 
