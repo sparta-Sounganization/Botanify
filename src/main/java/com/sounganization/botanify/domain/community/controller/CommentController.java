@@ -1,5 +1,6 @@
 package com.sounganization.botanify.domain.community.controller;
 
+import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.community.dto.req.CommentReqDto;
 import com.sounganization.botanify.domain.community.dto.res.CommentResDto;
 import com.sounganization.botanify.domain.community.service.CommentService;
@@ -7,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,10 +22,10 @@ public class CommentController {
     public ResponseEntity<CommentResDto> createComment(
             @PathVariable Long postId,
             @Valid @RequestBody CommentReqDto requestDto,
-            @RequestParam Long userId // 임시로 더미 userId를 받음
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
-        CommentResDto responseDto = commentService.createComment(postId, requestDto, userId);
+        CommentResDto responseDto = commentService.createComment(postId, requestDto, userDetails.getId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -34,10 +36,10 @@ public class CommentController {
     public ResponseEntity<CommentResDto> createReply(
             @PathVariable Long parentCommentId,
             @Valid @RequestBody CommentReqDto requestDto,
-            @RequestParam Long userId // 임시로 더미 userId를 받음
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
-        CommentResDto responseDto = commentService.createReply(parentCommentId, requestDto, userId);
+        CommentResDto responseDto = commentService.createReply(parentCommentId, requestDto, userDetails.getId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -48,10 +50,10 @@ public class CommentController {
     public ResponseEntity<CommentResDto> updateComment(
             @PathVariable Long id,
             @Valid @RequestBody CommentReqDto requestDto,
-            @RequestParam Long userId // 임시로 더미 userId를 받음
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
-        CommentResDto responseDto = commentService.updateComment(id, requestDto, userId);
+        CommentResDto responseDto = commentService.updateComment(id, requestDto, userDetails.getId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -61,9 +63,9 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long id,
-            @RequestParam Long userId // 임시로 더미 userId를 받음
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        commentService.deleteComment(id, userId);
+        commentService.deleteComment(id, userDetails.getId());
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
