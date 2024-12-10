@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
-    Page<Diary> findByPlantIdAndDeletedYnFalse(Long id, Pageable pageable);
+    Page<Diary> findByPlantId(Long id, Pageable pageable);
 }

@@ -1,13 +1,12 @@
 package com.sounganization.botanify.domain.garden.dto.res;
 
-import lombok.AllArgsConstructor;
+import com.sounganization.botanify.domain.garden.entity.Species;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@AllArgsConstructor
 @Getter
 @Setter
 public class PlantResDto {
@@ -19,5 +18,14 @@ public class PlantResDto {
     private String speciesName;
     private List<DiaryResDto> diaries;
 
+    public PlantResDto(int status, String message, long id, String plantName, LocalDate adoptionDate, String speciesName, List<DiaryResDto> diaries) {
+        this.status = status;
+        this.message = message;
+        this.id = id;
+        this.plantName = plantName;
+        this.adoptionDate = adoptionDate;
+        this.speciesName = speciesName;
+        this.diaries = diaries;
+    }
 
 }

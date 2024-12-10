@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PlantRepository extends JpaRepository<Plant, Long> {
-    Optional<Plant> findByIdAndDeletedYnFalse(Long id);
+    Optional<Plant> findById(Long id);
 }
