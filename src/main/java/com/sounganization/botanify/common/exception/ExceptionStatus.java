@@ -38,6 +38,9 @@ public enum ExceptionStatus {
     PLANT_NOT_FOUND(HttpStatus.NOT_FOUND,"식물을 찾을 수 없습니다."),
     PLANT_NOT_OWNED(HttpStatus.UNAUTHORIZED, "식물의 주인이 아닙니다."),
 
+    // species
+    SPECIES_NOT_FOUND(HttpStatus.NOT_FOUND, "품종을 찾을 수 없습니다."),
+
     // diary
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "성장 일지를 찾을 수 없습니다."),
     DIARY_NOT_OWNED(HttpStatus.UNAUTHORIZED, "성장 일지의 주인이 아닙니다."),
