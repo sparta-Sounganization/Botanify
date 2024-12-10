@@ -21,6 +21,7 @@ import java.util.Objects;
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final PlantRepository plantRepository;
+    private final DiaryMapper diaryMapper;
 
     /**
      * 사용자 id, 식물 id와 저장하고자 하는 일지 DTO 를 받아서,
@@ -33,7 +34,7 @@ public class DiaryService {
     @Transactional
     public MessageResDto createDiary(Long userId, Long plantId, DiaryReqDto reqDto) {
 
-        Diary reqDiary = DiaryMapper.toEntity(reqDto);
+        Diary reqDiary = diaryMapper.toEntity(reqDto);
 
         // todo - userId 에 대한 존재 확인
         if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
@@ -48,7 +49,7 @@ public class DiaryService {
 
         Diary resDiary = diaryRepository.save(reqDiary);
 
-        return DiaryMapper.toCreatedDto(resDiary.getId());
+        return diaryMapper.toCreatedDto(resDiary.getId());
     }
 
     /**
@@ -68,7 +69,7 @@ public class DiaryService {
         // userId 에 대한 diary 소유 여부 확인
         if (!Objects.equals(userId, diary.getUserId())) throw new CustomException(ExceptionStatus.DIARY_NOT_OWNED);
 
-        return DiaryMapper.toDto(diary);
+        return diaryMapper.toDto(diary);
     }
 
     /**
@@ -82,7 +83,7 @@ public class DiaryService {
     @Transactional
     public MessageResDto updateDiary(Long userId, Long id, DiaryReqDto reqDto) {
 
-        Diary reqDiary = DiaryMapper.toEntity(reqDto);
+        Diary reqDiary = diaryMapper.toEntity(reqDto);
 
         // todo - userId 에 대한 존재 확인
         if (Objects.isNull(userId)) throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
@@ -94,7 +95,7 @@ public class DiaryService {
 
         diary.update(reqDiary.getTitle(), reqDiary.getContent());
 
-        return DiaryMapper.toCreatedDto(diary.getId());
+        return diaryMapper.toUpdatedDto(diary.getId());
     }
 
     /**
