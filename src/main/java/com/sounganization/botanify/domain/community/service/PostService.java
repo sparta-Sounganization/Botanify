@@ -109,6 +109,10 @@ public class PostService {
         if (post.isDeletedYn()) {
             throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
         }
+
+        //게시글과 관련된 모든 댓글의 soft delete
+        List<Comment> comments = commentRepository.findCommentsByPostId(postId);
+        comments.forEach(Comment::softDelete);
         //삭제
         post.softDelete();
     }
