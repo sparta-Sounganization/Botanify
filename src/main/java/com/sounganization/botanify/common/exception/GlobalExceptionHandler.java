@@ -35,7 +35,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ExceptionResDto> handleCustomException(CustomException ex) {
-        log.info("서비스에서 잘못된 동작을 감지");
+        log.info("서비스 예외 발생: {} - {}", ex.getStatus().getStatus(), ex.getStatus().getMessage());
+        log.debug(ex.getMessage(), ex);
         return ex.getStatus().toResponseEntity();
     }
 
