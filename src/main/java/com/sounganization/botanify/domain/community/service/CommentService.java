@@ -31,7 +31,7 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
 
-        if (requestDto.getContent() == null || requestDto.getContent().trim().isEmpty()) {
+        if (requestDto.content() == null || requestDto.content().trim().isEmpty()) {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
         }
 
@@ -50,7 +50,7 @@ public class CommentService {
         Comment parentComment = commentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
 
-        if (requestDto.getContent() == null || requestDto.getContent().trim().isEmpty()) {
+        if (requestDto.content() == null || requestDto.content().trim().isEmpty()) {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
         }
 
@@ -74,7 +74,7 @@ public class CommentService {
             throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
         }
 
-        comment.update(requestDto.getContent());
+        comment.update(requestDto.content());
 
         return CommentMapper.toUpdateResDto(comment);
     }

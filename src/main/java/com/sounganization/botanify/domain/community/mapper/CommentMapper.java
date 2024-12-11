@@ -11,7 +11,7 @@ public class CommentMapper {
 
     public static Comment toEntity(CommentReqDto requestDto, Post post, Long userId, Comment parentComment) {
         return Comment.builder()
-                .content(requestDto.getContent())
+                .content(requestDto.content())
                 .post(post)
                 .userId(userId)
                 .parentComment(parentComment)
@@ -20,16 +20,16 @@ public class CommentMapper {
     }
 
     public static CommentResDto toResDto(Comment comment) {
-        return CommentResDto.builder()
-                .message("댓글이 추가되었습니다.")
-                .id(comment.getId())
-                .build();
+        return new CommentResDto(
+                "댓글이 추가되었습니다.",
+                comment.getId()
+        );
     }
 
     public static CommentResDto toUpdateResDto(Comment comment) {
-        return CommentResDto.builder()
-                .message("댓글이 수정되었습니다.")
-                .id(comment.getId())
-                .build();
+        return new CommentResDto(
+                "댓글이 수정되었습니다.",
+                comment.getId()
+        );
     }
 }
