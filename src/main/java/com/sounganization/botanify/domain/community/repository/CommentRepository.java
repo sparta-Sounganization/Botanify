@@ -18,6 +18,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         LEFT JOIN FETCH c.parentComment
         LEFT JOIN FETCH c.childComments
         WHERE c.post.id = :postId AND c.parentComment.id IS NULL
+        AND c.deletedYn = false
         ORDER BY c.parentComment.id NULLS FIRST, c.id
     """)
         List<Comment> findCommentsByPostId(@Param("postId") Long postId);
