@@ -2,16 +2,17 @@ package com.sounganization.botanify.domain.garden.service;
 
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
+import com.sounganization.botanify.domain.garden.dto.req.PlantReqDto;
 import com.sounganization.botanify.domain.garden.dto.res.DiaryResDto;
 import com.sounganization.botanify.domain.garden.dto.res.PlantResDto;
 import com.sounganization.botanify.domain.garden.entity.Diary;
 import com.sounganization.botanify.domain.garden.entity.Plant;
 import com.sounganization.botanify.domain.garden.entity.Species;
+import com.sounganization.botanify.domain.garden.mapper.DiaryMapper;
+import com.sounganization.botanify.domain.garden.mapper.PlantMapper;
 import com.sounganization.botanify.domain.garden.repository.DiaryRepository;
 import com.sounganization.botanify.domain.garden.repository.PlantRepository;
 import com.sounganization.botanify.domain.garden.repository.SpeciesRepository;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,11 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.attribute.standard.PageRanges;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,53 +28,55 @@ public class PlantService {
     private final PlantRepository plantRepository;
     private final SpeciesRepository speciesRepository;
     private final DiaryRepository diaryRepository;
+    private final PlantMapper plantMapper;
+    private final DiaryMapper diaryMapper;
 
     @Transactional
-    public Plant createPlant(String plantName, LocalDate adoptionDate, long speciesId) {
+    public Long createPlant(Long userId, PlantReqDto plantReqDto) {
 
-        Species species = speciesRepository.findById(speciesId).orElseThrow(()
-                -> new CustomException(ExceptionStatus.SPECIES_NOT_FOUND));
+        Species species = speciesRepository.findByIdCustom(plantReqDto.getSpeciesId());
 
-        species.setId(speciesId);
-        species.setSpeciesName("임시 종");
-        species.setDescription("임시 설명");
-        return plantRepository.save(Plant.builder()
-                .plantName(plantName)
-                .adoptionDate(adoptionDate)
-                .species(species)
-                .userId(1L)
-                .build());
+        Plant plant = plantMapper.toEntity(plantReqDto);
+        plant.addRelations(species, userId);
+
+        return plantRepository.save(plant).getId();
     }
 
     @Transactional(readOnly = true)
-    public PlantResDto getPlant(Long id, int page, int size) {
-        Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
+    public PlantResDto readPlant(Long userId, Long id, int page, int size) {
+
+        Plant plant = plantRepository.findByIdCustom(id);
+        if(!Objects.equals(userId, plant.getUserId())) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
+
         Species species = plant.getSpecies();
-        if (species == null) {
+        if (Objects.isNull(species)) {
             throw new CustomException(ExceptionStatus.SPECIES_NOT_FOUND);
         }
 
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Diary> diaryPage = diaryRepository.findByPlantId(plant.getId(), pageable);
-        List<DiaryResDto> diaries = diaryPage.stream()
-                .map(diary -> new DiaryResDto(diary.getTitle(), diary.getContent()))
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page - 1, size);
 
-        return new PlantResDto(200, "식물 조회 성공", plant.getId(), plant.getPlantName(), plant.getAdoptionDate(), species.getSpeciesName(), diaries);
+        Page<Diary> diaryPage = diaryRepository.findAllByPlantIdAndDeletedYnFalse(id, pageable);
+
+        Page<DiaryResDto> diaries = diaryPage.map(diaryMapper::toDto);
+
+        return new PlantResDto(plant.getId(), plant.getPlantName(), plant.getAdoptionDate(), species.getSpeciesName(), diaries);
     }
 
     @Transactional
-    public void updatePlant(Long id, String plantName, LocalDate adoptionDate) {
-        Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
+    public Long updatePlant(Long userId, Long id, PlantReqDto reqDto) {
+        // 식물 찾아와서 소유권 확인
+        Plant plant = plantRepository.findByIdCustom(id);
+        if(!Objects.equals(userId, plant.getUserId())) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
 
-        plant.setPlantName(plantName);
-        plant.setAdoptionDate(adoptionDate);
+        plant.update(reqDto.getPlantName(), reqDto.getAdoptionDate());
+
+        return plant.getId();
     }
 
     @Transactional
-    public void deletePlant(Long id) {
-        Plant plant = plantRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionStatus.PLANT_NOT_FOUND));
-        plant.setDeletedYn(true);
-        plantRepository.save(plant);
+    public void deletePlant(Long userId, Long id) {
+        Plant plant = plantRepository.findByIdCustom(id);
+        if(!Objects.equals(userId, plant.getUserId())) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
+        plant.softDelete();
     }
 }

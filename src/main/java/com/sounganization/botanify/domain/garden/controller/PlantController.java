@@ -1,17 +1,15 @@
 package com.sounganization.botanify.domain.garden.controller;
 
-import com.sounganization.botanify.common.exception.GlobalExceptionHandler;
+import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.garden.dto.req.PlantReqDto;
 import com.sounganization.botanify.domain.garden.dto.res.PlantResDto;
-import com.sounganization.botanify.domain.garden.entity.Plant;
-import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.service.PlantService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/plants")
@@ -22,35 +20,31 @@ public class PlantController {
 
     //식물 등록
     @PostMapping
-    public ResponseEntity<PlantResDto> createPlant(@RequestBody PlantReqDto plantReqDto) {
-        Plant createdPlant = plantService.createPlant(plantReqDto.getPlantName(), LocalDate.now(), plantReqDto.getSpeciesId());
-        Species species = createdPlant.getSpecies();
-        return ResponseEntity.created(null).body(new PlantResDto(
-                201,
-                "식물 등록 성공",
-                createdPlant.getId(),
-                createdPlant.getPlantName(),
-                createdPlant.getAdoptionDate(),
-                species.getSpeciesName(),
-                List.of()
-        ));
+    public ResponseEntity<Long> createPlant(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PlantReqDto plantReqDto) {
+        Long createdId = plantService.createPlant(userDetails.getId(), plantReqDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlantResDto> getPlant(@PathVariable Long id) {
-        PlantResDto plantResDto = plantService.getPlant(id, 0, 10);
+    public ResponseEntity<PlantResDto> readPlant(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PlantResDto plantResDto = plantService.readPlant(userDetails.getId(), id, page, size);
         return ResponseEntity.ok(plantResDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePlant(@PathVariable Long id, @RequestBody PlantReqDto plantReqDto) {
-        plantService.updatePlant(id, plantReqDto.getPlantName(), plantReqDto.getAdoptionDate());
-        return ResponseEntity.ok("식물 정보가 수정되었습니다.");
+    public ResponseEntity<Long> updatePlant(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id, @RequestBody PlantReqDto plantReqDto) {
+        Long updatedId = plantService.updatePlant(userDetails.getId(), id, plantReqDto);
+        return ResponseEntity.ok(updatedId);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePlant(@PathVariable Long id) {
-        plantService.deletePlant(id);
-        return ResponseEntity.ok("식물 정보가 삭제되었습니다.");
+    public ResponseEntity<String> deletePlant(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id) {
+        plantService.deletePlant(userDetails.getId(), id);
+        return ResponseEntity.noContent().build();
     }
 }
