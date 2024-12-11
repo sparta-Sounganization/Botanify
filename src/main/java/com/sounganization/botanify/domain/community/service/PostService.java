@@ -79,7 +79,8 @@ public class PostService {
             usernameMap.put(userId, usernameIterator.next());
         }
         // 댓글 리스트를 DTO로 변환하여 반환
-        return PostWithCommentResDto.from(post, comments, usernameMap);
+        return postMapper.entityToResDto(post, comments, usernameMap);
+
     }
 
     // 게시글 수정
