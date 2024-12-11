@@ -36,7 +36,7 @@ public class Comment extends Timestamped {
 
     // todo - post 삭제 시 같이 삭제되는 지 확인 필요
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
