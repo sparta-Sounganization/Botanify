@@ -33,7 +33,7 @@ public class PostController {
     //게시글 조회 - 다건조회
     @GetMapping
     public ResponseEntity<Page<PostListResDto>> readPosts(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         Page<PostListResDto> postListResDto = postService.readPosts(page, size);
         return ResponseEntity.ok(postListResDto);

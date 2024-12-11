@@ -52,7 +52,7 @@ public class PostService {
     // 게시글 조회 - 다건 조회
     public Page<PostListResDto> readPosts(int page, int size) {
         //pageable
-        Pageable pageable = PageRequest.of(page, size, Sort.by("updatedAt").descending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("updatedAt").descending());
         Page<Post> posts = postRepository.findAll(pageable);
         return posts.map(post -> postMapper.entityToResDto(post));
     }
