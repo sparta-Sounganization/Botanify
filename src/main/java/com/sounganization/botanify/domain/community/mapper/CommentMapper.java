@@ -4,32 +4,23 @@ import com.sounganization.botanify.domain.community.dto.req.CommentReqDto;
 import com.sounganization.botanify.domain.community.dto.res.CommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import java.util.ArrayList;
+@Mapper(componentModel = "spring")
+public interface CommentMapper {
 
-public class CommentMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "post", source = "post")
+    @Mapping(target = "userId", source = "userId")
+    @Mapping(target = "parentComment", source = "parentComment")
+    @Mapping(target = "content", source = "requestDto.content")
+    @Mapping(target = "childComments", ignore = true)
+    Comment toEntity(CommentReqDto requestDto, Post post, Long userId, Comment parentComment);
 
-    public static Comment toEntity(CommentReqDto requestDto, Post post, Long userId, Comment parentComment) {
-        return Comment.builder()
-                .content(requestDto.content())
-                .post(post)
-                .userId(userId)
-                .parentComment(parentComment)
-                .childComments(new ArrayList<>())
-                .build();
-    }
+    @Mapping(target = "message", constant = "댓글이 추가되었습니다.")
+    CommentResDto toResDto(Comment comment);
 
-    public static CommentResDto toResDto(Comment comment) {
-        return new CommentResDto(
-                "댓글이 추가되었습니다.",
-                comment.getId()
-        );
-    }
-
-    public static CommentResDto toUpdateResDto(Comment comment) {
-        return new CommentResDto(
-                "댓글이 수정되었습니다.",
-                comment.getId()
-        );
-    }
+    @Mapping(target = "message", constant = "댓글이 수정되었습니다.")
+    CommentResDto toUpdateResDto(Comment comment);
 }

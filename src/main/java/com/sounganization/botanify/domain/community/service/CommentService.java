@@ -21,6 +21,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentMapper commentMapper;
 
     @Transactional
     public CommentResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
@@ -35,10 +36,10 @@ public class CommentService {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
         }
 
-        Comment comment = CommentMapper.toEntity(requestDto, post, userId, null);
+        Comment comment = commentMapper.toEntity(requestDto, post, userId, null);
         Comment savedComment = commentRepository.save(comment);
 
-        return CommentMapper.toResDto(savedComment);
+        return commentMapper.toResDto(savedComment);
     }
 
     @Transactional
@@ -54,10 +55,10 @@ public class CommentService {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
         }
 
-        Comment reply = CommentMapper.toEntity(requestDto, parentComment.getPost(), userId, parentComment);
+        Comment reply = commentMapper.toEntity(requestDto, parentComment.getPost(), userId, parentComment);
         Comment savedReply = commentRepository.save(reply);
 
-        return CommentMapper.toResDto(savedReply);
+        return commentMapper.toResDto(savedReply);
     }
 
     @Transactional
@@ -76,7 +77,7 @@ public class CommentService {
 
         comment.update(requestDto.content());
 
-        return CommentMapper.toUpdateResDto(comment);
+        return commentMapper.toUpdateResDto(comment);
     }
 
     @Transactional
