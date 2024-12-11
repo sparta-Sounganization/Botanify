@@ -21,13 +21,14 @@ public class CommentTempDto {
     private List<CommentTempDto> childComments;
 
 
-    public static CommentTempDto from(Comment comment) {
+    public static CommentTempDto from(Comment comment,String username) {
         return CommentTempDto.builder()
                 .commentId(comment.getId())
                 .userId(comment.getUserId())
+                .username(username)
                 .content(comment.getContent())
                 .childComments(comment.getChildComments().stream()
-                        .map(CommentTempDto::from)
+                        .map(child -> from(child, username))
                         .collect(Collectors.toList()))
                 .build();
     }

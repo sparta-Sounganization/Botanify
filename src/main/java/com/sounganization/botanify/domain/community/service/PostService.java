@@ -23,7 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -65,8 +66,20 @@ public class PostService {
         post.incrementViewCounts();
         // 댓글과 대댓글 조회
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
+        // 댓글에 포함된 userId 가져오기
+        Set<Long> userIds = comments.stream()
+                .map(Comment::getUserId)
+                .collect(Collectors.toSet());
+        // usernames 조회
+        List<String> usernames = userRepository.findUsernamesByIds(userIds);
+        // userId와 username 매핑
+        Map<Long, String> usernameMap = new HashMap<>();
+        Iterator<String> usernameIterator = usernames.iterator();
+        for (Long userId : userIds) {
+            usernameMap.put(userId, usernameIterator.next());
+        }
         // 댓글 리스트를 DTO로 변환하여 반환
-        return PostWithCommentResDto.from(post, comments);
+        return PostWithCommentResDto.from(post, comments, usernameMap);
     }
 
     // 게시글 수정
@@ -97,7 +110,6 @@ public class PostService {
         }
         //삭제
         post.softDelete();
-
     }
 
     // 게시글 존재 확인 메서드
@@ -110,7 +122,7 @@ public class PostService {
     // 게시글 소유자 확인
     private void validatePostOwner(Post post, Long userId) {
         if (!post.getUserId().equals(userId)) {
-            throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
+            throw new CustomException(ExceptionStatus.UNAUTHORIZED_POST_ACCESS);
         }
     }
 }
