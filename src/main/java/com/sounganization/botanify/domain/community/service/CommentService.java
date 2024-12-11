@@ -89,6 +89,10 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
 
+        if (comment.getDeletedYn()) {
+            throw new CustomException(ExceptionStatus.COMMENT_ALREADY_DELETED);
+        }
+
         // 댓글 작성자 확인
         if (!comment.getUserId().equals(userId)) {
             throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
