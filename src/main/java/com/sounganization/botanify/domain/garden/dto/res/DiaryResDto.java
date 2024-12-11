@@ -1,11 +1,11 @@
 package com.sounganization.botanify.domain.garden.dto.res;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.time.LocalDateTime;
 
-@Getter
-@AllArgsConstructor
-public class DiaryResDto {
-    private String title;
-    private String content;
-}
+public record DiaryResDto(
+        Long id,
+        String title,
+        String content,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) { }
