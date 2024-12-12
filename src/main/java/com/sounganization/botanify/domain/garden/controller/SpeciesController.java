@@ -1,5 +1,6 @@
 package com.sounganization.botanify.domain.garden.controller;
 
+import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.garden.dto.req.SpeciesReqDto;
 import com.sounganization.botanify.domain.garden.dto.res.MessageResDto;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,16 +22,16 @@ public class SpeciesController {
 
     @PostMapping("/admin/species")
     public ResponseEntity<MessageResDto> createSpecies(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             HttpServletRequest httpReq,
             @Valid @RequestBody SpeciesReqDto reqDto
     ) {
-        MessageResDto resDto = speciesService.createSpecies(userId, reqDto);
+        MessageResDto resDto = speciesService.createSpecies(userDetails.getRole(), reqDto);
         String createdUri = httpReq.getRequestURI() + "/" + resDto.id();
         return ResponseEntity.created(URI.create(createdUri)).body(resDto);
     }
 
-    @GetMapping
+    @GetMapping("/species")
     public ResponseEntity<?> getAllSpecies(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
@@ -37,23 +39,26 @@ public class SpeciesController {
         return ResponseEntity.ok(speciesService.readAllSpecies(page, size));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/species/{id}")
     public ResponseEntity<SpeciesResDto> getSpecies(@PathVariable Long id) {
         return ResponseEntity.ok(speciesService.readSpecies(id));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/species/{id}")
     public ResponseEntity<MessageResDto> updateSpecies(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id,
             @Valid @RequestBody SpeciesReqDto reqDto
     ) {
-        return ResponseEntity.ok(speciesService.updateSpecies(userId, id, reqDto));
+        return ResponseEntity.ok(speciesService.updateSpecies(userDetails.getRole(), id, reqDto));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteSpecies(@RequestParam Long userId, @PathVariable Long id) {
-        speciesService.deleteSpecies(userId, id);
+    @DeleteMapping("/species/{id}")
+    public ResponseEntity<Void> deleteSpecies(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long id
+    ) {
+        speciesService.deleteSpecies(userDetails.getRole(), id);
         return ResponseEntity.noContent().build();
     }
 }

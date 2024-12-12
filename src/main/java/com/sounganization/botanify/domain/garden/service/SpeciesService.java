@@ -8,14 +8,13 @@ import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
 import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.mapper.SpeciesMapper;
 import com.sounganization.botanify.domain.garden.repository.SpeciesRepository;
+import com.sounganization.botanify.domain.user.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +23,9 @@ public class SpeciesService {
     private final SpeciesMapper speciesMapper;
 
     @Transactional
-    public MessageResDto createSpecies(Long userId, SpeciesReqDto reqDto) {
+    public MessageResDto createSpecies(UserRole userRole, SpeciesReqDto reqDto) {
 
-        // todo - 사용자 존재 및 권한이 관리자인지 확인
-        if (Objects.nonNull(userId)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
+        if (!userRole.equals(UserRole.ADMIN)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
 
         Species reqSpecies = speciesMapper.toEntity(reqDto);
 
@@ -37,6 +35,7 @@ public class SpeciesService {
     }
 
     public Page<SpeciesResDto> readAllSpecies(int page, int size) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<Species> speciesList = speciesRepository.findAllByDeletedYnFalse(pageable);
@@ -52,10 +51,9 @@ public class SpeciesService {
     }
 
     @Transactional
-    public MessageResDto updateSpecies(Long userId, Long id, SpeciesReqDto reqDto) {
+    public MessageResDto updateSpecies(UserRole userRole, Long id, SpeciesReqDto reqDto) {
 
-        // todo - 사용자 존재 및 권한이 관리자인지 확인
-        if (Objects.nonNull(userId)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
+        if (!userRole.equals(UserRole.ADMIN)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
 
         Species species = speciesRepository.findByIdCustom(id);
 
@@ -65,10 +63,9 @@ public class SpeciesService {
     }
 
     @Transactional
-    public void deleteSpecies(Long userId, Long speciesId) {
+    public void deleteSpecies(UserRole userRole, Long speciesId) {
 
-        // todo - 사용자 존재 및 권한이 관리자인지 확인
-        if (Objects.nonNull(userId)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
+        if (!userRole.equals(UserRole.ADMIN)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
 
         Species species = speciesRepository.findByIdCustom(speciesId);
 
