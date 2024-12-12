@@ -52,9 +52,9 @@ public class PostService {
     // 게시글 조회 - 다건 조회
     public Page<PostListResDto> readPosts(int page, int size) {
         //pageable
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("updatedAt").descending());
-        Page<Post> posts = postRepository.findAll(pageable);
-        return posts.map(post -> postMapper.entityToResDto(post));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.findAllByDeletedYnFalse(pageable);
+        return posts.map(postMapper::entityToResDto);
     }
 
     // 게시글 조회 - 단건조회
@@ -62,6 +62,8 @@ public class PostService {
     public PostWithCommentResDto readPost(Long postId) {
         // 게시글 존재 여부 확인
         Post post = validatePost(postId);
+        //이미 삭제된 게시글인지 확인
+        checkPostNotDeleted(post);
         // 조회수 증가
         post.incrementViewCounts();
         // 댓글과 대댓글 조회
@@ -90,6 +92,8 @@ public class PostService {
         Post post = validatePost(postId);
         //소유자 확인
         validatePostOwner(post, userId);
+        //이미 삭제된 게시글인지 확인
+        checkPostNotDeleted(post);
         // 게시글 수정
         post.updatePost(postUpdateReqDto.getTitle(), postUpdateReqDto.getContent());
         // DB 저장
@@ -106,9 +110,7 @@ public class PostService {
         //게시글 소유자 확인
         validatePostOwner(post, userId);
         //이미 삭제된 게시글인지 확인
-        if (post.isDeletedYn()) {
-            throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
-        }
+        checkPostNotDeleted(post);
 
         //게시글과 관련된 모든 댓글의 soft delete
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
@@ -128,6 +130,13 @@ public class PostService {
     private void validatePostOwner(Post post, Long userId) {
         if (!post.getUserId().equals(userId)) {
             throw new CustomException(ExceptionStatus.UNAUTHORIZED_POST_ACCESS);
+        }
+    }
+
+    //이미 삭제된 게시글인지 확인
+    private void checkPostNotDeleted(Post post) {
+        if (post.isDeletedYn()) {
+            throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
         }
     }
 }

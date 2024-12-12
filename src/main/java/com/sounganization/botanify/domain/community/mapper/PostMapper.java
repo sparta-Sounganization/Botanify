@@ -33,6 +33,7 @@ public interface PostMapper {
 
     default PostListResDto entityToResDto(Post post) {
         return PostListResDto.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .viewCounts(post.getViewCounts())
