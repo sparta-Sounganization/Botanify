@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -34,6 +33,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     }
 
     //username 찾기
-    @Query("SELECT u.username FROM User u WHERE u.id IN :userIds")
-    List<String> findUsernamesByIds(@Param("userIds") Set<Long> userIds);
+    @Query("SELECT u.id, u.username FROM User u WHERE u.id IN :userIds")
+    List<Object[]> findUsernamesByIds(@Param("userIds") List<Long> userIds);
 }

@@ -1,15 +1,14 @@
 package com.sounganization.botanify.domain.community.mapper;
 
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
+import com.sounganization.botanify.domain.community.dto.res.CommentTempDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
-import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
 import org.mapstruct.Mapper;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper(componentModel = "Spring")
 public interface PostMapper {
@@ -39,7 +38,12 @@ public interface PostMapper {
                 .build();
     }
 
-    default PostWithCommentResDto entityToResDto(Post post, List<Comment> comments, Map<Long, String> usernameMap) {
-        return PostWithCommentResDto.from(post, comments, usernameMap);
+    default PostWithCommentResDto entityToResDto(Post post, List<CommentTempDto> comments) {
+        return PostWithCommentResDto.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .viewCounts(post.getViewCounts())
+                .comments(comments)
+                .build();
     }
 }
