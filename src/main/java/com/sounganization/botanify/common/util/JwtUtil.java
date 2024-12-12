@@ -6,9 +6,11 @@ import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -21,6 +23,7 @@ public class JwtUtil {
     @Value("${spring.jwt.secret.key}")
     private String secretKey;
 
+    @Getter
     @Value("${spring.jwt.secret.expiration}")
     private long expirationTime;
 
@@ -34,6 +37,20 @@ public class JwtUtil {
     // JWT 서명 키 생성
     private Key getSigningKey() {
         return new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS512.getJcaName());
+    }
+
+    public String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof UserDetailsImpl userDetails) {
+                return String.valueOf(userDetails.getId());
+            }
+        }
+
+        throw new CustomException(ExceptionStatus.UNAUTHORIZED_ACCESS);
     }
 
     // JWT 토큰 생성
@@ -89,13 +106,14 @@ public class JwtUtil {
 
         Long id = Long.valueOf(claims.getSubject());
         String username = claims.get("username", String.class);
+        String email = ""; // 이메일은 토큰에 저장하지 않음
         String password = ""; // 비밀번호는 토큰에 저장하지 않음
         String city = claims.get("city", String.class);
         String town = claims.get("town", String.class);
         String role = claims.get("role", String.class);
 
         UserDetailsImpl userDetails = new UserDetailsImpl(
-                id, username, password, city, town, UserRole.valueOf(role));
+                id, username, email, password, city, town, UserRole.valueOf(role));
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails,

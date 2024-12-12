@@ -13,6 +13,7 @@ public enum ExceptionStatus {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 알 수 없는 오류가 발생했습니다."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     BODY_NOT_FOUND(HttpStatus.BAD_REQUEST, "요청 본문을 찾을 수 없습니다."),
+    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     // token
     TOKEN_NOT_PROVIDED(HttpStatus.UNAUTHORIZED, "토큰이 제공되지 않았습니다."),
@@ -44,7 +45,7 @@ public enum ExceptionStatus {
     // diary
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "성장 일지를 찾을 수 없습니다."),
     DIARY_NOT_OWNED(HttpStatus.UNAUTHORIZED, "성장 일지의 주인이 아닙니다."),
-  
+
     // post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글이 존재하지 않습니다."),
     POST_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 게시글입니다."),
