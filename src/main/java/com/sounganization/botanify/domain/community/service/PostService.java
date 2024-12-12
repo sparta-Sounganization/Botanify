@@ -1,11 +1,11 @@
 package com.sounganization.botanify.domain.community.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
-import com.sounganization.botanify.domain.community.dto.res.PostResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
@@ -37,7 +37,7 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public PostResDto createPost(PostReqDto postReqDto, Long userId) {
+    public CommonResDto createPost(PostReqDto postReqDto, Long userId) {
         //사용자 존재 여부 확인
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -46,15 +46,15 @@ public class PostService {
         // DB 저장
         Post savedPost = postRepository.save(post);
         //entity -> dto
-        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 등록되었습니다");
+        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED);
     }
 
     // 게시글 조회 - 다건 조회
     public Page<PostListResDto> readPosts(int page, int size) {
         //pageable
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("updatedAt").descending());
-        Page<Post> posts = postRepository.findAll(pageable);
-        return posts.map(post -> postMapper.entityToResDto(post));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.findAllByDeletedYnFalse(pageable);
+        return posts.map(postMapper::entityToResDto);
     }
 
     // 게시글 조회 - 단건조회
@@ -62,6 +62,8 @@ public class PostService {
     public PostWithCommentResDto readPost(Long postId) {
         // 게시글 존재 여부 확인
         Post post = validatePost(postId);
+        //이미 삭제된 게시글인지 확인
+        checkPostNotDeleted(post);
         // 조회수 증가
         post.incrementViewCounts();
         // 댓글과 대댓글 조회
@@ -78,24 +80,26 @@ public class PostService {
         for (Long userId : userIds) {
             usernameMap.put(userId, usernameIterator.next());
         }
-        // 댓글 리스트를 DTO로 변환하여 반환
+        // 댓글 리스트를 DTO 로 변환하여 반환
         return postMapper.entityToResDto(post, comments, usernameMap);
 
     }
 
     // 게시글 수정
     @Transactional
-    public PostResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
+    public CommonResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
         // 게시글 존재 여부 확인
         Post post = validatePost(postId);
         //소유자 확인
         validatePostOwner(post, userId);
+        //이미 삭제된 게시글인지 확인
+        checkPostNotDeleted(post);
         // 게시글 수정
-        post.updatePost(postUpdateReqDto.getTitle(), postUpdateReqDto.getContent());
+        post.updatePost(postUpdateReqDto.title(), postUpdateReqDto.content());
         // DB 저장
         Post savedPost = postRepository.save(post);
         //entity -> dto
-        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 수정되었습니다");
+        return postMapper.entityToResDto(savedPost, HttpStatus.OK);
     }
 
     // 게시글 삭제
@@ -106,9 +110,7 @@ public class PostService {
         //게시글 소유자 확인
         validatePostOwner(post, userId);
         //이미 삭제된 게시글인지 확인
-        if (post.isDeletedYn()) {
-            throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
-        }
+        checkPostNotDeleted(post);
 
         //게시글과 관련된 모든 댓글의 soft delete
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
@@ -128,6 +130,13 @@ public class PostService {
     private void validatePostOwner(Post post, Long userId) {
         if (!post.getUserId().equals(userId)) {
             throw new CustomException(ExceptionStatus.UNAUTHORIZED_POST_ACCESS);
+        }
+    }
+
+    //이미 삭제된 게시글인지 확인
+    private void checkPostNotDeleted(Post post) {
+        if (post.isDeletedYn()) {
+            throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
         }
     }
 }

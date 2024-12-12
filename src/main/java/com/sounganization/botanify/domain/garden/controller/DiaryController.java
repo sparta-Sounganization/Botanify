@@ -1,9 +1,9 @@
 package com.sounganization.botanify.domain.garden.controller;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.garden.dto.req.DiaryReqDto;
 import com.sounganization.botanify.domain.garden.dto.res.DiaryResDto;
-import com.sounganization.botanify.domain.garden.dto.res.MessageResDto;
 import com.sounganization.botanify.domain.garden.service.DiaryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,13 +21,13 @@ public class DiaryController {
     private final DiaryService diaryService;
 
     @PostMapping("/plants/{plantId}/diaries")
-    public ResponseEntity<MessageResDto> createDiary(
+    public ResponseEntity<CommonResDto> createDiary(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             HttpServletRequest httpReq,
             @PathVariable Long plantId,
             @Valid @RequestBody DiaryReqDto reqDto
     ) {
-        MessageResDto resDto = diaryService.createDiary(userDetails.getId(), plantId, reqDto);
+        CommonResDto resDto = diaryService.createDiary(userDetails.getId(), plantId, reqDto);
         String createdURI = httpReq.getRequestURI() + "/" + resDto.id();
         return ResponseEntity.created(URI.create(createdURI)).body(resDto);
     }
@@ -41,7 +41,7 @@ public class DiaryController {
     }
 
     @PutMapping("/diaries/{id}")
-    public ResponseEntity<MessageResDto> updateDiary(
+    public ResponseEntity<CommonResDto> updateDiary(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id,
             @Valid @RequestBody DiaryReqDto reqDto

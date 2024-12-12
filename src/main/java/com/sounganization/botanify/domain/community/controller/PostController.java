@@ -1,10 +1,10 @@
 package com.sounganization.botanify.domain.community.controller;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
-import com.sounganization.botanify.domain.community.dto.res.PostResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.service.PostService;
 import jakarta.validation.Valid;
@@ -24,9 +24,9 @@ public class PostController {
 
     //게시글 작성
     @PostMapping
-    public ResponseEntity<PostResDto> createPost(@Valid @RequestBody PostReqDto postReqDto,
+    public ResponseEntity<CommonResDto> createPost(@Valid @RequestBody PostReqDto postReqDto,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        PostResDto postResDto = postService.createPost(postReqDto, userDetails.getId());
+        CommonResDto postResDto = postService.createPost(postReqDto, userDetails.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(postResDto);
     }
 
@@ -48,10 +48,10 @@ public class PostController {
 
     //게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<PostResDto> updatePost(@PathVariable Long postId,
+    public ResponseEntity<CommonResDto> updatePost(@PathVariable Long postId,
                                                  @Valid @RequestBody PostUpdateReqDto postUpdateReqDto,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        PostResDto postResDto = postService.updatePost(postId, postUpdateReqDto, userDetails.getId());
+        CommonResDto postResDto = postService.updatePost(postId, postUpdateReqDto, userDetails.getId());
         return ResponseEntity.ok(postResDto);
     }
 

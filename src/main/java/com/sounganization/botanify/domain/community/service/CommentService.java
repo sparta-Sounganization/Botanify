@@ -1,9 +1,9 @@
 package com.sounganization.botanify.domain.community.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.CommentReqDto;
-import com.sounganization.botanify.domain.community.dto.res.CommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.CommentMapper;
@@ -24,13 +24,17 @@ public class CommentService {
     private final CommentMapper commentMapper;
 
     @Transactional
-    public CommentResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
+    public CommonResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
+
+        if (post.isDeletedYn()) {
+            throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
+        }
 
         if (requestDto.content() == null || requestDto.content().trim().isEmpty()) {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
@@ -43,13 +47,17 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResDto createReply(Long parentCommentId, CommentReqDto requestDto, Long userId) {
+    public CommonResDto createReply(Long parentCommentId, CommentReqDto requestDto, Long userId) {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         Comment parentComment = commentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
+
+        if (parentComment.getDeletedYn()) {
+            throw new CustomException(ExceptionStatus.COMMENT_ALREADY_DELETED);
+        }
 
         if (requestDto.content() == null || requestDto.content().trim().isEmpty()) {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
@@ -62,7 +70,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResDto updateComment(Long commentId, CommentReqDto requestDto, Long userId) {
+    public CommonResDto updateComment(Long commentId, CommentReqDto requestDto, Long userId) {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -100,4 +108,5 @@ public class CommentService {
 
         comment.softDelete();
     }
+
 }
