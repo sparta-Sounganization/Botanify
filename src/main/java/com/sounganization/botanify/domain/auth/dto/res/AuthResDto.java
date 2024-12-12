@@ -1,5 +1,8 @@
 package com.sounganization.botanify.domain.auth.dto.res;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record AuthResDto(
         int status,
         String message,
