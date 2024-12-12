@@ -8,8 +8,8 @@ import org.mapstruct.Mapper;
 public interface PlantMapper {
     default Plant toEntity(PlantReqDto reqDto) {
         return Plant.builder()
-                .plantName(reqDto.getPlantName())
-                .adoptionDate(reqDto.getAdoptionDate())
+                .plantName(reqDto.plantName())
+                .adoptionDate(reqDto.adoptionDate())
                 .build();
     }
 

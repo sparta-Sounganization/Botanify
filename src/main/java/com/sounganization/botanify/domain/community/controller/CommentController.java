@@ -1,8 +1,8 @@
 package com.sounganization.botanify.domain.community.controller;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.community.dto.req.CommentReqDto;
-import com.sounganization.botanify.domain.community.dto.res.CommentResDto;
 import com.sounganization.botanify.domain.community.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentResDto> createComment(
+    public ResponseEntity<CommonResDto> createComment(
             @PathVariable Long postId,
             @Valid @RequestBody CommentReqDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
-        CommentResDto responseDto = commentService.createComment(postId, requestDto, userDetails.getId());
+        CommonResDto responseDto = commentService.createComment(postId, requestDto, userDetails.getId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,13 +33,13 @@ public class CommentController {
     }
 
     @PostMapping("/{parentCommentId}/replies")
-    public ResponseEntity<CommentResDto> createReply(
+    public ResponseEntity<CommonResDto> createReply(
             @PathVariable Long parentCommentId,
             @Valid @RequestBody CommentReqDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
-        CommentResDto responseDto = commentService.createReply(parentCommentId, requestDto, userDetails.getId());
+        CommonResDto responseDto = commentService.createReply(parentCommentId, requestDto, userDetails.getId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -47,13 +47,13 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentResDto> updateComment(
+    public ResponseEntity<CommonResDto> updateComment(
             @PathVariable Long id,
             @Valid @RequestBody CommentReqDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
-        CommentResDto responseDto = commentService.updateComment(id, requestDto, userDetails.getId());
+        CommonResDto responseDto = commentService.updateComment(id, requestDto, userDetails.getId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)

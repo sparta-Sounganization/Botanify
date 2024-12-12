@@ -44,11 +44,6 @@ public class Post extends Timestamped {
         }
     }
 
-    //게시글 삭제
-    public void softDelete() {
-        super.softDelete();
-    }
-
     //이미 삭제된 게시글인지 확인
     public boolean isDeletedYn() {
         return super.getDeletedYn();

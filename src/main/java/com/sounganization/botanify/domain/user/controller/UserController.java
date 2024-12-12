@@ -1,6 +1,6 @@
 package com.sounganization.botanify.domain.user.controller;
 
-import com.sounganization.botanify.domain.auth.dto.res.AuthResDto;
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.domain.user.dto.req.UserDeleteReqDto;
 import com.sounganization.botanify.domain.user.dto.req.UserUpdateReqDto;
 import com.sounganization.botanify.domain.user.dto.res.UserPlantsResDto;
@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<AuthResDto> updateUserInfo(@Valid @RequestBody UserUpdateReqDto userUpdateReqDto) {
-        AuthResDto response = userService.updateUserInfo(userUpdateReqDto);
+    public ResponseEntity<CommonResDto> updateUserInfo(@Valid @RequestBody UserUpdateReqDto userUpdateReqDto) {
+        CommonResDto response = userService.updateUserInfo(userUpdateReqDto);
         return ResponseEntity.ok(response);
     }
 

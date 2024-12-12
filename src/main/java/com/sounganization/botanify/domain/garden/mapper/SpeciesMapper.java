@@ -1,7 +1,7 @@
 package com.sounganization.botanify.domain.garden.mapper;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.domain.garden.dto.req.SpeciesReqDto;
-import com.sounganization.botanify.domain.garden.dto.res.MessageResDto;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
 import com.sounganization.botanify.domain.garden.entity.Species;
 import org.springframework.http.HttpStatus;
@@ -24,20 +24,18 @@ public class SpeciesMapper {
         );
     }
 
-    // todo - 응답 형식이 도메인마다 중복되므로, AcceptedResDto,CommonResDto 등으로 리팩토링 제안할 것
-
-    public MessageResDto toCreatedDto(Long createdId) {
-        return new MessageResDto(
-                HttpStatus.CREATED.value(),
-                "성장 일지가 추가되었습니다.",
+    public CommonResDto toCreatedDto(Long createdId) {
+        return new CommonResDto(
+                HttpStatus.CREATED,
+                "식물 품종이 추가되었습니다.",
                 createdId
         );
     }
 
-    public MessageResDto toUpdatedDto(Long updatedId) {
-        return new MessageResDto(
-                HttpStatus.OK.value(),
-                "성장 일지가 수정되었습니다.",
+    public CommonResDto toUpdatedDto(Long updatedId) {
+        return new CommonResDto(
+                HttpStatus.OK,
+                "식물 품종이 수정되었습니다.",
                 updatedId
         );
     }

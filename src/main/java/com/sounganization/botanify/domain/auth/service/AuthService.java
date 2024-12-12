@@ -1,15 +1,16 @@
 package com.sounganization.botanify.domain.auth.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.common.util.JwtUtil;
 import com.sounganization.botanify.domain.auth.dto.req.SigninReqDto;
 import com.sounganization.botanify.domain.auth.dto.req.SignupReqDto;
-import com.sounganization.botanify.domain.auth.dto.res.AuthResDto;
 import com.sounganization.botanify.domain.user.entity.User;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +27,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public ResponseEntity<AuthResDto> signup(SignupReqDto request) {
+    public ResponseEntity<CommonResDto> signup(SignupReqDto request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new CustomException(ExceptionStatus.DUPLICATED_EMAIL);
         }
@@ -49,11 +50,11 @@ public class AuthService {
 
         Long userId = userRepository.save(newUser).getId();
 
-        AuthResDto response = new AuthResDto(201, "회원가입이 성공되었습니다.", userId);
-        return ResponseEntity.status(201).body(response);
+        CommonResDto response = new CommonResDto(HttpStatus.CREATED, "회원가입이 성공되었습니다.", userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    public ResponseEntity<AuthResDto> signin(SigninReqDto request) {
+    public ResponseEntity<CommonResDto> signin(SigninReqDto request) {
         // Spring Security 인증 처리
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
@@ -61,7 +62,7 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(authentication);
 
-        AuthResDto response = new AuthResDto(200, "로그인이 성공되었습니다.", token);
+        CommonResDto response = new CommonResDto(HttpStatus.OK, "로그인이 성공되었습니다.", token);
         return ResponseEntity.ok(response);
     }
 

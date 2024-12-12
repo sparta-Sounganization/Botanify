@@ -1,9 +1,9 @@
 package com.sounganization.botanify.domain.user.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.common.util.JwtUtil;
-import com.sounganization.botanify.domain.auth.dto.res.AuthResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +75,7 @@ public class UserService {
     }
 
     @Transactional
-    public AuthResDto updateUserInfo(UserUpdateReqDto updateReqDto) {
+    public CommonResDto updateUserInfo(UserUpdateReqDto updateReqDto) {
         User user = getAuthenticatedUser();
 
         if (!passwordEncoder.matches(updateReqDto.password(), user.toUserDetails().getPassword())) {
@@ -91,7 +92,7 @@ public class UserService {
                 updateReqDto.town(),
                 updateReqDto.address());
 
-        return new AuthResDto(200, "회원정보가 수정되었습니다.", user.getId());
+        return new CommonResDto(HttpStatus.OK, "회원정보가 수정되었습니다.", user.getId());
     }
 
     @Transactional

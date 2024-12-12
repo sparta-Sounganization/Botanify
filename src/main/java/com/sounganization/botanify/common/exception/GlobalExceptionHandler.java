@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,15 +28,21 @@ public class GlobalExceptionHandler {
         return ExceptionResDto.toResponseEntityWith(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 존재하지 않는 값을 참조하였습니다.");
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ExceptionResDto> handleHttpRequestMethodNotSupportedExceptionException() {
+        return ExceptionResDto.toResponseEntityWith(HttpStatus.BAD_REQUEST, "허용되지 않는 요청 메서드입니다.");
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ExceptionResDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ExceptionResDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException ignoredEx) {
         log.info("요청 본문의 누락을 감지");
         return ExceptionStatus.BODY_NOT_FOUND.toResponseEntity();
     }
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ExceptionResDto> handleCustomException(CustomException ex) {
-        log.info("서비스에서 잘못된 동작을 감지");
+        log.info("서비스 예외 발생: {} - {}", ex.getStatus().getStatus(), ex.getStatus().getMessage());
+        log.debug(ex.getMessage(), ex);
         return ex.getStatus().toResponseEntity();
     }
 
@@ -43,9 +50,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionGroupResDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         log.info("유효하지 않은 요청 본문을 감지");
         ExceptionGroupResDto res = new ExceptionGroupResDto(HttpStatus.BAD_REQUEST);
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            res.addCase(((FieldError) error).getField(), error.getDefaultMessage());
-        });
+        ex.getBindingResult().getAllErrors().forEach((error) -> res.addCase(((FieldError) error).getField(), error.getDefaultMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 }

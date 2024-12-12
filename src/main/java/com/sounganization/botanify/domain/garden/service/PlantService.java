@@ -34,7 +34,7 @@ public class PlantService {
     @Transactional
     public Long createPlant(Long userId, PlantReqDto plantReqDto) {
 
-        Species species = speciesRepository.findByIdCustom(plantReqDto.getSpeciesId());
+        Species species = speciesRepository.findByIdCustom(plantReqDto.speciesId());
 
         Plant plant = plantMapper.toEntity(plantReqDto);
         plant.addRelations(species, userId);
@@ -68,7 +68,7 @@ public class PlantService {
         Plant plant = plantRepository.findByIdCustom(id);
         if(!Objects.equals(userId, plant.getUserId())) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
 
-        plant.update(reqDto.getPlantName(), reqDto.getAdoptionDate());
+        plant.update(reqDto.plantName(), reqDto.adoptionDate());
 
         return plant.getId();
     }
