@@ -21,6 +21,7 @@ public class User extends Timestamped {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Getter
     @Column(nullable = false, length = 50)
     private String username;
 
@@ -28,17 +29,21 @@ public class User extends Timestamped {
     private String password;
 
     @Column(nullable = false)
+    @Getter
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
     // 주소 관련
     @Column(nullable = false, length = 50)
+    @Getter
     private String city;
 
     @Column(nullable = false, length = 50)
+    @Getter
     private String town;
 
     @Column(nullable = false)
+    @Getter
     private String address;
 
     @Builder
