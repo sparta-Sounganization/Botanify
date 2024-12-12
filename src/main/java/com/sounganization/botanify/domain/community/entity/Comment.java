@@ -34,8 +34,6 @@ public class Comment extends Timestamped {
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> childComments = new ArrayList<>();
 
-    // todo - post 삭제 시 같이 삭제되는 지 확인 필요
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
