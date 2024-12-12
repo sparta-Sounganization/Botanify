@@ -1,11 +1,11 @@
 package com.sounganization.botanify.domain.community.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
-import com.sounganization.botanify.domain.community.dto.res.PostResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
@@ -37,7 +37,7 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public PostResDto createPost(PostReqDto postReqDto, Long userId) {
+    public CommonResDto createPost(PostReqDto postReqDto, Long userId) {
         //사용자 존재 여부 확인
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -46,7 +46,7 @@ public class PostService {
         // DB 저장
         Post savedPost = postRepository.save(post);
         //entity -> dto
-        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 등록되었습니다");
+        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED);
     }
 
     // 게시글 조회 - 다건 조회
@@ -87,7 +87,7 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public PostResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
+    public CommonResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
         // 게시글 존재 여부 확인
         Post post = validatePost(postId);
         //소유자 확인
@@ -99,7 +99,7 @@ public class PostService {
         // DB 저장
         Post savedPost = postRepository.save(post);
         //entity -> dto
-        return postMapper.entityToResDto(savedPost, HttpStatus.CREATED.value(), "게시글이 수정되었습니다");
+        return postMapper.entityToResDto(savedPost, HttpStatus.OK);
     }
 
     // 게시글 삭제

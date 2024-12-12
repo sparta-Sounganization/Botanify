@@ -1,9 +1,9 @@
 package com.sounganization.botanify.domain.community.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.CommentReqDto;
-import com.sounganization.botanify.domain.community.dto.res.CommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.CommentMapper;
@@ -24,7 +24,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
 
     @Transactional
-    public CommentResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
+    public CommonResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -47,7 +47,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResDto createReply(Long parentCommentId, CommentReqDto requestDto, Long userId) {
+    public CommonResDto createReply(Long parentCommentId, CommentReqDto requestDto, Long userId) {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -70,7 +70,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResDto updateComment(Long commentId, CommentReqDto requestDto, Long userId) {
+    public CommonResDto updateComment(Long commentId, CommentReqDto requestDto, Long userId) {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));

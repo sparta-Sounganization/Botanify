@@ -1,9 +1,9 @@
 package com.sounganization.botanify.domain.garden.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.garden.dto.req.SpeciesReqDto;
-import com.sounganization.botanify.domain.garden.dto.res.MessageResDto;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
 import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.mapper.SpeciesMapper;
@@ -23,7 +23,7 @@ public class SpeciesService {
     private final SpeciesMapper speciesMapper;
 
     @Transactional
-    public MessageResDto createSpecies(UserRole userRole, SpeciesReqDto reqDto) {
+    public CommonResDto createSpecies(UserRole userRole, SpeciesReqDto reqDto) {
 
         if (!userRole.equals(UserRole.ADMIN)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
 
@@ -51,7 +51,7 @@ public class SpeciesService {
     }
 
     @Transactional
-    public MessageResDto updateSpecies(UserRole userRole, Long id, SpeciesReqDto reqDto) {
+    public CommonResDto updateSpecies(UserRole userRole, Long id, SpeciesReqDto reqDto) {
 
         if (!userRole.equals(UserRole.ADMIN)) throw new CustomException(ExceptionStatus.INVALID_ROLE);
 

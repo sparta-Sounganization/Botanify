@@ -1,7 +1,7 @@
 package com.sounganization.botanify.domain.auth.controller;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.domain.auth.dto.req.AuthReqDto;
-import com.sounganization.botanify.domain.auth.dto.res.AuthResDto;
 import com.sounganization.botanify.domain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResDto> signup(@RequestBody AuthReqDto request) {
+    public ResponseEntity<CommonResDto> signup(@RequestBody AuthReqDto request) {
         return authService.signup(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResDto> login(@RequestBody AuthReqDto request) {
+    public ResponseEntity<CommonResDto> login(@RequestBody AuthReqDto request) {
         return authService.login(request);
     }
 }

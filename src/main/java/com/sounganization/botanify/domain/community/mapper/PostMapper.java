@@ -1,12 +1,13 @@
 package com.sounganization.botanify.domain.community.mapper;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
-import com.sounganization.botanify.domain.community.dto.res.PostResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
 import org.mapstruct.Mapper;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -23,12 +24,8 @@ public interface PostMapper {
                 .build();
     }
 
-    default PostResDto entityToResDto(Post post, int statusCode, String message) {
-        return PostResDto.builder()
-                .status(statusCode)
-                .message(message)
-                .postId(post.getId())
-                .build();
+    default CommonResDto entityToResDto(Post post, HttpStatus status) {
+        return new CommonResDto(status, "게시글이 등록되었습니다.", post.getId());
     }
 
     default PostListResDto entityToResDto(Post post) {

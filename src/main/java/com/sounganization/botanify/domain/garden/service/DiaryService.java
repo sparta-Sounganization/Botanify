@@ -1,10 +1,10 @@
 package com.sounganization.botanify.domain.garden.service;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.garden.dto.req.DiaryReqDto;
 import com.sounganization.botanify.domain.garden.dto.res.DiaryResDto;
-import com.sounganization.botanify.domain.garden.dto.res.MessageResDto;
 import com.sounganization.botanify.domain.garden.entity.Diary;
 import com.sounganization.botanify.domain.garden.entity.Plant;
 import com.sounganization.botanify.domain.garden.mapper.DiaryMapper;
@@ -32,7 +32,7 @@ public class DiaryService {
      * @return 저장된 일지 엔티티
      */
     @Transactional
-    public MessageResDto createDiary(Long userId, Long plantId, DiaryReqDto reqDto) {
+    public CommonResDto createDiary(Long userId, Long plantId, DiaryReqDto reqDto) {
         // plant 획득 및 소유권 검증
         Plant plant = plantRepository.findByIdCustom(plantId);
         if (!Objects.equals(userId, plant.getUserId())) throw new CustomException(ExceptionStatus.PLANT_NOT_OWNED);
@@ -69,7 +69,7 @@ public class DiaryService {
      * @return 수정된 일지 엔티티
      */
     @Transactional
-    public MessageResDto updateDiary(Long userId, Long id, DiaryReqDto reqDto) {
+    public CommonResDto updateDiary(Long userId, Long id, DiaryReqDto reqDto) {
         // diary 획득 및 소유권 검증 (영속화)
         Diary diary = findAuthoredDiaryPersist(userId, id);
         // 요청 Dto 에서 바로 diary 갱신

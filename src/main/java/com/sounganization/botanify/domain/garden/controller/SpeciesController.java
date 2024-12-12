@@ -1,8 +1,8 @@
 package com.sounganization.botanify.domain.garden.controller;
 
+import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.garden.dto.req.SpeciesReqDto;
-import com.sounganization.botanify.domain.garden.dto.res.MessageResDto;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
 import com.sounganization.botanify.domain.garden.service.SpeciesService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,12 +21,12 @@ public class SpeciesController {
     private final SpeciesService speciesService;
 
     @PostMapping("/admin/species")
-    public ResponseEntity<MessageResDto> createSpecies(
+    public ResponseEntity<CommonResDto> createSpecies(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             HttpServletRequest httpReq,
             @Valid @RequestBody SpeciesReqDto reqDto
     ) {
-        MessageResDto resDto = speciesService.createSpecies(userDetails.getRole(), reqDto);
+        CommonResDto resDto = speciesService.createSpecies(userDetails.getRole(), reqDto);
         String createdUri = httpReq.getRequestURI() + "/" + resDto.id();
         return ResponseEntity.created(URI.create(createdUri)).body(resDto);
     }
@@ -45,7 +45,7 @@ public class SpeciesController {
     }
 
     @PutMapping("/species/{id}")
-    public ResponseEntity<MessageResDto> updateSpecies(
+    public ResponseEntity<CommonResDto> updateSpecies(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id,
             @Valid @RequestBody SpeciesReqDto reqDto
