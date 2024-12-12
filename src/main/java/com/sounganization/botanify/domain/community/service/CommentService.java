@@ -32,6 +32,10 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
 
+        if (post.isDeletedYn()) {
+            throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
+        }
+
         if (requestDto.content() == null || requestDto.content().trim().isEmpty()) {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
         }
@@ -50,6 +54,10 @@ public class CommentService {
 
         Comment parentComment = commentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
+
+        if (parentComment.getDeletedYn()) {
+            throw new CustomException(ExceptionStatus.COMMENT_ALREADY_DELETED);
+        }
 
         if (requestDto.content() == null || requestDto.content().trim().isEmpty()) {
             throw new CustomException(ExceptionStatus.INVALID_COMMENT_CONTENT);
@@ -100,4 +108,5 @@ public class CommentService {
 
         comment.softDelete();
     }
+
 }
