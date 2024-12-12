@@ -13,7 +13,8 @@ public interface SpeciesRepository extends JpaRepository<Species, Long> {
     Page<Species> findAllByDeletedYnFalse(Pageable pageable);
 
     Optional<Species> findByIdAndDeletedYnFalse(Long id);
+
     default Species findByIdCustom(Long id) {
-        return findByIdAndDeletedYnFalse(id).orElseThrow(() -> new CustomException(ExceptionStatus.SPECIES_NOT_FOUND));
+        return findByIdAndDeletedYnFalse(id).orElseThrow(()-> new CustomException(ExceptionStatus.SPECIES_NOT_FOUND));
     }
 }
