@@ -1,17 +1,19 @@
 package com.sounganization.botanify.domain.auth.service;
 
-import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
-import com.sounganization.botanify.domain.auth.dto.req.AuthReqDto;
-import com.sounganization.botanify.domain.user.dto.req.UserReqDto;
+import com.sounganization.botanify.common.util.JwtUtil;
+import com.sounganization.botanify.domain.auth.dto.req.SigninReqDto;
+import com.sounganization.botanify.domain.auth.dto.req.SignupReqDto;
+import com.sounganization.botanify.domain.auth.dto.res.AuthResDto;
+import com.sounganization.botanify.domain.user.entity.User;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +24,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    public ResponseEntity<CommonResDto> signup(AuthReqDto request) {
+    public ResponseEntity<AuthResDto> signup(SignupReqDto request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new CustomException(ExceptionStatus.DUPLICATED_EMAIL);
         }
@@ -34,38 +37,35 @@ public class AuthService {
 
         UserRole role = request.role() != null ? request.role() : UserRole.USER; // 기본값 USER
 
-        UserReqDto userReqDto = new UserReqDto(
-                null,
-                request.email(),
-                request.username(),
-                passwordEncoder.encode(request.password()),
-                request.city(),
-                request.town(),
-                request.address(),
-                role
-        );
+        User newUser = User.builder()
+                .email(request.email())
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .city(request.city())
+                .town(request.town())
+                .address(request.address())
+                .role(role)
+                .build();
 
-        Long userId = userRepository.saveNewUser(userReqDto).getId();
+        Long userId = userRepository.save(newUser).getId();
 
-        CommonResDto response = new CommonResDto(HttpStatus.CREATED, "회원가입이 성공되었습니다.", userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        AuthResDto response = new AuthResDto(201, "회원가입이 성공되었습니다.", userId);
+        return ResponseEntity.status(201).body(response);
     }
 
-    public ResponseEntity<CommonResDto> login(AuthReqDto request) {
-        UserReqDto userReqDto = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_CREDENTIALS));
-
-        if (!passwordEncoder.matches(request.password(), userReqDto.password())) {
-            throw new CustomException(ExceptionStatus.INVALID_CREDENTIALS);
-        }
-
+    public ResponseEntity<AuthResDto> signin(SigninReqDto request) {
         // Spring Security 인증 처리
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
-        // 로그인 성공 응답
-        CommonResDto authResDto = new CommonResDto(HttpStatus.OK, "로그인이 성공하였습니다.");
-        return ResponseEntity.ok(authResDto);
+        String token = jwtUtil.generateToken(authentication);
+
+        AuthResDto response = new AuthResDto(200, "로그인이 성공되었습니다.", token);
+        return ResponseEntity.ok(response);
+    }
+
+    public long getExpirationTime() {
+        return jwtUtil.getExpirationTime();
     }
 }

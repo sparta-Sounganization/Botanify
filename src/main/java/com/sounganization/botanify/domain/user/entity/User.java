@@ -1,7 +1,7 @@
 package com.sounganization.botanify.domain.user.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
-import com.sounganization.botanify.domain.user.dto.req.UserReqDto;
+import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,6 +21,7 @@ public class User extends Timestamped {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Getter
     @Column(nullable = false, length = 50)
     private String username;
 
@@ -28,17 +29,21 @@ public class User extends Timestamped {
     private String password;
 
     @Column(nullable = false)
+    @Getter
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
     // 주소 관련
     @Column(nullable = false, length = 50)
+    @Getter
     private String city;
 
     @Column(nullable = false, length = 50)
+    @Getter
     private String town;
 
     @Column(nullable = false)
+    @Getter
     private String address;
 
     @Builder
@@ -52,16 +57,7 @@ public class User extends Timestamped {
         this.address = address;
     }
 
-    public UserReqDto toDto() {
-        return new UserReqDto(
-                this.id,
-                this.email,
-                this.username,
-                this.password,
-                this.city,
-                this.town,
-                this.address,
-                this.role
-        );
+    public UserDetailsImpl toUserDetails() {
+        return new UserDetailsImpl(id, username, email, password, city, town, role);
     }
 }

@@ -10,6 +10,7 @@ spring:
     properties:
       hibernate:
         show_sql: true
+        format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
   datasource:
     url: jdbc:mysql://localhost:3306/botanify?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
