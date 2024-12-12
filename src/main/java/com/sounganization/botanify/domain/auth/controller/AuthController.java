@@ -4,6 +4,7 @@ import com.sounganization.botanify.domain.auth.dto.req.SigninReqDto;
 import com.sounganization.botanify.domain.auth.dto.req.SignupReqDto;
 import com.sounganization.botanify.domain.auth.dto.res.AuthResDto;
 import com.sounganization.botanify.domain.auth.service.AuthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,19 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<AuthResDto> signin(@Valid @RequestBody SigninReqDto request, HttpServletResponse response) {
-        return authService.signin(request, response);
+        ResponseEntity<AuthResDto> authResDtoResponseEntity = authService.signin(request);
+        AuthResDto authResDto = authResDtoResponseEntity.getBody();
+
+        // JWT 쿠키 생성
+        String token = authResDto.token();
+        if (token != null) {
+            Cookie jwtCookie = new Cookie("Authorization", token);
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(false);
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge((int) (authService.getExpirationTime()));
+            response.addCookie(jwtCookie);
+        }
+        return ResponseEntity.ok(authResDto);
     }
 }

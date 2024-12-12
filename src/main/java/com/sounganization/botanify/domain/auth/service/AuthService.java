@@ -9,8 +9,6 @@ import com.sounganization.botanify.domain.auth.dto.res.AuthResDto;
 import com.sounganization.botanify.domain.user.entity.User;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,7 +53,7 @@ public class AuthService {
         return ResponseEntity.status(201).body(response);
     }
 
-    public ResponseEntity<AuthResDto> signin(SigninReqDto request, HttpServletResponse response) {
+    public ResponseEntity<AuthResDto> signin(SigninReqDto request) {
         // Spring Security 인증 처리
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
@@ -63,16 +61,11 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(authentication);
 
-        Cookie jwtCookie = new Cookie("Authorization", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(false);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge((int) (jwtUtil.getExpirationTime()));
+        AuthResDto response = new AuthResDto(200, "로그인이 성공되었습니다.", token);
+        return ResponseEntity.ok(response);
+    }
 
-        response.addCookie(jwtCookie);
-
-        // 로그인 성공 응답
-        AuthResDto authResDto = new AuthResDto(200, "로그인이 성공하였습니다.");
-        return ResponseEntity.ok(authResDto);
+    public long getExpirationTime() {
+        return jwtUtil.getExpirationTime();
     }
 }
