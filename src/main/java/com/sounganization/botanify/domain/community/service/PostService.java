@@ -80,7 +80,7 @@ public class PostService {
         for (Long userId : userIds) {
             usernameMap.put(userId, usernameIterator.next());
         }
-        // 댓글 리스트를 DTO로 변환하여 반환
+        // 댓글 리스트를 DTO 로 변환하여 반환
         return postMapper.entityToResDto(post, comments, usernameMap);
 
     }
@@ -95,7 +95,7 @@ public class PostService {
         //이미 삭제된 게시글인지 확인
         checkPostNotDeleted(post);
         // 게시글 수정
-        post.updatePost(postUpdateReqDto.getTitle(), postUpdateReqDto.getContent());
+        post.updatePost(postUpdateReqDto.title(), postUpdateReqDto.content());
         // DB 저장
         Post savedPost = postRepository.save(post);
         //entity -> dto
