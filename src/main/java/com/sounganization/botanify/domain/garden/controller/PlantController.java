@@ -43,7 +43,7 @@ public class PlantController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePlant(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id) {
+    public ResponseEntity<Void> deletePlant(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id) {
         plantService.deletePlant(userDetails.getId(), id);
         return ResponseEntity.noContent().build();
     }

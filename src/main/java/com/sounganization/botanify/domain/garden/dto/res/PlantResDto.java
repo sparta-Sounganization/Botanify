@@ -1,13 +1,15 @@
 package com.sounganization.botanify.domain.garden.dto.res;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 
+@Getter
 @Builder
 public class PlantResDto {
-    private long id;
+    private Long id;
     private String plantName;
     private LocalDate adoptionDate;
     private String speciesName;
