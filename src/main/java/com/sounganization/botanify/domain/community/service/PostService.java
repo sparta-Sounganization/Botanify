@@ -13,6 +13,7 @@ import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
 import com.sounganization.botanify.domain.community.repository.CommentRepository;
 import com.sounganization.botanify.domain.community.repository.PostRepository;
+import com.sounganization.botanify.domain.user.projection.UserProjection;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,13 +77,12 @@ public class PostService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        Map<Long, String> userMap = userRepository.findUsernamesByIds(userIds).stream()
-                .collect(Collectors.toMap(
-                        result -> (Long) result[0],
-                        result -> (String) result[1]
-                ));
+        List<UserProjection> userProjections = userRepository.findUsernamesByIds(userIds);
+        Map<Long, String> userMap = userProjections.stream()
+                .collect(Collectors.toMap(UserProjection::getId, UserProjection::getUsername)
+                );
 
-         //댓글을 Map으로 그룹화 (ParentCommentId 기준)
+        // 댓글을 Map으로 그룹화 (ParentCommentId 기준)
         Map<Long, List<CommentTempDto>> commentMap = comments.stream()
                 .map(comment -> new CommentTempDto(
                         comment.getId(),
