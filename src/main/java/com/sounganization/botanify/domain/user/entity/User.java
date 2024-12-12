@@ -2,14 +2,12 @@ package com.sounganization.botanify.domain.user.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
-import com.sounganization.botanify.domain.user.dto.req.UserReqDto;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "users")

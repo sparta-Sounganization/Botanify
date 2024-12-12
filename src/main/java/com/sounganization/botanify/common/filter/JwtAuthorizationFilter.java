@@ -25,10 +25,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
+        if ("GET".equals(request.getMethod()) &&
+                (request.getServletPath().equals("/api/v1/posts") ||
+                        request.getServletPath().matches("/api/v1/posts/\\d+"))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         try {
             jwtAuthorizationHandler.handleAuthorization(request);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().write("{\"status\": 403, \"message\": \"접근 거부된 페이지입니다.\"}");
             return;
         }
