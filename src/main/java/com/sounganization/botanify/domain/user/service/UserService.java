@@ -55,18 +55,19 @@ public class UserService {
         return userMapper.toResDto(user);
     }
 
-    public UserPlantsResDto getUserInfoWithPlants(int page, int size) {
+    public UserPlantsResDto getUserInfoWithPlants(int plantPage, int plantSize, int diaryPage, int diarySize) {
         User user = getAuthenticatedUser();
-        Pageable pageable = createPageable(page, size);
-        Page<Plant> plants = plantRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), pageable);
+        Pageable plantPageable = createPageable(plantPage, plantSize);
+        Pageable diaryPageable = createPageable(diaryPage, diarySize);
+        Page<Plant> plants = plantRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), plantPageable);
 
         Page<PlantResDto> plantResDtos = plants.map(plant -> {
-            List<DiaryResDto> diaryResDtos = getDiaryResDtos(plant, pageable);
+            List<DiaryResDto> diaryResDtos = getDiaryResDtos(plant, diaryPageable);
             return new PlantResDto(plant.getId(),
                     plant.getPlantName(),
                     plant.getAdoptionDate(),
                     plant.getSpecies().getSpeciesName(),
-                    new PageImpl<>(diaryResDtos));
+                    new PageImpl<>(diaryResDtos, diaryPageable, diaryResDtos.size()));
         });
 
         UserResDto userResDto = userMapper.toResDto(user);

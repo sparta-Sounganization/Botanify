@@ -28,9 +28,11 @@ public class UserController {
 
     @GetMapping("/me/plants")
     public ResponseEntity<UserPlantsResDto> getUserInfoWithPlants(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        UserPlantsResDto userInfoWithPlants = userService.getUserInfoWithPlants(page, size);
+            @RequestParam(defaultValue = "1") int plantPage,
+            @RequestParam(defaultValue = "10") int plantSize,
+            @RequestParam(defaultValue = "1") int diaryPage,
+            @RequestParam(defaultValue = "10") int diarySize) {
+        UserPlantsResDto userInfoWithPlants = userService.getUserInfoWithPlants(plantPage, plantSize, diaryPage, diarySize);
         return ResponseEntity.ok(userInfoWithPlants);
     }
 
