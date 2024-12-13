@@ -16,8 +16,8 @@ public interface PostMapper {
 
     default Post reqDtoToEntity(PostReqDto postReqDto, Long userId) {
         return Post.builder()
-                .title(postReqDto.title())
-                .content(postReqDto.content())
+                .title(postReqDto.getTitle())
+                .content(postReqDto.getContent())
                 .viewCounts(0)
                 .userId(userId)
                 .build();

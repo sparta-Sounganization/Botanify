@@ -27,11 +27,11 @@ public class UserController {
     }
 
     @GetMapping("/me/plants")
-    public ResponseEntity<UserPlantsResDto> getUserInfoWithDiaries(
+    public ResponseEntity<UserPlantsResDto> getUserInfoWithPlants(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        UserPlantsResDto userInfoWithDiaries = userService.getUserInfoWithDiaries(page, size);
-        return ResponseEntity.ok(userInfoWithDiaries);
+        UserPlantsResDto userInfoWithPlants = userService.getUserInfoWithPlants(page, size);
+        return ResponseEntity.ok(userInfoWithPlants);
     }
 
     @GetMapping("/me/posts")

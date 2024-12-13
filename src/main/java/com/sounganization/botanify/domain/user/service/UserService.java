@@ -9,9 +9,11 @@ import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
 import com.sounganization.botanify.domain.community.repository.PostRepository;
 import com.sounganization.botanify.domain.garden.dto.res.DiaryResDto;
-import com.sounganization.botanify.domain.garden.entity.Diary;
+import com.sounganization.botanify.domain.garden.dto.res.PlantResDto;
+import com.sounganization.botanify.domain.garden.entity.Plant;
 import com.sounganization.botanify.domain.garden.mapper.DiaryMapper;
 import com.sounganization.botanify.domain.garden.repository.DiaryRepository;
+import com.sounganization.botanify.domain.garden.repository.PlantRepository;
 import com.sounganization.botanify.domain.user.dto.req.UserDeleteReqDto;
 import com.sounganization.botanify.domain.user.dto.req.UserUpdateReqDto;
 import com.sounganization.botanify.domain.user.dto.res.UserPlantsResDto;
@@ -22,12 +24,17 @@ import com.sounganization.botanify.domain.user.mapper.UserMapper;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +46,7 @@ public class UserService {
     private final DiaryMapper diaryMapper;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+    private final PlantRepository plantRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
@@ -47,29 +55,29 @@ public class UserService {
         return userMapper.toResDto(user);
     }
 
-    public UserPlantsResDto getUserInfoWithDiaries(int page, int size) {
+    public UserPlantsResDto getUserInfoWithPlants(int page, int size) {
         User user = getAuthenticatedUser();
+        Pageable pageable = createPageable(page, size);
+        Page<Plant> plants = plantRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), pageable);
 
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        Page<Diary> diaries = diaryRepository.findAllByPlantIdAndDeletedYnFalse(user.getId(), pageable);
-
-        Page<DiaryResDto> diaryResDtos = diaries.map(diaryMapper::toDto);
+        Page<PlantResDto> plantResDtos = plants.map(plant -> {
+            List<DiaryResDto> diaryResDtos = getDiaryResDtos(plant, pageable);
+            return new PlantResDto(plant.getId(),
+                    plant.getPlantName(),
+                    plant.getAdoptionDate(),
+                    plant.getSpecies().getSpeciesName(),
+                    new PageImpl<>(diaryResDtos));
+        });
 
         UserResDto userResDto = userMapper.toResDto(user);
-        return new UserPlantsResDto(userResDto, diaryResDtos);
+        return new UserPlantsResDto(userResDto, plantResDtos);
     }
 
     public UserPostsResDto getUserInfoWithPosts(int page, int size) {
         User user = getAuthenticatedUser();
-
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        Page<Post> posts = postRepository.findAll(pageable);
-
-        Page<PostListResDto> postResDtos = posts
-                .map(postMapper::entityToResDto);
-
+        Pageable pageable = createPageable(page, size);
+        Page<Post> posts = postRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), pageable);
+        Page<PostListResDto> postResDtos = mapPage(posts, postMapper::entityToResDto);
         UserResDto userResDto = userMapper.toResDto(user);
         return new UserPostsResDto(userResDto, postResDtos);
     }
@@ -112,5 +120,20 @@ public class UserService {
         Long userId = Long.parseLong(userIdStr);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_DETAILS_NOT_FOUND));
+    }
+
+    private Pageable createPageable(int page, int size) {
+        return PageRequest.of(page - 1, size);
+    }
+
+    private <T, R> Page<R> mapPage(Page<T> source, Function<T, R> mapper) {
+        return source.map(mapper);
+    }
+
+    private List<DiaryResDto> getDiaryResDtos(Plant plant, Pageable pageable) {
+        return diaryRepository.findAllByPlantIdAndDeletedYnFalse(plant.getId(), pageable)
+                .stream()
+                .map(diaryMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

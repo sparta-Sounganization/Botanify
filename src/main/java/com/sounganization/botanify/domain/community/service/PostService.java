@@ -127,7 +127,7 @@ public class PostService {
         //이미 삭제된 게시글인지 확인
         checkPostNotDeleted(post);
         // 게시글 수정
-        post.updatePost(postUpdateReqDto.title(), postUpdateReqDto.content());
+        post.updatePost(postUpdateReqDto.getTitle(), postUpdateReqDto.getContent());
         // DB 저장
         Post savedPost = postRepository.save(post);
         //entity -> dto
