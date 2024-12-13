@@ -38,6 +38,7 @@ public class PostService {
     private final PostMapper postMapper;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PopularPostService popularPostService;
 
     // 게시글 작성
     @Transactional
@@ -70,6 +71,10 @@ public class PostService {
         checkPostNotDeleted(post);
         // 조회수 증가
         post.incrementViewCounts();
+
+        // 조회수 증가 시 인기글 update
+        popularPostService.updatePostScore(postId);
+
         // 댓글 조회
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
 
@@ -149,6 +154,9 @@ public class PostService {
         comments.forEach(Comment::softDelete);
         //삭제
         post.softDelete();
+
+        //인기글에서 삭제된 게시글 제거
+        popularPostService.removeFromPopularPosts(postId);
     }
 
     // 게시글 존재 확인 메서드

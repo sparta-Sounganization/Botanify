@@ -22,6 +22,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
+    private final PopularPostService popularPostService;
 
     @Transactional
     public CommonResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
@@ -42,6 +43,9 @@ public class CommentService {
 
         Comment comment = commentMapper.toEntity(requestDto, post, userId, null);
         Comment savedComment = commentRepository.save(comment);
+
+        //댓글 생성 시 인기글 update
+        popularPostService.updatePostScore(postId);
 
         return commentMapper.toResDto(savedComment);
     }
@@ -107,6 +111,9 @@ public class CommentService {
         }
 
         comment.softDelete();
+
+        // 댓글 삭제 시 인기글 update
+        popularPostService.updatePostScore(comment.getPost().getId());
     }
 
 }
