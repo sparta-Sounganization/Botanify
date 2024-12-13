@@ -32,6 +32,7 @@ public class Comment extends Timestamped {
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Comment> childComments = new ArrayList<>();
 
     // todo - post 삭제 시 같이 삭제되는 지 확인 필요
