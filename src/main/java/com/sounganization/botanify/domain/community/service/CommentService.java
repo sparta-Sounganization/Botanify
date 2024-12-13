@@ -70,6 +70,9 @@ public class CommentService {
         Comment reply = commentMapper.toEntity(requestDto, parentComment.getPost(), userId, parentComment);
         Comment savedReply = commentRepository.save(reply);
 
+        // 대댓글 생성시 점수 update
+        popularPostService.updatePostScore(savedReply.getPost().getId());
+
         return commentMapper.toResDto(savedReply);
     }
 
@@ -88,6 +91,9 @@ public class CommentService {
         }
 
         comment.update(requestDto.content());
+
+        //댓글 수정 시 점수 update
+        popularPostService.updatePostScore(comment.getPost().getId());
 
         return commentMapper.toUpdateResDto(comment);
     }

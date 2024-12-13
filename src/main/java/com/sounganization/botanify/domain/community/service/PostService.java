@@ -50,6 +50,10 @@ public class PostService {
         Post post = postMapper.reqDtoToEntity(postReqDto, userId);
         // DB 저장
         Post savedPost = postRepository.save(post);
+
+        // 인기글 시스템에서 게시글 초기화
+        popularPostService.updatePostScore(savedPost.getId());
+
         //entity -> dto
         return postMapper.entityToResDto(savedPost, HttpStatus.CREATED);
     }
@@ -135,6 +139,10 @@ public class PostService {
         post.updatePost(postUpdateReqDto.title(), postUpdateReqDto.content());
         // DB 저장
         Post savedPost = postRepository.save(post);
+
+        // 게시글 수정시 점수 update
+        popularPostService.updatePostScore(postId);
+
         //entity -> dto
         return postMapper.entityToResDto(savedPost, HttpStatus.OK);
     }
