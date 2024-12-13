@@ -19,10 +19,21 @@ services:
       timeout: 20s
       retries: 10
     restart: always
-
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:latest
+    container_name: botanify-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    volumes:
+      - redis-data:/data
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning
 
 networks:
   app-network:
@@ -30,3 +41,4 @@ networks:
 
 volumes:
   db-data:
+  redis-data:
