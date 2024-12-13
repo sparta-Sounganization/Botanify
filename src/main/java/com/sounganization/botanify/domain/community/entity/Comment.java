@@ -32,6 +32,7 @@ public class Comment extends Timestamped {
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Comment> childComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

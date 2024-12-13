@@ -5,6 +5,7 @@ import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
+import com.sounganization.botanify.domain.community.dto.res.CommentTempDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
@@ -12,6 +13,7 @@ import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
 import com.sounganization.botanify.domain.community.repository.CommentRepository;
 import com.sounganization.botanify.domain.community.repository.PostRepository;
+import com.sounganization.botanify.domain.user.projection.UserProjection;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,23 +70,51 @@ public class PostService {
         checkPostNotDeleted(post);
         // 조회수 증가
         post.incrementViewCounts();
-        // 댓글과 대댓글 조회
+        // 댓글 조회
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
-        // 댓글에 포함된 userId 가져오기
-        Set<Long> userIds = comments.stream()
-                .map(Comment::getUserId)
-                .collect(Collectors.toSet());
-        // usernames 조회
-        List<String> usernames = userRepository.findUsernamesByIds(userIds);
-        // userId와 username 매핑
-        Map<Long, String> usernameMap = new HashMap<>();
-        Iterator<String> usernameIterator = usernames.iterator();
-        for (Long userId : userIds) {
-            usernameMap.put(userId, usernameIterator.next());
-        }
-        // 댓글 리스트를 DTO 로 변환하여 반환
-        return postMapper.entityToResDto(post, comments, usernameMap);
 
+        // userId로 username 매핑
+        List<Long> userIds = comments.stream()
+                .map(Comment::getUserId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<UserProjection> userProjections = userRepository.findUsernamesByIds(userIds);
+        Map<Long, String> userMap = userProjections.stream()
+                .collect(Collectors.toMap(UserProjection::getId, UserProjection::getUsername)
+                );
+
+        // 댓글을 Map으로 그룹화 (ParentCommentId 기준)
+        Map<Long, List<CommentTempDto>> commentMap = comments.stream()
+                .map(comment -> new CommentTempDto(
+                        comment.getId(),
+                        comment.getUserId(),
+                        userMap.getOrDefault(comment.getUserId(), "알수없는 유저"),
+                        comment.getContent()
+                ))
+                .collect(Collectors.groupingBy(commentDto -> {
+                    Comment parentComment = comments.stream()
+                            .filter(c -> c.getId().equals(commentDto.commentId()))
+                            .findFirst()
+                            .orElse(null);
+
+                    // parentComment 가 null 일 경우 루트 댓글로 처리
+                    return (parentComment != null && parentComment.getParentComment() != null)
+                            ? parentComment.getParentComment().getId()
+                            : -1L; // -1L을 null 대신 사용 루트 댓글을 구분
+                }));
+
+        // 루트 댓글에 대댓글 매핑
+        List<CommentTempDto> rootComments = commentMap.get(-1L);
+        if (rootComments != null) {
+            rootComments.forEach(comment -> {
+                List<CommentTempDto> replies = commentMap.get(comment.commentId());
+                if (replies != null) {
+                    comment.replies().addAll(replies);
+                }
+            });
+        }
+        return postMapper.entityToResDto(post, rootComments != null ? rootComments : new ArrayList<>());
     }
 
     // 게시글 수정
