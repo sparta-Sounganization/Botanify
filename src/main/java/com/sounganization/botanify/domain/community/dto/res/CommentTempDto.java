@@ -1,14 +1,13 @@
 package com.sounganization.botanify.domain.community.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sounganization.botanify.domain.community.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -20,18 +19,13 @@ public class CommentTempDto {
     private Long userId;
     private String username;
     private String content;
-    private List<CommentTempDto> childComments;
+    private List<CommentTempDto> replies;
 
-
-    public static CommentTempDto from(Comment comment, String username) {
-        return CommentTempDto.builder()
-                .commentId(comment.getId())
-                .userId(comment.getUserId())
-                .username(username)
-                .content(comment.getContent())
-                .childComments(comment.getChildComments().stream()
-                        .map(child -> from(child, username))
-                        .collect(Collectors.toList()))
-                .build();
+    public CommentTempDto(Long commentId, Long userId, String username, String content) {
+        this.commentId = commentId;
+        this.userId = userId;
+        this.username = username;
+        this.content = content;
+        this.replies = new ArrayList<>();
     }
 }
