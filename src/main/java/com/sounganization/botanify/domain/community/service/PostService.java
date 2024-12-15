@@ -5,14 +5,18 @@ import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
+import com.sounganization.botanify.domain.community.dto.req.ViewHistoryDto;
 import com.sounganization.botanify.domain.community.dto.res.CommentTempDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
+import com.sounganization.botanify.domain.community.entity.ViewHistory;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
+import com.sounganization.botanify.domain.community.mapper.ViewHistoryMapper;
 import com.sounganization.botanify.domain.community.repository.CommentRepository;
 import com.sounganization.botanify.domain.community.repository.PostRepository;
+import com.sounganization.botanify.domain.community.repository.ViewHistoryRepository;
 import com.sounganization.botanify.domain.user.projection.UserProjection;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +41,10 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+    private final ViewHistoryMapper viewHistoryMapper;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final ViewHistoryRepository viewHistoryRepository;
 
     // 게시글 작성
     @Transactional
@@ -63,13 +70,19 @@ public class PostService {
 
     // 게시글 조회 - 단건조회
     @Transactional
-    public PostWithCommentResDto readPost(Long postId) {
+    public PostWithCommentResDto readPost(Long postId, Long userId, LocalDate viewedAt) {
         // 게시글 존재 여부 확인
-        Post post = validatePost(postId);
+        Post post = existPost(postId);
         //이미 삭제된 게시글인지 확인
         checkPostNotDeleted(post);
         // 조회수 증가
-        post.incrementViewCounts();
+        if (userId != null && !isexistViewHistory(postId, userId, viewedAt)) {
+            post.incrementViewCounts();
+            ViewHistoryDto viewHistoryDto = new ViewHistoryDto(postId, userId, viewedAt);
+            ViewHistory viewHistory = viewHistoryMapper.dtoToEntity(viewHistoryDto);
+            viewHistoryRepository.save(viewHistory);
+        }
+
         // 댓글 조회
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
 
@@ -121,7 +134,7 @@ public class PostService {
     @Transactional
     public CommonResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
         // 게시글 존재 여부 확인
-        Post post = validatePost(postId);
+        Post post = existPost(postId);
         //소유자 확인
         validatePostOwner(post, userId);
         //이미 삭제된 게시글인지 확인
@@ -138,7 +151,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId, Long userId) {
         //게시글 존재 여부 확인
-        Post post = validatePost(postId);
+        Post post = existPost(postId);
         //게시글 소유자 확인
         validatePostOwner(post, userId);
         //이미 삭제된 게시글인지 확인
@@ -152,7 +165,7 @@ public class PostService {
     }
 
     // 게시글 존재 확인 메서드
-    private Post validatePost(Long postId) {
+    private Post existPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
     }
@@ -165,11 +178,18 @@ public class PostService {
         }
     }
 
-    //이미 삭제된 게시글인지 확인
+    // 이미 삭제된 게시글인지 확인
     private void checkPostNotDeleted(Post post) {
         if (post.isDeletedYn()) {
             throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
         }
+    }
+    // 조회 이력 확인
+    private boolean isexistViewHistory(Long postId, Long userId, LocalDate viewedAt) {
+        if (userId == null) {
+            return false;
+        }
+        return viewHistoryRepository.existViewHistory(postId, userId, viewedAt);
     }
 }
 
