@@ -55,6 +55,12 @@ public class AuthService {
     }
 
     public ResponseEntity<CommonResDto> signin(SigninReqDto request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_DETAILS_NOT_FOUND));
+
+        if (user.getDeletedYn()) {
+            throw new CustomException(ExceptionStatus.ACCOUNT_DELETED);
+        }
         // Spring Security 인증 처리
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
