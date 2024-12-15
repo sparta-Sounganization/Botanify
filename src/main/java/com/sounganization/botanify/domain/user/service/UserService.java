@@ -54,21 +54,37 @@ public class UserService {
         User user = getAuthenticatedUser();
         return userMapper.toResDto(user);
     }
+    // 슬픈 친구에요... 지우지 마세요...
+//    public UserPlantsResDto getUserInfoWithPlants(int plantPage, int plantSize, int diaryPage, int diarySize) {
+//        User user = getAuthenticatedUser();
+//        Pageable plantPageable = createPageable(plantPage, plantSize);
+//        Pageable diaryPageable = createPageable(diaryPage, diarySize);
+//        Page<Plant> plants = plantRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), plantPageable);
+//
+//        Page<PlantResDto> plantResDtos = plants.map(plant -> {
+//            List<DiaryResDto> diaryResDtos = getDiaryResDtos(plant, diaryPageable);
+//            return new PlantResDto(plant.getId(),
+//                    plant.getPlantName(),
+//                    plant.getAdoptionDate(),
+//                    plant.getSpecies().getSpeciesName(),
+//                    new PageImpl<>(diaryResDtos, diaryPageable, diaryResDtos.size()));
+//        });
+//
+//        UserResDto userResDto = userMapper.toResDto(user);
+//        return new UserPlantsResDto(userResDto, plantResDtos);
+//    }
 
-    public UserPlantsResDto getUserInfoWithPlants(int plantPage, int plantSize, int diaryPage, int diarySize) {
+    public UserPlantsResDto getUserInfoWithPlants(int page, int size) {
         User user = getAuthenticatedUser();
-        Pageable plantPageable = createPageable(plantPage, plantSize);
-        Pageable diaryPageable = createPageable(diaryPage, diarySize);
-        Page<Plant> plants = plantRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), plantPageable);
+        Pageable pageable = createPageable(page, size);
+        Page<Plant> plants = plantRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), pageable);
 
-        Page<PlantResDto> plantResDtos = plants.map(plant -> {
-            List<DiaryResDto> diaryResDtos = getDiaryResDtos(plant, diaryPageable);
-            return new PlantResDto(plant.getId(),
-                    plant.getPlantName(),
-                    plant.getAdoptionDate(),
-                    plant.getSpecies().getSpeciesName(),
-                    new PageImpl<>(diaryResDtos, diaryPageable, diaryResDtos.size()));
-        });
+        Page<PlantResDto> plantResDtos = plants.map(plant -> PlantResDto.builder()
+                .id(plant.getId())
+                .plantName(plant.getPlantName())
+                .adoptionDate(plant.getAdoptionDate())
+                .speciesName(plant.getSpecies().getSpeciesName())
+                .build());
 
         UserResDto userResDto = userMapper.toResDto(user);
         return new UserPlantsResDto(userResDto, plantResDtos);
