@@ -44,7 +44,9 @@ public class PostService {
     private final ViewHistoryMapper viewHistoryMapper;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PopularPostService popularPostService;
     private final ViewHistoryRepository viewHistoryRepository;
+
 
     // 게시글 작성
     @Transactional
@@ -56,6 +58,10 @@ public class PostService {
         Post post = postMapper.reqDtoToEntity(postReqDto, userId);
         // DB 저장
         Post savedPost = postRepository.save(post);
+
+        // 인기글 시스템에서 게시글 초기화
+        popularPostService.updatePostScore(savedPost.getId());
+
         //entity -> dto
         return postMapper.entityToResDto(savedPost, HttpStatus.CREATED);
     }
@@ -81,6 +87,10 @@ public class PostService {
             ViewHistoryDto viewHistoryDto = new ViewHistoryDto(postId, userId, viewedAt);
             ViewHistory viewHistory = viewHistoryMapper.dtoToEntity(viewHistoryDto);
             viewHistoryRepository.save(viewHistory);
+
+            // 조회수 증가 시 인기글 update
+            popularPostService.updatePostScore(postId);
+
         }
 
         // 댓글 조회
@@ -143,6 +153,10 @@ public class PostService {
         post.updatePost(postUpdateReqDto.title(), postUpdateReqDto.content());
         // DB 저장
         Post savedPost = postRepository.save(post);
+
+        // 게시글 수정시 점수 update
+        popularPostService.updatePostScore(postId);
+
         //entity -> dto
         return postMapper.entityToResDto(savedPost, HttpStatus.OK);
     }
@@ -162,6 +176,9 @@ public class PostService {
         comments.forEach(Comment::softDelete);
         //삭제
         post.softDelete();
+
+        //인기글에서 삭제된 게시글 제거
+        popularPostService.removeFromPopularPosts(postId);
     }
 
     // 게시글 존재 확인 메서드
@@ -178,12 +195,13 @@ public class PostService {
         }
     }
 
-    // 이미 삭제된 게시글인지 확인
+    //이미 삭제된 게시글인지 확인
     private void checkPostNotDeleted(Post post) {
         if (post.isDeletedYn()) {
             throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
         }
     }
+
     // 조회 이력 확인
     private boolean isexistViewHistory(Long postId, Long userId, LocalDate viewedAt) {
         if (userId == null) {
