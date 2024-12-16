@@ -10,6 +10,7 @@ import com.sounganization.botanify.domain.community.repository.PopularPostRedisR
 import com.sounganization.botanify.domain.community.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,24 @@ public class PopularPostService {
 
         // Redis 업데이트
         popularPostRedisRepository.updatePopularPost(post, commentCount);
+    }
+
+    @Scheduled(fixedRate = 3600000) // 1시간 마다
+    @Transactional
+    public void updateAllPostScores() {
+        log.info("인기 게시글 점수 업데이트 시작");
+        try {
+            List<Post> activePosts = postRepository.findAllByDeletedYnFalse();
+
+            for (Post post : activePosts) {
+                int commentCount = commentRepository.findCommentsByPostId(post.getId()).size();
+                popularPostRedisRepository.updatePopularPost(post, commentCount);
+            }
+
+            log.info("총 {}개의 게시글 점수 업데이트 완료", activePosts.size());
+        } catch (Exception e) {
+            log.error("인기 게시글 점수 업데이트 중 오류 발생: {}", e.getMessage(), e);
+        }
     }
 
     // 게시글 삭제 시 인기 게시글에서도 제거
