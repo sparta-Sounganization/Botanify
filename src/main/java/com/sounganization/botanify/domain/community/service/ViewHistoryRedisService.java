@@ -13,11 +13,11 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class PostRedisService {
+public class ViewHistoryRedisService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    //조회이력
+    //조회이력 있는지 확인
     public boolean isViewHistoryExist(Long postId, Long userId, LocalDate viewedAt) {
         String redisKey = String.valueOf(postId);
         String value = viewedAt.toString() + ":" + userId;
@@ -26,7 +26,7 @@ public class PostRedisService {
         return cacheValues != null && cacheValues.contains(value);
     }
 
-    //캐싱저장
+    //캐시 저장
     public void saveViewHistory(Long postId, Long userId, LocalDate viewedAt) {
         String redisKey = String.valueOf(postId);
         String value = viewedAt.toString() + ":" + userId;

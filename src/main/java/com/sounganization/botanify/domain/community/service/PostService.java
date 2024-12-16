@@ -46,6 +46,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final PopularPostService popularPostService;
     private final ViewHistoryRepository viewHistoryRepository;
+    private final ViewHistoryRedisService viewHistoryRedisService;
 
 
     // 게시글 작성
@@ -79,18 +80,22 @@ public class PostService {
     public PostWithCommentResDto readPost(Long postId, Long userId, LocalDate viewedAt) {
         // 게시글 존재 여부 확인
         Post post = existPost(postId);
-        //이미 삭제된 게시글인지 확인
+        //이미 삭제된 게시글인지
         checkPostNotDeleted(post);
+        //Redis에서 조회 이력 확인
+        boolean isHistoryExist = viewHistoryRedisService.isViewHistoryExist(postId,userId,viewedAt);
+
         // 조회수 증가
-        if (userId != null && !isexistViewHistory(postId, userId, viewedAt)) {
+        if (userId != null && !isHistoryExist) {
             post.incrementViewCounts();
             ViewHistoryDto viewHistoryDto = new ViewHistoryDto(postId, userId, viewedAt);
             ViewHistory viewHistory = viewHistoryMapper.dtoToEntity(viewHistoryDto);
             viewHistoryRepository.save(viewHistory);
 
+            viewHistoryRedisService.saveViewHistory(postId,userId,viewedAt);
+
             // 조회수 증가 시 인기글 update
             popularPostService.updatePostScore(postId);
-
         }
 
         // 댓글 조회
@@ -202,7 +207,7 @@ public class PostService {
         }
     }
 
-    // 조회 이력 확인
+    // 조회 이력 확인(v1에 사용 queryDsl)
     private boolean isexistViewHistory(Long postId, Long userId, LocalDate viewedAt) {
         if (userId == null) {
             return false;
