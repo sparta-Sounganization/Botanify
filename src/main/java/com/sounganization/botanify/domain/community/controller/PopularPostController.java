@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v2/posts/popular")
+@RequestMapping("/api/v1/posts/popular")
 @RequiredArgsConstructor
 public class PopularPostController {
 
