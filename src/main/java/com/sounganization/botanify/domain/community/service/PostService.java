@@ -38,6 +38,7 @@ public class PostService {
     private final PostMapper postMapper;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PopularPostService popularPostService;
 
     // 게시글 작성
     @Transactional
@@ -49,6 +50,10 @@ public class PostService {
         Post post = postMapper.reqDtoToEntity(postReqDto, userId);
         // DB 저장
         Post savedPost = postRepository.save(post);
+
+        // 인기글 시스템에서 게시글 초기화
+        popularPostService.updatePostScore(savedPost.getId());
+
         //entity -> dto
         return postMapper.entityToResDto(savedPost, HttpStatus.CREATED);
     }
@@ -70,6 +75,10 @@ public class PostService {
         checkPostNotDeleted(post);
         // 조회수 증가
         post.incrementViewCounts();
+
+        // 조회수 증가 시 인기글 update
+        popularPostService.updatePostScore(postId);
+
         // 댓글 조회
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
 
@@ -130,6 +139,10 @@ public class PostService {
         post.updatePost(postUpdateReqDto.title(), postUpdateReqDto.content());
         // DB 저장
         Post savedPost = postRepository.save(post);
+
+        // 게시글 수정시 점수 update
+        popularPostService.updatePostScore(postId);
+
         //entity -> dto
         return postMapper.entityToResDto(savedPost, HttpStatus.OK);
     }
@@ -149,6 +162,9 @@ public class PostService {
         comments.forEach(Comment::softDelete);
         //삭제
         post.softDelete();
+
+        //인기글에서 삭제된 게시글 제거
+        popularPostService.removeFromPopularPosts(postId);
     }
 
     // 게시글 존재 확인 메서드
