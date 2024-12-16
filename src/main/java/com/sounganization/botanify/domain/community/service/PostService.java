@@ -84,7 +84,7 @@ public class PostService {
                 .collect(Collectors.toMap(UserProjection::getId, UserProjection::getUsername)
                 );
 
-        // 댓글을 Map으로 그룹화 (ParentCommentId 기준)
+        // 댓글을 Map 으로 그룹화 (ParentCommentId 기준)
         Map<Long, List<CommentTempDto>> commentMap = comments.stream()
                 .map(comment -> new CommentTempDto(
                         comment.getId(),
