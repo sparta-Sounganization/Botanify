@@ -77,7 +77,8 @@ public class PostService {
 
     // 게시글 조회 - 단건조회
     @Transactional
-    public PostWithCommentResDto readPost(Long postId, Long userId, LocalDate viewedAt) {
+    public PostWithCommentResDto readPost(Long postId, Long userId) {
+        LocalDate viewedAt = LocalDate.now();
         // 게시글 존재 여부 확인
         Post post = existPost(postId);
         //이미 삭제된 게시글인지

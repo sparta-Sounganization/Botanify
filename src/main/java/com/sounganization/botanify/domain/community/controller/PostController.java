@@ -53,7 +53,7 @@ public class PostController {
             Authentication authentication = jwtUtil.getAuthentication(token);
             userId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
         }
-        PostWithCommentResDto postWithCommentResDto = postService.readPost(postId, userId, LocalDate.now());
+        PostWithCommentResDto postWithCommentResDto = postService.readPost(postId, userId);
         return ResponseEntity.ok(postWithCommentResDto);
     }
 
