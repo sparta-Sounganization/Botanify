@@ -26,12 +26,23 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfo());
     }
 
+    // 슬픈 친구에요... 지우지 마세요...
+//    @GetMapping("/me/plants")
+//    public ResponseEntity<UserPlantsResDto> getUserInfoWithPlants(
+//            @RequestParam(defaultValue = "1") int plantPage,
+//            @RequestParam(defaultValue = "10") int plantSize,
+//            @RequestParam(defaultValue = "1") int diaryPage,
+//            @RequestParam(defaultValue = "10") int diarySize) {
+//        UserPlantsResDto userInfoWithPlants = userService.getUserInfoWithPlants(plantPage, plantSize, diaryPage, diarySize);
+//        return ResponseEntity.ok(userInfoWithPlants);
+//    }
+
     @GetMapping("/me/plants")
-    public ResponseEntity<UserPlantsResDto> getUserInfoWithDiaries(
+    public ResponseEntity<UserPlantsResDto> getUserInfoWithPlants(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        UserPlantsResDto userInfoWithDiaries = userService.getUserInfoWithDiaries(page, size);
-        return ResponseEntity.ok(userInfoWithDiaries);
+        UserPlantsResDto userInfoWithPlants = userService.getUserInfoWithPlants(page, size);
+        return ResponseEntity.ok(userInfoWithPlants);
     }
 
     @GetMapping("/me/posts")

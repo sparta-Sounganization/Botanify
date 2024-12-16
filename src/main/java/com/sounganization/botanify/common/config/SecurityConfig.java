@@ -1,9 +1,7 @@
 package com.sounganization.botanify.common.config;
 
-import com.sounganization.botanify.common.filter.JwtAuthenticationFilter;
 import com.sounganization.botanify.common.filter.JwtAuthorizationFilter;
 import com.sounganization.botanify.common.handler.JwtAuthorizationHandler;
-import com.sounganization.botanify.common.util.JwtUtil;
 import com.sounganization.botanify.domain.user.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,15 +22,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthorizationHandler jwtAuthorizationHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(http), jwtUtil);
-        jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/login");
-
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -43,7 +37,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .addFilter(jwtAuthenticationFilter)
                 .addFilterBefore(new JwtAuthorizationFilter(
                         jwtAuthorizationHandler), UsernamePasswordAuthenticationFilter.class);
 

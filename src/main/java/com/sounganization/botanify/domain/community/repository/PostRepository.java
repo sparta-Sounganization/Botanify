@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByDeletedYnFalse(Pageable pageable);
+    Page<Post> findAllByUserIdAndDeletedYnFalse(Long userId, Pageable pageable);
 }

@@ -1,8 +1,8 @@
 package com.sounganization.botanify.domain.user.dto.res;
 
-import com.sounganization.botanify.domain.garden.dto.res.DiaryResDto;
+import com.sounganization.botanify.domain.garden.dto.res.PlantResDto;
 import org.springframework.data.domain.Page;
 
-public record UserPlantsResDto (
+public record UserPlantsResDto(
         UserResDto userInfo,
-        Page<DiaryResDto> diaries) {}
+        Page<PlantResDto> plants) {}

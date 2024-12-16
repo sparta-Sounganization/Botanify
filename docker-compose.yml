@@ -24,6 +24,25 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
 
+  redis-master:
+    image: redis:7.0
+    hostname: redis-master
+    container_name: redis-master
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./db/redis/data:/data
+    networks:
+      - app-network
+    environment:
+      TZ: Asia/Seoul
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
 networks:
   app-network:
     driver: bridge
