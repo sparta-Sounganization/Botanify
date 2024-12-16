@@ -2,6 +2,7 @@ package com.sounganization.botanify.domain.community.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sounganization.botanify.domain.community.entity.QViewHistory;
+import com.sounganization.botanify.domain.community.entity.ViewHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,11 +17,11 @@ public class ViewHistoryCustomRepositoryImpl implements ViewHistoryCustomReposit
     public boolean existViewHistory(Long postId, Long userId, LocalDate viewedAt) {
         QViewHistory viewHistory = QViewHistory.viewHistory;
 
-        long count = jpaQueryFactory.selectFrom(viewHistory)
+        ViewHistory result = jpaQueryFactory.selectFrom(viewHistory)
                 .where(viewHistory.postId.eq(postId)
                         .and(viewHistory.userId.eq(userId))
                         .and(viewHistory.viewedAt.eq(viewedAt)))
-                .fetchCount();
-        return count > 0;
+                .fetchFirst();
+        return  result != null;
     }
 }
