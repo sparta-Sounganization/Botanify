@@ -4,8 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record PostListResDto (
-        Long id,
-        String title,
-        String content,
-        Integer viewCounts
+    Long id,
+    String title,
+    String content,
+    Integer viewCounts
 ) {}
