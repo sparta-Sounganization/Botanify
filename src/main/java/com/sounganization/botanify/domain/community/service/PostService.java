@@ -84,7 +84,7 @@ public class PostService {
                 .collect(Collectors.toMap(UserProjection::getId, UserProjection::getUsername)
                 );
 
-        // 댓글을 Map으로 그룹화 (ParentCommentId 기준)
+        // 댓글을 Map 으로 그룹화 (ParentCommentId 기준)
         Map<Long, List<CommentTempDto>> commentMap = comments.stream()
                 .map(comment -> new CommentTempDto(
                         comment.getId(),
@@ -127,7 +127,7 @@ public class PostService {
         //이미 삭제된 게시글인지 확인
         checkPostNotDeleted(post);
         // 게시글 수정
-        post.updatePost(postUpdateReqDto.getTitle(), postUpdateReqDto.getContent());
+        post.updatePost(postUpdateReqDto.title(), postUpdateReqDto.content());
         // DB 저장
         Post savedPost = postRepository.save(post);
         //entity -> dto

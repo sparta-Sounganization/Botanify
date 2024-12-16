@@ -36,8 +36,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-//    private final DiaryRepository diaryRepository;
-//    private final DiaryMapper diaryMapper;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final PlantRepository plantRepository;
@@ -48,25 +46,6 @@ public class UserService {
         User user = getAuthenticatedUser();
         return userMapper.toResDto(user);
     }
-    // 슬픈 친구에요... 지우지 마세요...
-//    public UserPlantsResDto getUserInfoWithPlants(int plantPage, int plantSize, int diaryPage, int diarySize) {
-//        User user = getAuthenticatedUser();
-//        Pageable plantPageable = createPageable(plantPage, plantSize);
-//        Pageable diaryPageable = createPageable(diaryPage, diarySize);
-//        Page<Plant> plants = plantRepository.findAllByUserIdAndDeletedYnFalse(user.getId(), plantPageable);
-//
-//        Page<PlantResDto> plantResDtos = plants.map(plant -> {
-//            List<DiaryResDto> diaryResDtos = getDiaryResDtos(plant, diaryPageable);
-//            return new PlantResDto(plant.getId(),
-//                    plant.getPlantName(),
-//                    plant.getAdoptionDate(),
-//                    plant.getSpecies().getSpeciesName(),
-//                    new PageImpl<>(diaryResDtos, diaryPageable, diaryResDtos.size()));
-//        });
-//
-//        UserResDto userResDto = userMapper.toResDto(user);
-//        return new UserPlantsResDto(userResDto, plantResDtos);
-//    }
 
     public UserPlantsResDto getUserInfoWithPlants(int page, int size) {
         User user = getAuthenticatedUser();
@@ -149,11 +128,4 @@ public class UserService {
     private String getNewPassword(String newPassword, String currentPassword) {
         return newPassword != null ? passwordEncoder.encode(newPassword) : currentPassword;
     }
-
-//    private List<DiaryResDto> getDiaryResDtos(Plant plant, Pageable pageable) {
-//        return diaryRepository.findAllByPlantIdAndDeletedYnFalse(plant.getId(), pageable)
-//                .stream()
-//                .map(diaryMapper::toDto)
-//                .collect(Collectors.toList());
-//    }
 }
