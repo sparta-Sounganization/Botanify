@@ -22,16 +22,24 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-
-  redis:
-    image: redis:latest
-    container_name: botanify-redis
+      
+  redis-master:
+    image: redis:7.0
+    hostname: redis-master
+    container_name: redis-master
     ports:
       - "6379:6379"
+    volumes:
+      - ./db/redis/data:/data
     networks:
       - app-network
-    volumes:
-      - redis-data:/data
+    environment:
+      TZ: Asia/Seoul
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: always
     command: redis-server --save 20 1 --loglevel warning
 

@@ -26,7 +26,7 @@ public enum ExceptionStatus {
     PASSWORDS_DO_NOT_MATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     INVALID_ROLE(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 권한입니다."),
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
-    ACCOUNT_DELETED(HttpStatus.FORBIDDEN, "해당 계정은 삭제되었습니다."),
+    ACCOUNT_DELETED(HttpStatus.FORBIDDEN, "탈퇴된 사용자입니다."),
     USER_DETAILS_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."),
 
     // user
