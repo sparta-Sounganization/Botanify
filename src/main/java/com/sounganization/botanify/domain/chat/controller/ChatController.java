@@ -1,8 +1,12 @@
 package com.sounganization.botanify.domain.chat.controller;
 
 import com.sounganization.botanify.common.security.UserDetailsImpl;
+import com.sounganization.botanify.domain.chat.dto.res.ChatMessageResDto;
+import com.sounganization.botanify.domain.chat.dto.res.ChatRoomResDto;
 import com.sounganization.botanify.domain.chat.entity.ChatMessage;
 import com.sounganization.botanify.domain.chat.entity.ChatRoom;
+import com.sounganization.botanify.domain.chat.mapper.ChatMessageMapper;
+import com.sounganization.botanify.domain.chat.mapper.ChatRoomMapper;
 import com.sounganization.botanify.domain.chat.service.ChatMessageService;
 import com.sounganization.botanify.domain.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,8 @@ public class ChatController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
+    private final ChatRoomMapper chatRoomMapper;
+    private final ChatMessageMapper chatMessageMapper;
 
     @PostMapping("/rooms")
     public ResponseEntity<ChatRoom> createChatRoom(
@@ -33,7 +39,7 @@ public class ChatController {
     }
 
     @GetMapping("/rooms")
-    public ResponseEntity<Page<ChatRoom>> getUserChatRooms(
+    public ResponseEntity<Page<ChatRoomResDto>> getUserChatRooms(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -42,23 +48,22 @@ public class ChatController {
                 userDetails.getId(),
                 PageRequest.of(page, size)
         );
-        return ResponseEntity.ok(chatRooms);
+        return ResponseEntity.ok(chatRoomMapper.toChatRoomResDtoPage(chatRooms));
     }
 
     @GetMapping("/rooms/{roomId}/messages")
-    public ResponseEntity<Page<ChatMessage>> getRoomMessages(
+    public ResponseEntity<Page<ChatMessageResDto>> getRoomMessages(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long roomId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.DESC, "id")
-        );
 
-        Page<ChatMessage> messages = chatMessageService.getRoomMessages(roomId, userDetails.getId(), pageable);
-        return ResponseEntity.ok(messages);
+        Page<ChatMessage> messages = chatMessageService.getRoomMessages(
+                roomId,
+                userDetails.getId(),
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))
+        );
+        return ResponseEntity.ok(chatMessageMapper.toChatMessageResDtoPage(messages));
     }
 }
