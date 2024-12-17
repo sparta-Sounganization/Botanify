@@ -1,6 +1,6 @@
-package com.sounganization.botanify.domain.chat.dto;
+package com.sounganization.botanify.domain.chat.dto.req;
 
-public record ChatMessageDto(
+public record ChatMessageReqDto(
         MessageType type,
         Long roomId,
         Long senderId,

@@ -1,8 +1,8 @@
 package com.sounganization.botanify.common.config.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sounganization.botanify.domain.chat.dto.ChatMessageDto;
-import com.sounganization.botanify.domain.chat.dto.ErrorMessageDto;
+import com.sounganization.botanify.domain.chat.dto.req.ChatMessageReqDto;
+import com.sounganization.botanify.domain.chat.dto.res.ErrorMessageDto;
 import com.sounganization.botanify.domain.chat.entity.ChatMessage;
 import com.sounganization.botanify.domain.chat.service.ChatMessageService;
 import com.sounganization.botanify.domain.chat.service.ChatRoomService;
@@ -37,7 +37,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        ChatMessageDto chatMessage = objectMapper.readValue(payload, ChatMessageDto.class);
+        ChatMessageReqDto chatMessage = objectMapper.readValue(payload, ChatMessageReqDto.class);
 
         Long roomId = chatMessage.roomId();
         Long userId = chatMessage.senderId();
@@ -69,7 +69,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         log.info("사용자 {}가 채팅방 {}에 입장했습니다.", userId, roomId);
     }
 
-    private void handleChatMessage(WebSocketSession session, ChatMessageDto chatMessage) throws IOException {
+    private void handleChatMessage(WebSocketSession session, ChatMessageReqDto chatMessage) throws IOException {
 
         ChatMessage savedMessage = chatMessageService.saveMessage(
                 chatMessage.roomId(),
