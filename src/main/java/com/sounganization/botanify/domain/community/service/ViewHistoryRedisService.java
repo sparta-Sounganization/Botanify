@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -19,20 +18,22 @@ public class ViewHistoryRedisService {
 
     //조회이력 있는지 확인
     public boolean isViewHistoryExist(Long postId, Long userId, LocalDate viewedAt) {
-        String redisKey = String.valueOf(postId);
-        String value = viewedAt.toString() + ":" + userId;
+        String redisKey = "view_history:post_id:" + postId;
+        String field = String.valueOf(userId);
+        String value = viewedAt.toString();
 
-        List<String> cacheValues = redisTemplate.opsForList().range(redisKey, 0, -1);
-        return cacheValues != null && cacheValues.contains(value);
+        String storedValue = (String) redisTemplate.opsForHash().get(redisKey, field);
+        return value.equals(storedValue);
     }
 
     //캐시 저장
     public void saveViewHistory(Long postId, Long userId, LocalDate viewedAt) {
-        String redisKey = String.valueOf(postId);
-        String value = viewedAt.toString() + ":" + userId;
+        String redisKey = "view_history:post_id:" + postId;
+        String field = String.valueOf(userId);
+        String value = viewedAt.toString();
 
         if (isOneDayPassed(viewedAt)) {
-            redisTemplate.opsForList().leftPush(redisKey, value);
+            redisTemplate.opsForHash().put(redisKey, field, value);
             long ttl = remainingTime();
             redisTemplate.expire(redisKey, ttl, TimeUnit.SECONDS);
         }
