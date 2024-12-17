@@ -5,13 +5,11 @@ import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
-import com.sounganization.botanify.domain.community.dto.req.ViewHistoryDto;
 import com.sounganization.botanify.domain.community.dto.res.CommentTempDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
-import com.sounganization.botanify.domain.community.entity.ViewHistory;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
 import com.sounganization.botanify.domain.community.mapper.ViewHistoryMapper;
 import com.sounganization.botanify.domain.community.repository.CommentRepository;
@@ -84,19 +82,19 @@ public class PostService {
         //이미 삭제된 게시글인지
         checkPostNotDeleted(post);
         //Redis에서 조회 이력 확인
-        boolean isHistoryExist = viewHistoryRedisService.isViewHistoryExist(postId,userId,viewedAt);
+        boolean isHistoryExist = viewHistoryRedisService.isViewHistoryExist(postId, userId, viewedAt);
 
         // 조회수 증가
         if (userId != null && !isHistoryExist) {
             post.incrementViewCounts();
-            ViewHistoryDto viewHistoryDto = new ViewHistoryDto(postId, userId, viewedAt);
-            ViewHistory viewHistory = viewHistoryMapper.dtoToEntity(viewHistoryDto);
-            viewHistoryRepository.save(viewHistory);
-
-            viewHistoryRedisService.saveViewHistory(postId,userId,viewedAt);
-
+            viewHistoryRedisService.saveViewHistory(postId, userId, viewedAt);
             // 조회수 증가 시 인기글 update
             popularPostService.updatePostScore(postId);
+
+            //V1에서 사용
+            //ViewHistoryDto viewHistoryDto = new ViewHistoryDto(postId, userId, viewedAt);
+            //ViewHistory viewHistory = viewHistoryMapper.dtoToEntity(viewHistoryDto);
+            //viewHistoryRepository.save(viewHistory);
         }
 
         // 댓글 조회
