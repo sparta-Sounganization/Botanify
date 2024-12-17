@@ -19,11 +19,10 @@ services:
       timeout: 20s
       retries: 10
     restart: always
-
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-
+      
   redis-master:
     image: redis:7.0
     hostname: redis-master
@@ -42,6 +41,33 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+    command: redis-server --save 20 1 --loglevel warning
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"   # LocalStack main API
+      - "4571:4571"   # Optional for legacy AWS endpoints
+    environment:
+      SERVICES: s3   # s3 지정
+      EDGE_PORT: 4566
+      DEBUG: 1
+      AWS_DEFAULT_REGION: ap-northeast-2
+      AWS_ACCESS_KEY_ID: admin
+      AWS_SECRET_ACCESS_KEY: admin
+      PERSISTENCE: 1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - localstack-data:/var/lib/localstack
+      - ./aws:/etc/localstack/init/ready.d
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4566/_localstack/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:
@@ -49,3 +75,5 @@ networks:
 
 volumes:
   db-data:
+  redis-data:
+  localstack-data:
