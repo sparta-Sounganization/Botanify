@@ -55,7 +55,11 @@ public enum ExceptionStatus {
     INVALID_COMMENT_CONTENT(HttpStatus.BAD_REQUEST, "댓글 내용을 입력해주세요."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     NOT_COMMENT_OWNER(HttpStatus.FORBIDDEN, "댓글 작성자만 댓글을 수정하거나 삭제할 수 있습니다."),
-    COMMENT_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 댓글입니다.")
+    COMMENT_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 댓글입니다."),
+
+    // chat
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
+    UNAUTHORIZED_CHAT_ACCESS(HttpStatus.FORBIDDEN, "채팅방에 접근 권한이 없습니다.")
 
     ;
     private final HttpStatus status;
