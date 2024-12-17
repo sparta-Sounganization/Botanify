@@ -1,7 +1,9 @@
 package com.sounganization.botanify.common.config;
 
+import com.sounganization.botanify.common.filter.GoogleJwtAuthenticationFilter;
 import com.sounganization.botanify.common.filter.JwtAuthorizationFilter;
 import com.sounganization.botanify.common.handler.JwtAuthorizationHandler;
+import com.sounganization.botanify.common.util.JwtUtil;
 import com.sounganization.botanify.domain.user.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +26,7 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthorizationHandler jwtAuthorizationHandler;
+    private final JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,6 +40,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(new GoogleJwtAuthenticationFilter(
+                        "/api/v1/auth/signin/google", authenticationManager(http), jwtUtil),
+                        UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthorizationFilter(
                         jwtAuthorizationHandler), UsernamePasswordAuthenticationFilter.class);
 
