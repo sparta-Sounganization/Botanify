@@ -11,8 +11,10 @@ import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDt
 import com.sounganization.botanify.domain.community.entity.Comment;
 import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
+import com.sounganization.botanify.domain.community.mapper.ViewHistoryMapper;
 import com.sounganization.botanify.domain.community.repository.CommentRepository;
 import com.sounganization.botanify.domain.community.repository.PostRepository;
+import com.sounganization.botanify.domain.community.repository.ViewHistoryRepository;
 import com.sounganization.botanify.domain.user.projection.UserProjection;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +39,13 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+    private final ViewHistoryMapper viewHistoryMapper;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PopularPostService popularPostService;
+    private final ViewHistoryRepository viewHistoryRepository;
+    private final ViewHistoryRedisService viewHistoryRedisService;
+
 
     // 게시글 작성
     @Transactional
@@ -68,16 +75,27 @@ public class PostService {
 
     // 게시글 조회 - 단건조회
     @Transactional
-    public PostWithCommentResDto readPost(Long postId) {
+    public PostWithCommentResDto readPost(Long postId, Long userId) {
+        LocalDate viewedAt = LocalDate.now();
         // 게시글 존재 여부 확인
-        Post post = validatePost(postId);
-        //이미 삭제된 게시글인지 확인
+        Post post = existPost(postId);
+        //이미 삭제된 게시글인지
         checkPostNotDeleted(post);
-        // 조회수 증가
-        post.incrementViewCounts();
+        //Redis에서 조회 이력 확인
+        boolean isHistoryExist = viewHistoryRedisService.isViewHistoryExist(postId, userId, viewedAt);
 
-        // 조회수 증가 시 인기글 update
-        popularPostService.updatePostScore(postId);
+        // 조회수 증가
+        if (userId != null && !isHistoryExist) {
+            post.incrementViewCounts();
+            viewHistoryRedisService.saveViewHistory(postId, userId, viewedAt);
+            // 조회수 증가 시 인기글 update
+            popularPostService.updatePostScore(postId);
+
+            //V1에서 사용
+            //ViewHistoryDto viewHistoryDto = new ViewHistoryDto(postId, userId, viewedAt);
+            //ViewHistory viewHistory = viewHistoryMapper.dtoToEntity(viewHistoryDto);
+            //viewHistoryRepository.save(viewHistory);
+        }
 
         // 댓글 조회
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
@@ -130,7 +148,7 @@ public class PostService {
     @Transactional
     public CommonResDto updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, Long userId) {
         // 게시글 존재 여부 확인
-        Post post = validatePost(postId);
+        Post post = existPost(postId);
         //소유자 확인
         validatePostOwner(post, userId);
         //이미 삭제된 게시글인지 확인
@@ -151,7 +169,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId, Long userId) {
         //게시글 존재 여부 확인
-        Post post = validatePost(postId);
+        Post post = existPost(postId);
         //게시글 소유자 확인
         validatePostOwner(post, userId);
         //이미 삭제된 게시글인지 확인
@@ -168,7 +186,7 @@ public class PostService {
     }
 
     // 게시글 존재 확인 메서드
-    private Post validatePost(Long postId) {
+    private Post existPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.POST_NOT_FOUND));
     }
@@ -186,6 +204,14 @@ public class PostService {
         if (post.isDeletedYn()) {
             throw new CustomException(ExceptionStatus.POST_ALREADY_DELETED);
         }
+    }
+
+    // 조회 이력 확인(v1에 사용 queryDsl)
+    private boolean isexistViewHistory(Long postId, Long userId, LocalDate viewedAt) {
+        if (userId == null) {
+            return false;
+        }
+        return viewHistoryRepository.existViewHistory(postId, userId, viewedAt);
     }
 }
 
