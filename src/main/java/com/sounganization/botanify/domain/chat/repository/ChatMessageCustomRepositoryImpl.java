@@ -6,6 +6,9 @@ import com.sounganization.botanify.domain.chat.entity.ChatRoom;
 import com.sounganization.botanify.domain.chat.entity.QChatMessage;
 import com.sounganization.botanify.domain.chat.entity.QChatRoom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -51,5 +54,26 @@ public class ChatMessageCustomRepositoryImpl implements ChatMessageCustomReposit
                 .where(message.chatRoom.id.eq(roomId))
                 .orderBy(message.createdAt.asc())
                 .fetch();
+    }
+
+    @Override
+    public Page<ChatMessage> findMessagesByRoomIdWithPagination(Long roomId, Pageable pageable) {
+        QChatMessage message = QChatMessage.chatMessage;
+
+        List<ChatMessage> messages = jpaQueryFactory
+                .selectFrom(message)
+                .where(message.chatRoom.id.eq(roomId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(message.createdAt.desc())
+                .fetch();
+
+        Long total = jpaQueryFactory
+                .select(message.count())
+                .from(message)
+                .where(message.chatRoom.id.eq(roomId))
+                .fetchOne();
+
+        return new PageImpl<>(messages, pageable, total);
     }
 }
