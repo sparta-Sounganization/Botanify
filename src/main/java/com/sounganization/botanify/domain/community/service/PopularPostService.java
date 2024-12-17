@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,10 +57,20 @@ public class PopularPostService {
     public void updateAllPostScores() {
         log.info("인기 게시글 점수 업데이트 시작");
         try {
+            // 삭제되지 않은 모든 게시글 가져오기
             List<Post> activePosts = postRepository.findAllByDeletedYnFalse();
 
+            // 게시글 IDs 가져오기
+            List<Long> postIds = activePosts.stream()
+                    .map(Post::getId)
+                    .collect(Collectors.toList());
+
+            // 한 번의 query로 모든 게시글에 대한 댓글 수를 가져오기
+            Map<Long, Long> commentCounts = commentRepository.countCommentsByPostIds(postIds);
+
+            // 점수 update
             for (Post post : activePosts) {
-                int commentCount = commentRepository.findCommentsByPostId(post.getId()).size();
+                int commentCount = commentCounts.getOrDefault(post.getId(), 0L).intValue();
                 popularPostRedisRepository.updatePopularPost(post, commentCount);
             }
 
