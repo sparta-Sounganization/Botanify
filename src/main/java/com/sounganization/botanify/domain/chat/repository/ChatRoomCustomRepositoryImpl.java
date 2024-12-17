@@ -5,6 +5,9 @@ import com.sounganization.botanify.domain.chat.entity.ChatRoom;
 import com.sounganization.botanify.domain.chat.entity.QChatMessage;
 import com.sounganization.botanify.domain.chat.entity.QChatRoom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -52,5 +55,28 @@ public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
                 .where(chatRoom.senderUserId.eq(userId)
                         .or(chatRoom.receiverUserId.eq(userId)))
                 .fetch();
+    }
+
+    @Override
+    public Page<ChatRoom> findRoomsByUserIdWithPagination(Long userId, Pageable pageable) {
+        QChatRoom chatRoom = QChatRoom.chatRoom;
+
+        List<ChatRoom> rooms = jpaQueryFactory
+                .selectFrom(chatRoom)
+                .where(chatRoom.senderUserId.eq(userId)
+                        .or(chatRoom.receiverUserId.eq(userId)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(chatRoom.updatedAt.desc())
+                .fetch();
+
+        Long total = jpaQueryFactory
+                .select(chatRoom.count())
+                .from(chatRoom)
+                .where(chatRoom.senderUserId.eq(userId)
+                        .or(chatRoom.receiverUserId.eq(userId)))
+                .fetchOne();
+
+        return new PageImpl<>(rooms, pageable, total);
     }
 }
