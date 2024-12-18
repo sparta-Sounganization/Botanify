@@ -20,7 +20,7 @@ public class S3Controller {
     @PostMapping("/{domain}/images")
     public ResponseEntity<ImageUrlResDto> uploadImage(@PathVariable ImageDomainPath domain, @RequestBody ImageUploadReqDto reqDto) {
         ImageUrlResDto resDto = s3service.getPreSignedUrl(String.valueOf(domain), reqDto);
-        return ResponseEntity.ok(resDto);
+        return ResponseEntity.accepted().body(resDto);
     }
 
     @DeleteMapping("/images")
