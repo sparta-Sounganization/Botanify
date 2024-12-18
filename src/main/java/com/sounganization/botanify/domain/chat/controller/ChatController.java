@@ -66,4 +66,22 @@ public class ChatController {
         );
         return ResponseEntity.ok(chatMessageMapper.toChatMessageResDtoPage(messages));
     }
+
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Void> deleteMessage(
+            @PathVariable Long messageId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        chatMessageService.deleteMessage(messageId, userDetails.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/rooms/{roomId}")
+    public ResponseEntity<Void> deleteChatRoom(
+            @PathVariable Long roomId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        chatRoomService.deleteChatRoom(roomId, userDetails.getId());
+        return ResponseEntity.noContent().build();
+    }
 }
