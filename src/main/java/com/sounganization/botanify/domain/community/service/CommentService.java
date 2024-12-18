@@ -110,7 +110,7 @@ public class CommentService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findCommentsById(commentId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
 
         if (comment.getDeletedYn()) {
