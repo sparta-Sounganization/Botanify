@@ -44,4 +44,17 @@ public class ChatMessageService {
 
         return chatMessageRepository.findMessagesByRoomIdWithPagination(roomId, pageable);
     }
+
+    @Transactional
+    public void deleteMessage(Long messageId, Long userId) {
+
+        ChatMessage message = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.CHAT_MESSAGE_NOT_FOUND));
+
+        if (!message.getSenderId().equals(userId)) {
+            throw new CustomException(ExceptionStatus.MESSAGE_NOT_OWNED);
+        }
+
+        message.softDelete();
+    }
 }
