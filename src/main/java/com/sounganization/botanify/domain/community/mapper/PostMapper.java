@@ -21,6 +21,7 @@ public interface PostMapper {
                 .content(postReqDto.content())
                 .viewCounts(0)
                 .userId(userId)
+                .imageUrl(postReqDto.imageUrl())
                 .build();
     }
 
@@ -34,6 +35,7 @@ public interface PostMapper {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .viewCounts(post.getViewCounts())
+                .imageUrl(post.getImageUrl())
                 .build();
     }
 
@@ -42,6 +44,7 @@ public interface PostMapper {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .viewCounts(post.getViewCounts())
+                .imageUrl(post.getImageUrl())
                 .comments(comments)
                 .build();
     }
@@ -51,6 +54,7 @@ public interface PostMapper {
                 post.getId(),
                 post.getTitle(),
                 post.getViewCounts(),
+                post.getImageUrl(),
                 commentCount,
                 score
         );

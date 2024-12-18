@@ -15,6 +15,7 @@ import com.sounganization.botanify.domain.community.mapper.ViewHistoryMapper;
 import com.sounganization.botanify.domain.community.repository.CommentRepository;
 import com.sounganization.botanify.domain.community.repository.PostRepository;
 import com.sounganization.botanify.domain.community.repository.ViewHistoryRepository;
+import com.sounganization.botanify.domain.s3.service.S3Service;
 import com.sounganization.botanify.domain.user.projection.UserProjection;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class PostService {
     private final PopularPostService popularPostService;
     private final ViewHistoryRepository viewHistoryRepository;
     private final ViewHistoryRedisService viewHistoryRedisService;
+    private final S3Service s3Service;
 
 
     // 게시글 작성
@@ -183,6 +185,8 @@ public class PostService {
 
         //인기글에서 삭제된 게시글 제거
         popularPostService.removeFromPopularPosts(postId);
+        //게시글이 보유한 이미지 삭제 요청
+        s3Service.deleteImage(post.getImageUrl());
     }
 
     // 게시글 존재 확인 메서드
