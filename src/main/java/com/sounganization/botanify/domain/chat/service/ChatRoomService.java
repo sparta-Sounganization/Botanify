@@ -2,6 +2,7 @@ package com.sounganization.botanify.domain.chat.service;
 
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
+import com.sounganization.botanify.domain.chat.entity.ChatMessage;
 import com.sounganization.botanify.domain.chat.entity.ChatRoom;
 import com.sounganization.botanify.domain.chat.repository.ChatRoomRepository;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
@@ -53,5 +54,18 @@ public class ChatRoomService {
         }
 
         return chatRoom;
+    }
+
+    @Transactional
+    public void deleteChatRoom(Long roomId, Long userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.CHAT_ROOM_NOT_FOUND));
+
+        if (!chatRoom.getSenderUserId().equals(userId) && !chatRoom.getReceiverUserId().equals(userId)) {
+            throw new CustomException(ExceptionStatus.NOT_CHAT_ROOM_PARTICIPANT);
+        }
+
+        chatRoom.softDelete();
+        chatRoom.getMessages().forEach(ChatMessage::softDelete);
     }
 }
