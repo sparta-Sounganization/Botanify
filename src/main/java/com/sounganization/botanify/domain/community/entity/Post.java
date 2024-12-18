@@ -29,6 +29,9 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = true)
+    private String imageUrl;
+
     //조회수 증가
     public void incrementViewCounts() {
         viewCounts++;
