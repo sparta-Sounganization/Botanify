@@ -5,6 +5,7 @@ import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.s3.dto.req.ImageUploadReqDto;
 import com.sounganization.botanify.domain.s3.dto.res.ImageUrlResDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -14,12 +15,14 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
@@ -38,14 +41,14 @@ public class S3Service {
         // 파일 확장자 검사
         this.checkExtensionAllowed(reqDto.fileName());
 
-        // prefix:UUID:fileName 규칙의 키를 생성한 후, URL 에 적합하도록 인코딩
+        // prefix:UUID:fileName 규칙의 키를 생성
         String rawKey = String.format("%s:%s:%s", prefix, UUID.randomUUID(), reqDto.fileName());
-        String encodedKey = URLEncoder.encode(rawKey, StandardCharsets.UTF_8);
 
         // 업로드를 위한 PreSigned URL 생성
-        String preSignedUrl = generatePreSignedUrl(encodedKey);
+        String preSignedUrl = generatePreSignedUrl(rawKey);
 
-        // 업로드 URL & 공개 조회용 URL 반환
+        // 업로드 URL & 공개 조회용 URL 반환 (key 직접 URL 용으로 인코딩 후 문자열에 더하여 반환)
+        String encodedKey = URLEncoder.encode(rawKey, StandardCharsets.UTF_8);
         return new ImageUrlResDto(preSignedUrl, String.format("%s/%s/%s", endpoint, bucket, encodedKey));
     }
 
@@ -54,18 +57,22 @@ public class S3Service {
         return reqDtos.stream().map(reqDto -> this.getPreSignedUrl(prefix, reqDto)).toList();
     }
 
-    public void deleteImage(String fileName) {
-        if(!fileName.startsWith(endpoint)){
-            throw new CustomException(ExceptionStatus.BAD_REQUEST);
+    public void deleteImage(String imageUrl) {
+        // endpoint 가 포함되지 않았다면 잘못 저장된 URL 이므로 단락 반환
+        if(!imageUrl.startsWith(endpoint)) {
+            log.warn("S3 로의 잘못된 URL 삭제 요청");
+            return;
         }
 
-        String key = fileName.substring(endpoint.length() + 1);
+        String encodedKey = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        String decodedKey = URLDecoder.decode(encodedKey, StandardCharsets.UTF_8);
 
         try {
-            s3Client.deleteObject(b -> b.bucket(bucket).key(key));
+            s3Client.deleteObject(b -> b.bucket(bucket).key(decodedKey));
+            log.info("이미지 삭제 요청. KEY - {}", decodedKey);
         }
         catch (S3Exception ex) {
-            throw new CustomException(ExceptionStatus.BAD_REQUEST);
+            log.error("S3 에서 이미지 삭제 실패.", ex);
         }
     }
 
