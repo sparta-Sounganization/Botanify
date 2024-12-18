@@ -87,7 +87,7 @@ public class CommentService {
 
         // 댓글 작성자 확인
         if(!comment.getUserId().equals(userId)){
-            throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
+            throw new CustomException(ExceptionStatus.COMMENT_NOT_OWNED);
         }
 
         comment.update(requestDto.content());
@@ -113,7 +113,7 @@ public class CommentService {
 
         // 댓글 작성자 확인
         if (!comment.getUserId().equals(userId)) {
-            throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
+            throw new CustomException(ExceptionStatus.COMMENT_NOT_OWNED);
         }
 
         comment.softDelete();
