@@ -22,6 +22,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
+    private final PopularPostService popularPostService;
 
     @Transactional
     public CommonResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
@@ -42,6 +43,9 @@ public class CommentService {
 
         Comment comment = commentMapper.toEntity(requestDto, post, userId, null);
         Comment savedComment = commentRepository.save(comment);
+
+        //댓글 생성 시 인기글 update
+        popularPostService.updatePostScore(postId);
 
         return commentMapper.toResDto(savedComment);
     }
@@ -66,6 +70,9 @@ public class CommentService {
         Comment reply = commentMapper.toEntity(requestDto, parentComment.getPost(), userId, parentComment);
         Comment savedReply = commentRepository.save(reply);
 
+        // 대댓글 생성시 점수 update
+        popularPostService.updatePostScore(savedReply.getPost().getId());
+
         return commentMapper.toResDto(savedReply);
     }
 
@@ -80,10 +87,13 @@ public class CommentService {
 
         // 댓글 작성자 확인
         if(!comment.getUserId().equals(userId)){
-            throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
+            throw new CustomException(ExceptionStatus.COMMENT_NOT_OWNED);
         }
 
         comment.update(requestDto.content());
+
+        //댓글 수정 시 점수 update
+        popularPostService.updatePostScore(comment.getPost().getId());
 
         return commentMapper.toUpdateResDto(comment);
     }
@@ -103,10 +113,13 @@ public class CommentService {
 
         // 댓글 작성자 확인
         if (!comment.getUserId().equals(userId)) {
-            throw new CustomException(ExceptionStatus.NOT_COMMENT_OWNER);
+            throw new CustomException(ExceptionStatus.COMMENT_NOT_OWNED);
         }
 
         comment.softDelete();
+
+        // 댓글 삭제 시 인기글 update
+        popularPostService.updatePostScore(comment.getPost().getId());
     }
 
 }

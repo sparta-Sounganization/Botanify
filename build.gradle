@@ -73,6 +73,9 @@ dependencies {
     implementation 'com.auth0:java-jwt:3.18.2'
     implementation 'com.auth0:jwks-rsa:0.21.1'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
+
+    //WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {

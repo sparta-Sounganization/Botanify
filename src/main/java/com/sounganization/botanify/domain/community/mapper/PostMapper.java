@@ -3,6 +3,7 @@ package com.sounganization.botanify.domain.community.mapper;
 import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.res.CommentTempDto;
+import com.sounganization.botanify.domain.community.dto.res.PopularPostResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostListResDto;
 import com.sounganization.botanify.domain.community.dto.res.PostWithCommentResDto;
 import com.sounganization.botanify.domain.community.entity.Post;
@@ -43,5 +44,15 @@ public interface PostMapper {
                 .viewCounts(post.getViewCounts())
                 .comments(comments)
                 .build();
+    }
+
+    default PopularPostResDto entityToPopularDto(Post post, Integer commentCount, Double score) {
+        return new PopularPostResDto(
+                post.getId(),
+                post.getTitle(),
+                post.getViewCounts(),
+                commentCount,
+                score
+        );
     }
 }
