@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +28,9 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
+    @Transactional
     public ResponseEntity<CommonResDto> signup(SignupReqDto request) {
-        if (userRepository.findByEmail(request.email()).isPresent()) {
+        if (userRepository.existsByEmail((request.email()))) {
             throw new CustomException(ExceptionStatus.DUPLICATED_EMAIL);
         }
 
@@ -54,6 +56,7 @@ public class AuthService {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<CommonResDto> signin(SigninReqDto request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_DETAILS_NOT_FOUND));
