@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # docker-compose 설정에 의해, localstack 이미지의 시작과 함께 실행되는 스크립트.
 # 지정된 명칭의 버킷을 생성한다.
