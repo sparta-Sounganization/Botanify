@@ -54,6 +54,7 @@ public class PopularPostRedisRepository {
                 post.getId(),
                 post.getTitle(),
                 post.getViewCounts(),
+                post.getImageUrl(),
                 commentCount,
                 score
         );
