@@ -56,6 +56,7 @@ public enum ExceptionStatus {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     COMMENT_NOT_OWNED(HttpStatus.FORBIDDEN, "댓글 작성자만 댓글을 수정하거나 삭제할 수 있습니다."),
     COMMENT_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 댓글입니다."),
+    MAX_COMMENT_DEPTH_EXCEEDED(HttpStatus.BAD_REQUEST, "댓글의 최대 깊이를 초과하였습니다. 직접 댓글을 작성해주세요."),
 
     // chat
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),

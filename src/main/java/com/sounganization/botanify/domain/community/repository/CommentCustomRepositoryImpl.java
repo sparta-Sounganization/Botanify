@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -20,8 +21,13 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
     @Override
     public List<Comment> findCommentsByPostId(Long postId) {
         QComment comment = QComment.comment;
+        QComment parentComment = new QComment("parentComment");
 
-        List<Comment> result = jpaQueryFactory.selectFrom(comment)
+        List<Comment> result = jpaQueryFactory
+                .selectFrom(comment)
+                .distinct()
+                .leftJoin(comment.childComments).fetchJoin()
+                .leftJoin(comment.parentComment, parentComment).fetchJoin()
                 .where(comment.post.id.eq(postId)
                         .and(comment.deletedYn.isFalse()))
                 .orderBy(
@@ -52,5 +58,20 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                         tuple -> tuple.get(1, Long.class),
                         (a, b) -> b
                 ));
+    }
+
+    @Override
+    public Optional<Comment> findCommentsById(Long commentId) {
+        QComment comment = QComment.comment;
+
+        Comment result = jpaQueryFactory
+                .selectFrom(comment)
+                .distinct()
+                .leftJoin(comment.childComments).fetchJoin()
+                .where(comment.id.eq(commentId)
+                        .and(comment.deletedYn.isFalse()))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 }

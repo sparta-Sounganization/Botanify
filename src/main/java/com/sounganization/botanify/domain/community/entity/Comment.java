@@ -25,8 +25,6 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    // todo - N+1 발생 시 Projection 사용해보기
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parentComment;
@@ -41,6 +39,13 @@ public class Comment extends Timestamped {
 
     @Column(nullable = false)
     private Long userId;
+
+    @Column(nullable = false)
+    private Integer depth;
+
+    public static class CommentBuilder {
+        private Integer depth = 0;
+    }
 
     public void update(String content) {
         if(content == null || content.trim().isEmpty()) {
