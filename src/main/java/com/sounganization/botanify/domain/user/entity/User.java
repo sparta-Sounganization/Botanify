@@ -46,8 +46,11 @@ public class User extends Timestamped {
     @Getter
     private String address;
 
+    private String nx;
+    private String ny;
+
     @Builder
-    public User(String email, String username, String password, UserRole role, String city, String town, String address) {
+    public User(String email, String username, String password, UserRole role, String city, String town, String address, String nx, String ny) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -55,9 +58,11 @@ public class User extends Timestamped {
         this.city = city;
         this.town = town;
         this.address = address;
+        this.nx = nx;
+        this.ny = ny;
     }
 
     public UserDetailsImpl toUserDetails() {
-        return new UserDetailsImpl(id, username, email, password, city, town, role);
+        return new UserDetailsImpl(id, username, email, password, city, town, role, nx, ny);
     }
 }
