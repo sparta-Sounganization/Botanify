@@ -46,6 +46,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             jwtAuthorizationHandler.handleAuthorization(request);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("{\"status\": 403, \"message\": \"접근 거부된 페이지입니다.\"}");
             return;
