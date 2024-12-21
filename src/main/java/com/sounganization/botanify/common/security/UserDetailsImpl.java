@@ -20,6 +20,8 @@ public class UserDetailsImpl implements UserDetails {
     private final String city;
     private final String town;
     private final UserRole role;
+    private final String nx;
+    private final String ny;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

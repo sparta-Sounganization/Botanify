@@ -3,6 +3,8 @@ spring:
     name: Botanify
   profiles:
     active: dev
+  jackson:
+    time-zone: Asia/Seoul
   jpa:
     open-in-view: false
     hibernate:
