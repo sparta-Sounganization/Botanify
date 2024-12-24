@@ -70,7 +70,13 @@ public enum ExceptionStatus {
     API_DATA_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "API 데이터 파싱 중 문제가 발생했습니다."),
 
     // Kakao API
-    INVALID_COORDINATES(HttpStatus.BAD_REQUEST, "좌표를 찾을 수 없습니다.");
+    INVALID_COORDINATES(HttpStatus.BAD_REQUEST, "좌표를 찾을 수 없습니다."),
+
+
+    // plant API
+    PARSER_FAILED(HttpStatus.BAD_REQUEST, "XML 파싱 실패"),
+    ;
+
 
     private final HttpStatus status;
     private final String message;
