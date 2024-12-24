@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: Botanify
+  profiles:
+    active: dev
+  jackson:
+    time-zone: Asia/Seoul
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: jdbc:mysql://localhost:3306/botanify?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: admin
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    master:
+      host: localhost
+      port: 6379
+  cache:
+    redis:
+      time-to-live: 600000  # 10분
+aws:
+  s3:
+    endpoint: http://localhost:4566
+    bucket: botanify-backend-bucket
+  access-key: admin
+  secret-key: admin
