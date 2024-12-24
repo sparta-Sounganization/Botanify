@@ -17,9 +17,23 @@ public class Species extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    //품종 코드
+    @Column(nullable = false)
+    private String speciesCode;
+
+    //품종 이름
     @Column(nullable = false, length = 50)
     private String speciesName;
 
+    //식물코드
+    @Column(nullable = false)
+    private String plantCode;
+
+    //식물이름
+    @Column(nullable = false)
+    private String plantName;
+
+    //설명
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
