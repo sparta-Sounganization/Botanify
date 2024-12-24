@@ -52,7 +52,9 @@ public class GoogleJwtAuthenticationProvider implements AuthenticationProvider {
                 "",
                 "",
                 "",
-                user.getRole()
+                user.getRole(),
+                "",
+                ""
         );
 
         // 인증 토큰 반환
