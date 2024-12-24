@@ -30,12 +30,13 @@ public class ChatController {
     private final ChatMessageMapper chatMessageMapper;
 
     @PostMapping("/rooms")
-    public ResponseEntity<ChatRoom> createChatRoom(
+    public ResponseEntity<ChatRoomResDto> createChatRoom(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam Long receiverId
     ) {
         ChatRoom chatRoom = chatRoomService.createChatRoom(userDetails.getId(), receiverId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatRoom);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(chatRoomMapper.toResDto(chatRoom));
     }
 
     @GetMapping("/rooms")

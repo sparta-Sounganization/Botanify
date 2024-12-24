@@ -17,6 +17,7 @@ public interface CommentMapper {
     @Mapping(target = "parentComment", source = "parentComment")
     @Mapping(target = "content", source = "requestDto.content")
     @Mapping(target = "childComments", ignore = true)
+    @Mapping(target = "depth", expression = "java(parentComment == null ? 0 : parentComment.getDepth() + 1)")
     Comment toEntity(CommentReqDto requestDto, Post post, Long userId, Comment parentComment);
 
     default CommonResDto toResDto(Comment comment) {

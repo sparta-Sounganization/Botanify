@@ -24,6 +24,8 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final PopularPostService popularPostService;
 
+    private static final int MAX_COMMENT_DEPTH = 1;
+
     @Transactional
     public CommonResDto createComment(Long postId, CommentReqDto requestDto, Long userId) {
 
@@ -58,6 +60,10 @@ public class CommentService {
 
         Comment parentComment = commentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
+
+        if (parentComment.getDepth() >= MAX_COMMENT_DEPTH) {
+            throw new CustomException(ExceptionStatus.MAX_COMMENT_DEPTH_EXCEEDED);
+        }
 
         if (parentComment.getDeletedYn()) {
             throw new CustomException(ExceptionStatus.COMMENT_ALREADY_DELETED);
@@ -104,7 +110,7 @@ public class CommentService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findCommentsById(commentId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.COMMENT_NOT_FOUND));
 
         if (comment.getDeletedYn()) {
