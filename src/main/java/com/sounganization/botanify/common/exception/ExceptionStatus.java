@@ -63,9 +63,15 @@ public enum ExceptionStatus {
     UNAUTHORIZED_CHAT_ACCESS(HttpStatus.FORBIDDEN, "채팅방에 접근 권한이 없습니다."),
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "메시지를 찾을 수 없습니다."),
     MESSAGE_NOT_OWNED(HttpStatus.FORBIDDEN, "메시지 작성자만 삭제할 수 있습니다."),
-    NOT_CHAT_ROOM_PARTICIPANT(HttpStatus.FORBIDDEN, "채팅방 참여자만 삭제할 수 있습니다.")
+    NOT_CHAT_ROOM_PARTICIPANT(HttpStatus.FORBIDDEN, "채팅방 참여자만 삭제할 수 있습니다."),
 
-    ;
+    // API
+    API_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "API 호출 중 문제가 발생했습니다."),
+    API_DATA_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "API 데이터 파싱 중 문제가 발생했습니다."),
+
+    // Kakao API
+    INVALID_COORDINATES(HttpStatus.BAD_REQUEST, "좌표를 찾을 수 없습니다.");
+
     private final HttpStatus status;
     private final String message;
 

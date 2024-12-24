@@ -6,6 +6,8 @@ import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -63,10 +65,23 @@ public class JwtUtil {
                 .claim("role", userDetails.getRole().name())
                 .claim("city", userDetails.getCity())
                 .claim("town", userDetails.getTown())
+                .claim("nx", userDetails.getNx())
+                .claim("ny", userDetails.getNy())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(signingKey)
                 .compact();
+    }
+
+    // JWT를 쿠키에 담아 응답에 추가
+    public void addJwtToCookie(String jwt, HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("Authorization", jwt);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);    // HTTPS 사용 시 true 로 설정
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge((int) (expirationTime));
+
+        response.addCookie(jwtCookie);
     }
 
     // 토큰에서 Claims 추출
@@ -111,9 +126,11 @@ public class JwtUtil {
         String city = claims.get("city", String.class);
         String town = claims.get("town", String.class);
         String role = claims.get("role", String.class);
+        String nx = claims.get("nx", String.class);
+        String ny = claims.get("ny", String.class);
 
         UserDetailsImpl userDetails = new UserDetailsImpl(
-                id, username, email, password, city, town, UserRole.valueOf(role));
+                id, username, email, password, city, town, UserRole.valueOf(role), nx, ny);
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails,
