@@ -38,4 +38,13 @@ public class UserCustomRepositoryImpl implements UserCustomRepository{
                 .where(user.id.eq(id))
                 .execute();
     }
+
+    @Override
+    public void updateCoordinates(String nx, String ny, Long userId) {
+        jpaQueryFactory.update(user)
+                .set(user.nx, nx)
+                .set(user.ny, ny)
+                .where(user.id.eq(userId))
+                .execute();
+    }
 }
