@@ -11,14 +11,18 @@ import com.sounganization.botanify.domain.community.repository.PostRepository;
 import com.sounganization.botanify.domain.garden.dto.res.PlantResDto;
 import com.sounganization.botanify.domain.garden.entity.Plant;
 import com.sounganization.botanify.domain.garden.repository.PlantRepository;
+import com.sounganization.botanify.domain.user.dto.req.AddressReqDto;
 import com.sounganization.botanify.domain.user.dto.req.UserDeleteReqDto;
 import com.sounganization.botanify.domain.user.dto.req.UserUpdateReqDto;
 import com.sounganization.botanify.domain.user.dto.res.UserPlantsResDto;
 import com.sounganization.botanify.domain.user.dto.res.UserPostsResDto;
 import com.sounganization.botanify.domain.user.dto.res.UserResDto;
 import com.sounganization.botanify.domain.user.entity.User;
+import com.sounganization.botanify.domain.user.enums.UserRole;
 import com.sounganization.botanify.domain.user.mapper.UserMapper;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
+import com.sounganization.botanify.domain.weather.service.LocationService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +45,7 @@ public class UserService {
     private final PlantRepository plantRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final LocationService locationService;
 
     public UserResDto getUserInfo() {
         User user = getAuthenticatedUser();
@@ -75,6 +80,53 @@ public class UserService {
                 updateReqDto.town(),
                 updateReqDto.address());
         return new CommonResDto(HttpStatus.OK, "회원정보가 수정되었습니다.", user.getId());
+    }
+
+    @Transactional
+    public void updateAddress(String token, AddressReqDto addressReqDto, HttpServletResponse response) {
+
+        if (token == null || token.isEmpty()) {
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_PROVIDED);
+        }
+
+        try {
+            String userId = jwtUtil.getClaimsFromToken(token).getSubject();
+
+            String[] coordinates = locationService.getCoordinates(addressReqDto.city(), addressReqDto.town());
+            String nx = coordinates != null ? coordinates[0] : null;
+            String ny = coordinates != null ? coordinates[1] : null;
+
+            UserRole currentRole = userRepository.findRoleById(Long.parseLong(userId))
+                    .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+            UserRole newRole = currentRole == UserRole.GUEST ? UserRole.USER : currentRole;
+
+            // 주소, Role, 좌표 동시 업데이트
+            userRepository.updateAddressRoleAndCoordinates(
+                    Long.parseLong(userId),
+                    addressReqDto.city(),
+                    addressReqDto.town(),
+                    addressReqDto.address(),
+                    newRole,
+                    nx,
+                    ny
+            );
+
+            // JWT 재발급
+            String newToken = jwtUtil.generateToken(
+                    userId,
+                    jwtUtil.getCurrentUsername(token),
+                    newRole,
+                    addressReqDto.city(),
+                    addressReqDto.town(),
+                    nx,
+                    ny
+            );
+
+            jwtUtil.addJwtToCookie(newToken, response);
+
+        } catch (Exception e) {
+            throw new CustomException(ExceptionStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Transactional
