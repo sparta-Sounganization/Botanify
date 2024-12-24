@@ -6,6 +6,8 @@ import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,6 +71,17 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(signingKey)
                 .compact();
+    }
+
+    // JWT를 쿠키에 담아 응답에 추가
+    public void addJwtToCookie(String jwt, HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("Authorization", jwt);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);    // HTTPS 사용 시 true 로 설정
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge((int) (expirationTime));
+
+        response.addCookie(jwtCookie);
     }
 
     // 토큰에서 Claims 추출

@@ -25,3 +25,9 @@ spring:
   cache:
     redis:
       time-to-live: 600000  # 10분
+aws:
+  s3:
+    endpoint: http://localhost:4566
+    bucket: botanify-backend-bucket
+  access-key: admin
+  secret-key: admin
