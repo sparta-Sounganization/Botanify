@@ -65,6 +65,8 @@ public class JwtUtil {
                 .claim("role", userDetails.getRole().name())
                 .claim("city", userDetails.getCity())
                 .claim("town", userDetails.getTown())
+                .claim("nx", userDetails.getNx())
+                .claim("ny", userDetails.getNy())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(signingKey)
@@ -124,9 +126,11 @@ public class JwtUtil {
         String city = claims.get("city", String.class);
         String town = claims.get("town", String.class);
         String role = claims.get("role", String.class);
+        String nx = claims.get("nx", String.class);
+        String ny = claims.get("ny", String.class);
 
         UserDetailsImpl userDetails = new UserDetailsImpl(
-                id, username, email, password, city, town, UserRole.valueOf(role));
+                id, username, email, password, city, town, UserRole.valueOf(role), nx, ny);
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails,

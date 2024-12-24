@@ -9,6 +9,7 @@ import com.sounganization.botanify.domain.auth.dto.req.SignupReqDto;
 import com.sounganization.botanify.domain.user.entity.User;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
+import com.sounganization.botanify.domain.weather.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final LocationService locationService;
 
     @Transactional
     public ResponseEntity<CommonResDto> signup(SignupReqDto request) {
@@ -38,6 +40,14 @@ public class AuthService {
             throw new CustomException(ExceptionStatus.PASSWORDS_DO_NOT_MATCH);
         }
 
+        String[] coordinates = locationService.getCoordinates(request.city(), request.town());
+        if (coordinates == null) {
+            throw new CustomException(ExceptionStatus.INVALID_COORDINATES);
+        }
+
+        String nx = coordinates[0];
+        String ny = coordinates[1];
+
         UserRole role = request.role() != null ? request.role() : UserRole.USER; // 기본값 USER
 
         User newUser = User.builder()
@@ -48,6 +58,8 @@ public class AuthService {
                 .town(request.town())
                 .address(request.address())
                 .role(role)
+                .nx(nx)
+                .ny(ny)
                 .build();
 
         Long userId = userRepository.save(newUser).getId();
