@@ -31,7 +31,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
 
         //api
-        if (request.getServletPath().startsWith("/api/growth-forms")) {
+        if (request.getServletPath().startsWith("/api/plant-api")) {
             filterChain.doFilter(request, response);
             return;
         }
