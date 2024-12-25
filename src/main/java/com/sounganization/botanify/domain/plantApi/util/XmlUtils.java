@@ -4,6 +4,7 @@ import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.plantApi.dto.res.PlantApiResDto;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XmlUtils {
-    //XML 문자열 -> Document 변환
+
     public static Document parseXml(String xml) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -26,7 +27,6 @@ public class XmlUtils {
         }
     }
 
-    //Document에서 태그 값 반환
     public static String getTagValue(Document document, String tagName) {
         NodeList nodes = document.getElementsByTagName(tagName);
         if (nodes.getLength() > 0) {
@@ -35,8 +35,6 @@ public class XmlUtils {
         return null;
     }
 
-
-    //노드에서 특정 태그 값 반환
     public static String getTagValue(Node node, String tagName) {
         if (node == null || !node.hasChildNodes()) {
             return null;
@@ -51,7 +49,6 @@ public class XmlUtils {
         return null;
     }
 
-    // NodeList에서 품종코드,이름 추출 -> 리스트 반환
     public static List<String> extractCodesAndNames(NodeList items) {
         List<String> codeAndNames = new ArrayList<>();
         for (int i = 0; i < items.getLength(); i++) {
@@ -63,7 +60,6 @@ public class XmlUtils {
     }
 
     public static PlantApiResDto parseSpeciesDetail(Document detailDocument, String codeNm, String cntntsNo, String cntntsSj) {
-        // 각 태그의 값을 추출
         String smell = getTagValue(detailDocument, "smellCodeNm");
         String toxicity = getTagValue(detailDocument, "toxctyInfo");
         String managementLevel = getTagValue(detailDocument, "managelevelCodeNm");
@@ -77,7 +73,6 @@ public class XmlUtils {
         String waterAutumn = getTagValue(detailDocument, "watercycleAutumnCodeNm");
         String waterWinter = getTagValue(detailDocument, "watercycleWinterCodeNm");
 
-        // PlantApiResDto 객체 생성 및 필드 설정
         return PlantApiResDto.builder()
                 .codeNm(codeNm)
                 .cntntsNo(cntntsNo)
@@ -97,5 +92,27 @@ public class XmlUtils {
                 .build();
     }
 
-}
 
+    public static String getTagValue(Element element, String tagName) {
+        NodeList nodeList = element.getElementsByTagName(tagName);
+        if (nodeList.getLength() > 0) {
+            Node node = nodeList.item(0);
+            return node.getTextContent().trim();
+        }
+        return null;
+    }
+
+
+    public static NodeList getNodesByTagName(Document document, String tagName) {
+        return document.getElementsByTagName(tagName);
+    }
+
+
+    public static String extractValue(Node node, String tagName) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            Element element = (Element) node;
+            return getTagValue(element, tagName);
+        }
+        return null;
+    }
+}
