@@ -50,14 +50,14 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/address")
+    @PutMapping("/me/address")
     public ResponseEntity<CommonResDto> updateAddress(
             @CookieValue(value = "Authorization") String token,
             @Valid @RequestBody AddressReqDto addressReqDto,
             HttpServletResponse response) {
 
         userService.updateAddress(token, addressReqDto, response);
-        return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "주소가 업데이트되었으며, 역할이 USER로 승격되었습니다."));
+        return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "주소가 업데이트되었습니다."));
     }
 
     @DeleteMapping("/me")

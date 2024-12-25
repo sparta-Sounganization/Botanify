@@ -75,10 +75,7 @@ public class UserService {
         String newPassword = getNewPassword(updateReqDto.newPassword(), user.toUserDetails().getPassword());
         userRepository.updateUserInfo(user.getId(),
                 updateReqDto.username(),
-                newPassword,
-                updateReqDto.city(),
-                updateReqDto.town(),
-                updateReqDto.address());
+                newPassword);
         return new CommonResDto(HttpStatus.OK, "회원정보가 수정되었습니다.", user.getId());
     }
 
@@ -98,7 +95,12 @@ public class UserService {
 
             UserRole currentRole = userRepository.findRoleById(Long.parseLong(userId))
                     .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
-            UserRole newRole = currentRole == UserRole.GUEST ? UserRole.USER : currentRole;
+            UserRole newRole;
+            if (currentRole == UserRole.GUEST) {
+                newRole = UserRole.USER;
+            } else {
+                newRole = currentRole;
+            }
 
             // 주소, Role, 좌표 동시 업데이트
             userRepository.updateAddressRoleAndCoordinates(
