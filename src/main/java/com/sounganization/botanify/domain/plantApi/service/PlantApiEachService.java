@@ -51,8 +51,8 @@ public class PlantApiEachService {
 
             for (int i = 0; i < itemList.getLength(); i++) {
                 Node itemNode = itemList.item(i);
-                String categoryCode = XmlUtils.extractValue(itemNode, "code");
-                String categoryName = XmlUtils.extractValue(itemNode, "codeNm");
+                String categoryCode = XmlUtils.getTagValue(itemNode, "code");
+                String categoryName = XmlUtils.getTagValue(itemNode, "codeNm");
                 if (categoryCode != null && categoryName != null) {
                     categoryList.add(new CategoryResDto(categoryCode, categoryName));
                 }
@@ -87,8 +87,8 @@ public class PlantApiEachService {
 
             for (int i = 0; i < itemNodes.getLength(); i++) {
                 Node itemNode = itemNodes.item(i);
-                String plantName = XmlUtils.extractValue(itemNode, "cntntsSj");
-                String plantCode = XmlUtils.extractValue(itemNode, "cntntsNo");
+                String plantName = XmlUtils.getTagValue(itemNode, "cntntsSj");
+                String plantCode = XmlUtils.getTagValue(itemNode, "cntntsNo");
                 if (plantName != null && plantCode != null) {
                     plantList.add(new PlantListResDto(plantCode, plantName));
                 }
@@ -103,14 +103,10 @@ public class PlantApiEachService {
         return getCategoryPlantList(grwhstleCode, 1)  // 첫 번째 페이지 조회
                 .flatMap(response -> {
                     try {
-                        // 첫 번째 페이지에서 totalCount 추출
-                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder builder = factory.newDocumentBuilder();
-                        InputStream inputStream = new ByteArrayInputStream(response.getBytes("UTF-8"));
-                        Document document = builder.parse(inputStream);
+                        Document document = XmlUtils.parseXml(response);
 
                         // totalCount 추출
-                        String totalCountStr = XmlUtils.getTagValue(document.getDocumentElement(), "totalCount");
+                        String totalCountStr = XmlUtils.getTagValue(document, "totalCount");
                         int totalCount = totalCountStr != null ? Integer.parseInt(totalCountStr) : 0;
                         int totalPages = (int) Math.ceil((double) totalCount / 10);  // 페이지 수 계산
 

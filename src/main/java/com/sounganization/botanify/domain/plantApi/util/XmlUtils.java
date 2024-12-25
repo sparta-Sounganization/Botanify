@@ -106,13 +106,5 @@ public class XmlUtils {
     public static NodeList getNodesByTagName(Document document, String tagName) {
         return document.getElementsByTagName(tagName);
     }
-
-
-    public static String extractValue(Node node, String tagName) {
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            Element element = (Element) node;
-            return getTagValue(element, tagName);
-        }
-        return null;
-    }
+    
 }
