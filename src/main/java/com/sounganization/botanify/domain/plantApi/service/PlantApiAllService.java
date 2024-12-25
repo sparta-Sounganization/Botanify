@@ -1,7 +1,7 @@
 package com.sounganization.botanify.domain.plantApi.service;
 
-import com.sounganization.botanify.domain.plantApi.util.XmlUtils;
 import com.sounganization.botanify.domain.plantApi.dto.res.PlantApiResDto;
+import com.sounganization.botanify.domain.plantApi.util.XmlUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ import static com.sounganization.botanify.domain.plantApi.util.XmlUtils.parseSpe
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PlantApiService {
+public class PlantApiAllService {
     private final WebClient webClient;
 
     @Value("${spring.nongsaro.api.key}")
@@ -136,7 +136,6 @@ public class PlantApiService {
             return allResults; // 모든 페이지의 결과를 합쳐서 반환
         });
     }
-
 
     // 품종 정보와 상세 정보 조회
     private Mono<List<PlantApiResDto>> parseSpeciesAndRetrieveDetails(Document document, String codeNm) {
