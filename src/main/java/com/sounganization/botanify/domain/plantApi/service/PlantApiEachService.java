@@ -99,7 +99,7 @@ public class PlantApiEachService {
         return plantList;
     }
 
-    public Mono<List<PlantListResDto>> getSpeciesForCodeWithDetails(String grwhstleCode) {
+    public Mono<List<PlantListResDto>> getPlantListWithCode(String grwhstleCode) {
         return getCategoryPlantList(grwhstleCode, 1)  // 첫 번째 페이지 조회
                 .flatMap(response -> {
                     try {
@@ -115,7 +115,7 @@ public class PlantApiEachService {
                         int totalPages = (int) Math.ceil((double) totalCount / 10);  // 페이지 수 계산
 
                         // 총 페이지 수에 맞춰 각 페이지의 식물 정보를 조회하고 DTO로 반환
-                        return retrieveSpeciesPagesWithDetails(grwhstleCode, totalPages);
+                        return retrieveSpeciesAllPlantList(grwhstleCode, totalPages);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return Mono.error(e);  // 오류 발생 시 Mono 에러 반환
@@ -123,7 +123,7 @@ public class PlantApiEachService {
                 });
     }
 
-    private Mono<List<PlantListResDto>> retrieveSpeciesPagesWithDetails(String grwhstleCode, int totalPages) {
+    private Mono<List<PlantListResDto>> retrieveSpeciesAllPlantList(String grwhstleCode, int totalPages) {
         List<Mono<List<PlantListResDto>>> pageRequests = new ArrayList<>();
         for (int pageNo = 1; pageNo <= totalPages; pageNo++) {
             final int currentPageNo = pageNo;

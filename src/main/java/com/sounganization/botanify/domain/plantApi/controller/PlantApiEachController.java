@@ -37,7 +37,7 @@ public class PlantApiEachController {
     //식물 코드별 식물 리스트 조회
     @GetMapping("/api/plant-api/species/plantList/{speciesCode}")
     public Mono<List<PlantListResDto>> getCategoryPlantList(@PathVariable String speciesCode) {
-        return tempService.getSpeciesForCodeWithDetails(speciesCode);  // 서비스 메서드 호출
+        return tempService.getPlantListWithCode(speciesCode);  // 서비스 메서드 호출
     }
 
     //식물 상세 정보 조회
