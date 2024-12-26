@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
+import com.sounganization.botanify.common.util.GridUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -49,7 +50,7 @@ public class LocationService {
             String latitude = documents.get(0).path("address").path("y").asText();
 
             // 위경도를 격자 좌표로 변환
-            return GridService.convertToGrid(Double.parseDouble(longitude), Double.parseDouble(latitude));
+            return GridUtil.convertToGrid(Double.parseDouble(longitude), Double.parseDouble(latitude));
         } catch (Exception e) {
             throw new CustomException(ExceptionStatus.API_INVALID_REQUEST);
         }

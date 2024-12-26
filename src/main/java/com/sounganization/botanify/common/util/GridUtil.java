@@ -1,6 +1,6 @@
-package com.sounganization.botanify.domain.weather.service;
+package com.sounganization.botanify.common.util;
 
-public class GridService {
+public class GridUtil {
 
     public static String[] convertToGrid(double lon, double lat) {
         final double RE = 6371.00877;    // 지구 반경(km)
