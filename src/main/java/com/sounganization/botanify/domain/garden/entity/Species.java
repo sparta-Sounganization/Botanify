@@ -39,9 +39,6 @@ public class Species extends Timestamped {
     @Column private String waterWinter;
     @Column private String rtnFileUrl;
 
-    // API 에서 현재는 받아오지 않는 값
-    @Column private String speciesCode;
-
     public void update(String plantName) {
         if (Objects.nonNull(plantName)) {
             this.plantName = plantName;

@@ -44,6 +44,5 @@ public interface SpeciesMapper {
     @Mapping(source = "codeNm", target = "speciesName")
     @Mapping(source = "cntntsNo", target = "plantCode")
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "speciesCode", ignore = true)
     Species toEntity(PlantApiResDto apiRes);
 }
