@@ -40,7 +40,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/ws/chat",
                                 "/ws/chat/**",
-                                "/ws/**"
+                                "/ws/**",
+                                "/actuator/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/{postId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/species", "/api/v1/species/{speciesId}").permitAll()
