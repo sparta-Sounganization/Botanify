@@ -42,6 +42,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 (
                         request.getServletPath().equals("/api/v1/posts") ||
                         request.getServletPath().matches("/api/v1/posts/\\d+") ||
+                        request.getServletPath().equals("/api/v1/species") ||
                         request.getServletPath().matches("/api/v1/species/\\d+")
                 )
         ) {
