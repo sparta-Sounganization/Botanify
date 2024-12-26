@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -17,28 +19,32 @@ public class Species extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    //품종 코드
-    @Column(nullable = false)
-    private String speciesCode;
+    // 필수 값
+    @Column(nullable = false, length = 50) private String plantName; // cntntsSj
 
-    //품종 이름
-    @Column(nullable = false, length = 50)
-    private String speciesName;
+    // API 에 의한 동적 값 (description)
+    @Column private String speciesName; // codeNm
+    @Column private String plantCode; // cntntsNo
+    @Column private String smell;
+    @Column private String toxicity;
+    @Column private String managementLevel;
+    @Column private String growthSpeed;
+    @Column private String growthTemperature;
+    @Column private String winterLowestTemp;
+    @Column private String humidity;
+    @Column private String fertilizerInfo;
+    @Column private String waterSpring;
+    @Column private String waterSummer;
+    @Column private String waterAutumn;
+    @Column private String waterWinter;
+    @Column private String rtnFileUrl;
 
-    //식물코드
-    @Column(nullable = false)
-    private String plantCode;
+    // API 에서 현재는 받아오지 않는 값
+    @Column private String speciesCode;
 
-    //식물이름
-    @Column(nullable = false)
-    private String plantName;
-
-    //설명
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String description;
-
-    public void update(String speciesName, String description) {
-        this.speciesName = speciesName;
-        this.description = description;
+    public void update(String plantName) {
+        if (Objects.nonNull(plantName)) {
+            this.plantName = plantName;
+        }
     }
 }

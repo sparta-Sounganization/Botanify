@@ -57,7 +57,7 @@ public class SpeciesService {
 
         Species species = speciesRepository.findByIdCustom(id);
 
-        species.update(reqDto.speciesName(), reqDto.description());
+        species.update(reqDto.plantName());
 
         return speciesMapper.toUpdatedDto(species.getId());
     }
