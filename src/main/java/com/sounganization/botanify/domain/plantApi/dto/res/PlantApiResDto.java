@@ -18,6 +18,7 @@ public record PlantApiResDto(
         String waterSpring,          // 봄 물주기
         String waterSummer,          // 여름 물주기
         String waterAutumn,          // 가을 물주기
-        String waterWinter           // 겨울 물주기
+        String waterWinter,          // 겨울 물주기
+        String rtnFileUrl            // 이미지
 ) {}
 

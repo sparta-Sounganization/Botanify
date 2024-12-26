@@ -59,7 +59,7 @@ public class XmlUtils {
         return codeAndNames;
     }
 
-    public static PlantApiResDto parseSpeciesDetail(Document detailDocument, String codeNm, String cntntsNo, String cntntsSj) {
+    public static PlantApiResDto parseSpeciesDetail(Document detailDocument, String codeNm, String cntntsNo, String cntntsSj,String rtnFileUrl) {
         String smell = getTagValue(detailDocument, "smellCodeNm");
         String toxicity = getTagValue(detailDocument, "toxctyInfo");
         String managementLevel = getTagValue(detailDocument, "managelevelCodeNm");
@@ -74,6 +74,7 @@ public class XmlUtils {
         String waterWinter = getTagValue(detailDocument, "watercycleWinterCodeNm");
 
         return PlantApiResDto.builder()
+                .rtnFileUrl(rtnFileUrl)
                 .codeNm(codeNm)
                 .cntntsNo(cntntsNo)
                 .cntntsSj(cntntsSj)

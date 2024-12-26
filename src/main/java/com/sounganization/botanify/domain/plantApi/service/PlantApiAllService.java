@@ -146,12 +146,16 @@ public class PlantApiAllService {
             String cntntsNo = XmlUtils.getTagValue(items.item(i), "cntntsNo");
             String cntntsSj = XmlUtils.getTagValue(items.item(i), "cntntsSj");
 
+            String rtnFileUrl = XmlUtils.getTagValue(items.item(i), "rtnFileUrl");
+            String[] rtnFileUrls = rtnFileUrl.split("\\|");
+            String firstUrl = rtnFileUrls.length > 0 ? rtnFileUrls[0] : null;
+
             // 상세 정보를 가져와서 DTO에 설정
             Mono<PlantApiResDto> detailRequest = getSpeciesDetail(cntntsNo)
                     .map(detailResponse -> {
                         Document detailDocument = XmlUtils.parseXml(detailResponse);
                         // DTO 객체를 반환
-                        return parseSpeciesDetail(detailDocument, codeNm, cntntsNo, cntntsSj);
+                        return parseSpeciesDetail(detailDocument, codeNm, cntntsNo, cntntsSj,firstUrl);
                     });
 
             detailRequests.add(detailRequest);
