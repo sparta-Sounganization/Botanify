@@ -2,6 +2,7 @@ package com.sounganization.botanify.domain.garden.mapper;
 
 import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.domain.garden.dto.req.SpeciesReqDto;
+import com.sounganization.botanify.domain.garden.dto.res.SpeciesDetailResDto;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
 import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.plantApi.dto.res.PlantApiResDto;
@@ -19,8 +20,29 @@ public interface SpeciesMapper {
 
     default SpeciesResDto toDto(Species species) {
         return new SpeciesResDto(
-                species.getId(),
+                species.getRtnFileUrl(),
                 species.getPlantName()
+        );
+    }
+
+
+    default SpeciesDetailResDto toDetailDto(Species species) {
+        return new SpeciesDetailResDto(
+                species.getRtnFileUrl(),
+                species.getPlantCode(),
+                species.getPlantName(),
+                species.getSmell(),
+                species.getToxicity(),
+                species.getManagementLevel(),
+                species.getGrowthSpeed(),
+                species.getGrowthTemperature(),
+                species.getWinterLowestTemp(),
+                species.getHumidity(),
+                species.getFertilizerInfo(),
+                species.getWaterSpring(),
+                species.getWaterSummer(),
+                species.getWaterAutumn(),
+                species.getWaterWinter()
         );
     }
 

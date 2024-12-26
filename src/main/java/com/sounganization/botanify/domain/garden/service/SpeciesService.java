@@ -4,6 +4,7 @@ import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.domain.garden.dto.req.SpeciesReqDto;
+import com.sounganization.botanify.domain.garden.dto.res.SpeciesDetailResDto;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
 import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.mapper.SpeciesMapper;
@@ -34,20 +35,20 @@ public class SpeciesService {
         return speciesMapper.toCreatedDto(resSpecies.getId());
     }
 
-    public Page<SpeciesResDto> readAllSpecies(int page, int size) {
+    public Page<SpeciesResDto> readAllSpecies(int page, int size, String search) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Species> speciesList = speciesRepository.findAllByDeletedYnFalse(pageable);
+        Page<Species> speciesList = speciesRepository.findBySearch(pageable, search);
 
         return speciesList.map(speciesMapper::toDto);
     }
 
-    public SpeciesResDto readSpecies(Long id) {
+    public SpeciesDetailResDto readSpecies(Long id) {
 
         Species species = speciesRepository.findByIdCustom(id);
 
-        return speciesMapper.toDto(species);
+        return speciesMapper.toDetailDto(species);
     }
 
     @Transactional
