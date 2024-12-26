@@ -50,11 +50,11 @@ public class GoogleJwtAuthenticationProvider implements AuthenticationProvider {
                 email,
                 username,
                 "",
-                "",
-                "",
+                user.getCity(),
+                user.getTown(),
                 user.getRole(),
-                "",
-                ""
+                user.getNx(),
+                user.getNy()
         );
 
         // 인증 토큰 반환
