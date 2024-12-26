@@ -1,5 +1,6 @@
 package com.sounganization.botanify.common.config.websocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.domain.chat.dto.req.ChatMessageReqDto;
 import com.sounganization.botanify.domain.chat.dto.res.ErrorMessageDto;
@@ -77,8 +78,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 chatMessage.content()
         );
 
-        String messageJson = objectMapper.writeValueAsString(chatMessage);
-        broadcastMessage(savedMessage.getChatRoom().getId(), new TextMessage(messageJson));
+        broadcastMessage(savedMessage.getChatRoom().getId(), chatMessage);
     }
 
     private void handleLeaveMessage(WebSocketSession session, Long roomId, Long userId) {
@@ -93,18 +93,25 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         log.info("사용자 {}가 채팅방 {}에서 퇴장했습니다.", userId, roomId);
     }
 
-    private void broadcastMessage(Long roomId, TextMessage message) {
-        Map<Long, WebSocketSession> roomSessions = chatRoomSessions.get(roomId);
-        if (roomSessions != null) {
-            roomSessions.values().forEach(session -> {
-                try {
-                    if (session.isOpen()) {
-                        session.sendMessage(message);
+    public void broadcastMessage(Long roomId, ChatMessageReqDto message) {
+        try {
+            String messageJson = objectMapper.writeValueAsString(message);
+            TextMessage textMessage = new TextMessage(messageJson);
+
+            Map<Long, WebSocketSession> roomSessions = chatRoomSessions.get(roomId);
+            if (roomSessions != null) {
+                roomSessions.values().forEach(session -> {
+                    try {
+                        if (session.isOpen()) {
+                            session.sendMessage(textMessage);
+                        }
+                    } catch (IOException e) {
+                        log.error("메시지 전송 중 오류 발생: {}", e.getMessage());
                     }
-                } catch (IOException e) {
-                    log.error("메시지 전송 중 오류 발생: {}", e.getMessage());
-                }
-            });
+                });
+            }
+        } catch (JsonProcessingException e) {
+            log.error("메시지 변환 중 오류 발생: {}", e.getMessage());
         }
     }
 
