@@ -4,6 +4,6 @@ import lombok.Builder;
 
 @Builder
 public record CategoryResDto(
-        String CategoryCode,
-        String CategoryName
+        String categoryCode,
+        String categoryName
 ) {}
