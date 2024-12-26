@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebClientConfig {
-    @Value("${spring.nongsaro.api.base-url}")
+    @Value("${nongsaro.api.base-url}")
     private String baseUrl;
 
     @Bean

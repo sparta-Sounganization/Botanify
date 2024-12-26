@@ -28,7 +28,7 @@ import java.util.List;
 public class PlantApiEachService {
 
     private final WebClient webClient;
-    @Value("${spring.nongsaro.api.key}")
+    @Value("${nongsaro.api.key}")
     private String apiKey;
 
     //품종 코드 조회

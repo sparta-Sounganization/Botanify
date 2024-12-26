@@ -23,7 +23,7 @@ import static com.sounganization.botanify.domain.plantApi.util.XmlUtils.parseSpe
 public class PlantApiAllService {
     private final WebClient webClient;
 
-    @Value("${spring.nongsaro.api.key}")
+    @Value("${nongsaro.api.key}")
     private String apiKey;
 
     // 품종 코드 조회

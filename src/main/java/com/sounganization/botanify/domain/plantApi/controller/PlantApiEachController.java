@@ -23,7 +23,7 @@ public class PlantApiEachController {
      * 3. 리스트에서 식물 선택 -> (식물 상세 정보 조회)
      */
 
-    @Value("${spring.nongsaro.api.key}")
+    @Value("${nongsaro.api.key}")
     private String apiKey;
 
     private final PlantApiEachService tempService;
