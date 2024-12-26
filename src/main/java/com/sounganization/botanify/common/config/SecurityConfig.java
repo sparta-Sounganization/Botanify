@@ -35,12 +35,13 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST).hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(
-                                "/api/v1/auth/**",
                                 "/ws/chat",
                                 "/ws/chat/**",
                                 "/ws/**"
-                                ).permitAll()
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/{postId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/species", "/api/v1/species/{speciesId}").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")

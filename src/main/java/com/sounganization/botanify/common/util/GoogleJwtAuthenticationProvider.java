@@ -37,7 +37,7 @@ public class GoogleJwtAuthenticationProvider implements AuthenticationProvider {
                     .email(email)
                     .username(username)
                     .password("") // OAuth 로그인이라 비밀번호는 빈 값
-                    .role(UserRole.USER)
+                    .role(UserRole.GUEST)
                     .city("")
                     .town("")
                     .address("")
@@ -50,11 +50,11 @@ public class GoogleJwtAuthenticationProvider implements AuthenticationProvider {
                 email,
                 username,
                 "",
-                "",
-                "",
+                user.getCity(),
+                user.getTown(),
                 user.getRole(),
-                "",
-                ""
+                user.getNx(),
+                user.getNy()
         );
 
         // 인증 토큰 반환

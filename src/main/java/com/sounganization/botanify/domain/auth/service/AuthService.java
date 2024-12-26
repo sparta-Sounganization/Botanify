@@ -13,6 +13,7 @@ import com.sounganization.botanify.domain.weather.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,14 +41,6 @@ public class AuthService {
             throw new CustomException(ExceptionStatus.PASSWORDS_DO_NOT_MATCH);
         }
 
-        String[] coordinates = locationService.getCoordinates(request.city(), request.town());
-        if (coordinates == null) {
-            throw new CustomException(ExceptionStatus.INVALID_COORDINATES);
-        }
-
-        String nx = coordinates[0];
-        String ny = coordinates[1];
-
         UserRole role = request.role() != null ? request.role() : UserRole.USER; // 기본값 USER
 
         User newUser = User.builder()
@@ -58,14 +51,25 @@ public class AuthService {
                 .town(request.town())
                 .address(request.address())
                 .role(role)
-                .nx(nx)
-                .ny(ny)
                 .build();
 
-        Long userId = userRepository.save(newUser).getId();
+        User savedUser = userRepository.save(newUser);
+        updateCoordinatesAsync(request.city(), request.town(), savedUser.getId());
 
-        CommonResDto response = new CommonResDto(HttpStatus.CREATED, "회원가입이 성공되었습니다.", userId);
+        CommonResDto response = new CommonResDto(
+                HttpStatus.CREATED, "회원가입이 성공되었습니다.", savedUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Async
+    @Transactional
+    public void updateCoordinatesAsync(String city, String town, Long userId) {
+        String[] coordinates = locationService.getCoordinates(city, town);
+        if (coordinates != null) {
+            String nx = coordinates[0];
+            String ny = coordinates[1];
+            userRepository.updateCoordinates(nx, ny, userId);
+        }
     }
 
     @Transactional(readOnly = true)
