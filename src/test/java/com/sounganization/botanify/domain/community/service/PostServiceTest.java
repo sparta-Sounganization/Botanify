@@ -11,6 +11,7 @@ import com.sounganization.botanify.domain.community.entity.Post;
 import com.sounganization.botanify.domain.community.mapper.PostMapper;
 import com.sounganization.botanify.domain.community.repository.CommentRepository;
 import com.sounganization.botanify.domain.community.repository.PostRepository;
+import com.sounganization.botanify.domain.s3.service.S3Service;
 import com.sounganization.botanify.domain.user.entity.User;
 import com.sounganization.botanify.domain.user.projection.UserProjection;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
@@ -43,6 +44,7 @@ class PostServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private PostMapper postMapper;
     @Mock private PopularPostService popularPostService;
+    @Mock private S3Service s3Service;
 
     // 종속 계층 - 조회수 어뷰징 관련
     @Mock private ViewHistoryRedisService viewHistoryRedisService;
@@ -61,7 +63,7 @@ class PostServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        postReqDto = new PostReqDto("test title", "test content");
+        postReqDto = new PostReqDto("test title", "test content", null);
         userId = 1L;
         post = mock(Post.class);
         savedPost = Post.builder().id(1L).build();
@@ -158,7 +160,7 @@ class PostServiceTest {
         // given
         Long postId = 1L;
         Long userId = 1L;
-        PostUpdateReqDto updateReqDto = new PostUpdateReqDto("test title", "test content");
+        PostUpdateReqDto updateReqDto = new PostUpdateReqDto("test title", "test content", null);
         Post post = Post.builder().userId(userId).build();
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(postRepository.save(post)).thenReturn(post);
@@ -184,6 +186,7 @@ class PostServiceTest {
         comments.add(Comment.builder().id(1L).build());
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(commentRepository.findCommentsByPostId(postId)).thenReturn(comments);
+        doNothing().when(s3Service).deleteImage(any(String.class));
 
         // when
         postService.deletePost(postId, userId);
