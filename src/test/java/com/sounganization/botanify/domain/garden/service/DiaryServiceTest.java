@@ -17,9 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-import static com.sounganization.botanify.domain.garden.entity.QDiary.diary;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,7 +71,7 @@ class DiaryServiceTest {
 
 
     @Test
-    void readDiary() {
+    void readDiary_Success() {
         // given
         Long id = 1L;
         Long userId = 1L;
@@ -100,7 +98,7 @@ class DiaryServiceTest {
 
 
     @Test
-    void updateDiary() {
+    void updateDiary_Success() {
         // given
         Long id = 1L;
         DiaryReqDto diaryReqDto = new DiaryReqDto("test diary title", "test diary content");
@@ -120,7 +118,7 @@ class DiaryServiceTest {
     }
 
     @Test
-    void deleteDiary() {
+    void deleteDiary_Success() {
         // given
         Long id = 1L;
         Diary diary = Diary.builder().id(id).userId(userId).build();
