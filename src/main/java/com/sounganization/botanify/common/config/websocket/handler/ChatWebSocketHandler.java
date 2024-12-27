@@ -1,4 +1,4 @@
-package com.sounganization.botanify.common.config.websocket;
+package com.sounganization.botanify.common.config.websocket.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.common.config.websocket.service.WebSocketChatService;
@@ -20,6 +20,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper;
     private final WebSocketChatService webSocketChatService;
+    private final ConnectionFailureHandler connectionFailureHandler;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -37,6 +38,10 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                     webSocketChatService.handleEnterRoom(session, chatMessage.roomId(), chatMessage.senderId());
                     break;
                 case TALK:
+                    if (!session.isOpen()) {
+                        connectionFailureHandler.handleConnectionFailure(chatMessage);
+                        return;
+                    }
                     webSocketChatService.handleChatMessage(chatMessage);
                     break;
                 case LEAVE:
@@ -45,6 +50,10 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             }
         } catch (Exception e) {
             handleError(session, e);
+
+            if (chatMessage.type() == ChatMessageReqDto.MessageType.TALK) {
+                connectionFailureHandler.handleConnectionFailure(chatMessage);
+            }
         }
     }
 
