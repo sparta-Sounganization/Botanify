@@ -15,4 +15,5 @@ public interface ChatMessageCustomRepository {
     Page<ChatMessage> findMessagesByRoomIdWithPagination(Long roomId, Pageable pageable);
     int softDeleteMessagesOlderThan(LocalDateTime cutoffDate, int batchSize);
     long countActiveMessagesByRoomId(Long roomId);
+    List<ChatMessage> findUndeliveredMessages();
 }

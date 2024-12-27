@@ -3,6 +3,7 @@ package com.sounganization.botanify.domain.chat.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
+import com.sounganization.botanify.domain.chat.components.ChatFailureHandler;
 import com.sounganization.botanify.domain.chat.dto.req.ChatMessageReqDto;
 import com.sounganization.botanify.domain.chat.entity.ChatMessage;
 import com.sounganization.botanify.domain.chat.entity.ChatRoom;
@@ -25,6 +26,7 @@ public class ChatMessageService {
     private final ChatRoomService chatRoomService;
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
+    private final ChatFailureHandler chatFailureHandler;
 
     @Transactional
     public ChatMessage saveMessage(Long roomId, Long senderId, String content) {
@@ -55,6 +57,13 @@ public class ChatMessageService {
             );
         } catch (Exception e) {
             log.error("메시지 발행 중 오류 발생: {}", e.getMessage());
+            // Redis 실패 시 fallback 처리
+            chatFailureHandler.handleRedisFailure(new ChatMessageReqDto(
+                    ChatMessageReqDto.MessageType.TALK,
+                    roomId,
+                    senderId,
+                    content
+            ));
         }
 
         // 비동기적으로 DB에 저장
