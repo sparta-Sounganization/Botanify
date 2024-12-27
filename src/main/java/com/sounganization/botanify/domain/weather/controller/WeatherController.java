@@ -7,7 +7,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,7 +16,7 @@ public class WeatherController {
     private final WeatherService weatherService;
 
     @GetMapping("/current")
-    public Mono<String> getCurrentWeather(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public String getCurrentWeather(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         String nx = userDetails.getNx(); // 사용자의 x 좌표
         String ny = userDetails.getNy(); // 사용자의 y 좌표
         return weatherService.getCurrentWeather(nx, ny);

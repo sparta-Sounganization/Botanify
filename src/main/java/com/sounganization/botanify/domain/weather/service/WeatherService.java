@@ -9,15 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ public class WeatherService {
     private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
     private final WebClient webClient;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${weather.api.key}")
     private String apiKey;
@@ -33,13 +33,22 @@ public class WeatherService {
     @Value("${weather.api.base-url}")
     private String baseUrl;
 
-    // Mono 를 사용한 비동기 처리로 변경
     @CircuitBreaker(name = "weatherService", fallbackMethod = "fallbackGetCurrentWeather")
-    public Mono<String> getCurrentWeather(String nx, String ny) {
+    public String getCurrentWeather(String nx, String ny) {
         String baseDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = getClosestBaseTime(LocalDateTime.now());
 
-        // URL 생성
+        // 캐시 키 생성 (nx, ny, baseDate, baseTime 포함)
+        String cacheKey = generateCacheKey(nx, ny, baseDate, baseTime);
+
+        // 1. Redis 에서 데이터 조회
+        String cachedWeather = redisTemplate.opsForValue().get(cacheKey);
+        if (cachedWeather != null) {
+            logger.info("Redis Cache Hit for key: {}", cacheKey);
+            return cachedWeather;
+        }
+
+        // 2. Redis 에 데이터가 없으면 API 호출
         String apiUrl = UriComponentsBuilder.fromUriString(baseUrl)
                 .path("/getUltraSrtNcst")
                 .queryParam("serviceKey", apiKey)
@@ -53,13 +62,23 @@ public class WeatherService {
                 .build(false) // 자동 인코딩 방지
                 .toUriString();
 
-        return webClient.get()
+        String weatherData = webClient.get()
                 .uri(apiUrl)
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(this::extractWeatherData)
-                .timeout(Duration.ofSeconds(3)) // 타임아웃 3초
-                .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1))); // 재시도 2회, 1초 간격
+                .block();
+
+        // 3. Redis 에 데이터 저장 (TTL 45분 설정)
+        redisTemplate.opsForValue().set(cacheKey, weatherData, 45, TimeUnit.MINUTES);
+        logger.info("Redis Cache Set for key: {} with TTL 45 minutes", cacheKey);
+
+        return weatherData;
+    }
+
+    private String generateCacheKey(String nx, String ny, String baseDate, String baseTime) {
+        // 캐시 키에 nx, ny, 날짜 및 시간 포함
+        return String.format("weather:%s:%s:%s%s", nx, ny, baseDate, baseTime);
     }
 
     private String extractWeatherData(String jsonResponse) {
@@ -91,7 +110,6 @@ public class WeatherService {
                         result.append("풍속: ").append(obsrValue).append("m/s\n");
                         break;
                     default:
-                        logger.warn("Unknown category: {}", category);
                         break;
                 }
             }
@@ -118,8 +136,8 @@ public class WeatherService {
     }
 
     @SuppressWarnings("unused")
-    private Mono<String> fallbackGetCurrentWeather(String nx, String ny, Throwable throwable) {
-        logger.error("getCurrentWeather 메서드 호출 실패 (nx: {}, ny: {}): {}", nx, ny, throwable.getMessage());
-        return Mono.error(new CustomException(ExceptionStatus.WEATHER_SERVICE_NOT_AVAILABLE));
+    private String fallbackGetCurrentWeather(String nx, String ny, Throwable throwable) {
+        logger.error("getCurrentWeather 메서드 호출 실패 (nx: {}, ny: {}): {}", nx, ny, throwable.getMessage(), throwable);
+        throw new CustomException(ExceptionStatus.WEATHER_SERVICE_NOT_AVAILABLE);
     }
 }

@@ -25,17 +25,17 @@ public class AppConfig {
 
         // 커넥션 풀 설정
         ConnectionProvider provider = ConnectionProvider.builder("weatherService")
-                .maxConnections(100) // 최대 연결 수 100
-                .pendingAcquireTimeout(Duration.ofSeconds(3)) // 대기 시간 3초
+                .maxConnections(200) // 최대 연결 수 200
+                .pendingAcquireTimeout(Duration.ofSeconds(5)) // 대기 시간 5초
                 .build();
 
         // HttpClient 설정
         HttpClient httpClient = HttpClient.create(provider)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000) // 연결 시간 초과 3초
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // 연결 시간 초과 5초
                 .responseTimeout(Duration.ofSeconds(5)) // 응답 시간 초과 5초
                 .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(3)) // 읽기 시간 초과 5초
-                            .addHandlerLast(new WriteTimeoutHandler(3))) // 쓰기 시간 초과 5초
+                        conn.addHandlerLast(new ReadTimeoutHandler(5)) // 읽기 시간 초과 5초
+                            .addHandlerLast(new WriteTimeoutHandler(5))) // 쓰기 시간 초과 5초
                 .compress(true); // GZIP 압축 사용
 
         var circuitBreaker = circuitBreakerRegistry.circuitBreaker("weatherService");
