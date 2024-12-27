@@ -50,7 +50,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             }
         } catch (Exception e) {
             handleError(session, e);
-
+            // 메시지 처리 중 오류 발생시 연결 실패로 처리
             if (chatMessage.type() == ChatMessageReqDto.MessageType.TALK) {
                 connectionFailureHandler.handleConnectionFailure(chatMessage);
             }
