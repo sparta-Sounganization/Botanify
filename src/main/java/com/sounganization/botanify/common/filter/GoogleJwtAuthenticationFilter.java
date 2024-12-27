@@ -2,7 +2,6 @@ package com.sounganization.botanify.common.filter;
 
 import com.sounganization.botanify.common.util.JwtUtil;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,7 +41,7 @@ public class GoogleJwtAuthenticationFilter extends AbstractAuthenticationProcess
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         // JWT 생성
         String jwt = jwtUtil.generateToken(authResult);
 

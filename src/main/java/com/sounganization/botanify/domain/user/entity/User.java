@@ -46,7 +46,9 @@ public class User extends Timestamped {
     @Getter
     private String address;
 
+    @Getter
     private String nx;
+    @Getter
     private String ny;
 
     @Builder

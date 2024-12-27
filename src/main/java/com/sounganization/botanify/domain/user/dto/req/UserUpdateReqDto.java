@@ -15,8 +15,5 @@ public record UserUpdateReqDto(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\\$%\\^&\\*])[A-Za-z\\d!@#\\$%\\^&\\*]{8,}$",
                 message = "비밀번호는 최소 8자리 이상, 영문 대소문자, 숫자, 특수문자가 각각 1개 이상 포함되어야 합니다."
         )
-        String newPassword,
-        String city,
-        String town,
-        String address
+        String newPassword
 ) {}
