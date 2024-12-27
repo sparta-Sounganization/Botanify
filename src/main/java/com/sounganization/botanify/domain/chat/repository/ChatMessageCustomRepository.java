@@ -13,4 +13,6 @@ public interface ChatMessageCustomRepository {
     List<ChatMessage> findRecentMessages(ChatRoom room, LocalDateTime after);
     List<ChatMessage> findMessagesWithRoomByRoomId(Long roomId);
     Page<ChatMessage> findMessagesByRoomIdWithPagination(Long roomId, Pageable pageable);
+    int softDeleteMessagesOlderThan(LocalDateTime cutoffDate, int batchSize);
+    long countActiveMessagesByRoomId(Long roomId);
 }
