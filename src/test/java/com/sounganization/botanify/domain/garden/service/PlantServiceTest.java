@@ -116,14 +116,14 @@ class PlantServiceTest {
         when(plantRepository.findByIdCustom(id)).thenReturn(plant);
 
         // when
-        PlantResDto result = plantService.updatePlant(userId, id, plantReqDto);
+        Long result = plantService.updatePlant(userId, id, plantReqDto);
 
         // then
         assertNotNull(result);
         verify(plantRepository).findByIdCustom(id);
         assertEquals(plantReqDto.plantName(), plant.getPlantName());
         assertEquals(plantReqDto.adoptionDate(), plant.getAdoptionDate());
-        assertEquals("종이름", result.speciesName());
+        assertEquals("종이름", plant.getSpecies().getSpeciesName());
     }
 
     @Test
