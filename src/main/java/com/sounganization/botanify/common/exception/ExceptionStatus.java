@@ -70,7 +70,11 @@ public enum ExceptionStatus {
     API_DATA_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "API 데이터 파싱 중 문제가 발생했습니다."),
 
     // Kakao API
-    INVALID_COORDINATES(HttpStatus.BAD_REQUEST, "좌표를 찾을 수 없습니다.");
+    INVALID_COORDINATES(HttpStatus.BAD_REQUEST, "좌표를 찾을 수 없습니다."),
+
+    // Weather API
+    WEATHER_SERVICE_NOT_AVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "현재 날씨 정보를 가져올 수 없습니다. 잠시 후 다시 시도해주세요."),
+    NO_WEATHER_DATA(HttpStatus.NOT_FOUND, "주어진 위치와 시간에 대한 기상 데이터가 없습니다.");
 
     private final HttpStatus status;
     private final String message;

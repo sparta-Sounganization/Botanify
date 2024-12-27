@@ -4,39 +4,41 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
-import org.springframework.beans.factory.annotation.Qualifier;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@RequiredArgsConstructor
 public class WeatherService {
 
-    private final RestTemplate restTemplate;
-    private final String apiKey;
-    private final String baseUrl;
+    private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
-    public WeatherService(@Qualifier("weatherRestTemplate") RestTemplate restTemplate,
-                          @Value("${weather.api.key}") String apiKey,
-                          @Value("${weather.api.base-url}") String baseUrl) {
-        this.restTemplate = restTemplate;
-        this.apiKey = apiKey;
-        this.baseUrl = baseUrl;
-    }
+    private final WebClient webClient;
 
+    @Value("${weather.api.key}")
+    private String apiKey;
+
+    @Value("${weather.api.base-url}")
+    private String baseUrl;
+
+    @CircuitBreaker(name = "weatherService", fallbackMethod = "fallbackGetCurrentWeather")
     public String getCurrentWeather(String nx, String ny) {
         String baseDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = getClosestBaseTime(LocalDateTime.now());
 
-        // UriComponentsBuilder 를 사용하여 URL 생성
-        String apiUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+        // URL 생성
+        String apiUrl = UriComponentsBuilder.fromUriString(baseUrl)
                 .path("/getUltraSrtNcst")
-                .queryParam("serviceKey", "{serviceKey}") // 중괄호로 변수화
+                .queryParam("serviceKey", apiKey)
                 .queryParam("pageNo", 1)
                 .queryParam("numOfRows", 10)
                 .queryParam("base_date", baseDate)
@@ -45,18 +47,14 @@ public class WeatherService {
                 .queryParam("ny", ny)
                 .queryParam("dataType", "JSON")
                 .build(false) // 자동 인코딩 방지
-                .expand(apiKey) // {serviceKey} 변수에 apiKey 값 삽입
                 .toUriString();
 
-        try {
-            ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-            System.out.println("API Response: " + response.getBody()); // 응답 본문 출력
-
-            return extractWeatherData(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new CustomException(ExceptionStatus.API_INVALID_REQUEST);
-        }
+        return webClient.get()
+                .uri(apiUrl)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(this::extractWeatherData)
+                .block();
     }
 
     private String extractWeatherData(String jsonResponse) {
@@ -66,7 +64,7 @@ public class WeatherService {
             JsonNode items = root.path("response").path("body").path("items").path("item");
 
             if (items.isMissingNode() || items.isEmpty()) {
-                return "주어진 위치와 시간에 대한 기상 데이터가 없습니다.";
+                throw new CustomException(ExceptionStatus.NO_WEATHER_DATA);
             }
 
             StringBuilder result = new StringBuilder();
@@ -87,11 +85,14 @@ public class WeatherService {
                     case "WSD":
                         result.append("풍속: ").append(obsrValue).append("m/s\n");
                         break;
+                    default:
+                        logger.warn("Unknown category: {}", category);
+                        break;
                 }
             }
             return result.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error parsing weather data: {}", e.getMessage(), e);
             throw new CustomException(ExceptionStatus.API_DATA_PARSING_ERROR);
         }
     }
@@ -109,5 +110,11 @@ public class WeatherService {
         }
 
         return String.format("%02d00", hour);
+    }
+
+    @SuppressWarnings("unused")
+    private String fallbackGetCurrentWeather(String nx, String ny, Throwable throwable) {
+        logger.error("getCurrentWeather 메서드 호출 실패 (nx: {}, ny: {}): {}", nx, ny, throwable.getMessage(), throwable);
+        throw new CustomException(ExceptionStatus.WEATHER_SERVICE_NOT_AVAILABLE);
     }
 }
