@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.sounganization.botanify.domain.plantApi.util.XmlUtils.parseSpeciesDetail;
 
@@ -82,11 +83,36 @@ public class PlantApiAllService {
                             // getSpeciesForCodeWithDetails에 전달
                             allSpeciesResults.add(getSpeciesForCodeWithDetails(code, codeNm));
                         }
+
                         return Mono.zip(allSpeciesResults, results -> {
                             List<PlantApiResDto> finalResult = new ArrayList<>();
                             for (Object result : results) {
                                 finalResult.addAll((List<PlantApiResDto>) result);
                             }
+
+                            // 식물 코드 기준으로 중복을 검사하고, 중복되는 두 데이터를 생육 형태만 병합하여 하나로 만든다.
+                            finalResult = new ArrayList<>(finalResult.stream().collect(Collectors.toMap(
+                                    PlantApiResDto::cntntsNo, res -> res,
+                                    (r1, r2) -> PlantApiResDto.builder()
+                                            .codeNm(String.format("%s,%s", r1.codeNm(), r2.codeNm()))   // 생육형태만 쉼표로 이어붙여서 새 Dto 로 병합
+                                            .cntntsNo(r1.cntntsNo())
+                                            .cntntsSj(r1.cntntsSj())
+                                            .smell(r1.smell())
+                                            .toxicity(r1.toxicity())
+                                            .managementLevel(r1.managementLevel())
+                                            .growthSpeed(r1.growthSpeed())
+                                            .growthTemperature(r1.growthTemperature())
+                                            .winterLowestTemp(r1.winterLowestTemp())
+                                            .humidity(r1.humidity())
+                                            .fertilizerInfo(r1.fertilizerInfo())
+                                            .waterSpring(r1.waterSpring())
+                                            .waterSummer(r1.waterSummer())
+                                            .waterAutumn(r1.waterAutumn())
+                                            .waterWinter(r1.waterWinter())
+                                            .rtnFileUrl(r1.rtnFileUrl())
+                                            .build()
+                            )).values());
+
                             return finalResult;
                         });
                     } else {
