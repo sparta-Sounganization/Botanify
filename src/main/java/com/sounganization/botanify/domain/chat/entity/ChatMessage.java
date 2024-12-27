@@ -42,6 +42,13 @@ public class ChatMessage extends Timestamped {
         this.expirationDate = LocalDateTime.now().plusDays(ChatMessageConstants.DEFAULT_RETENTION_DAYS);
     }
 
+    @Column(nullable = false)
+    private Boolean delivered = false;
+
+    public void markAsDelivered() {
+        this.delivered = true;
+    }
+
     public enum MessageType {
         ENTER, TALK, LEAVE
     }
