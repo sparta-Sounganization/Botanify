@@ -78,8 +78,17 @@ dependencies {
     implementation 'com.auth0:jwks-rsa:0.21.1'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
 
-    //WebSocket
+    // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // WebClient + Resilience4j
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.0.2'
+    implementation 'io.github.resilience4j:resilience4j-reactor:2.0.2'
+
+    // Monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {

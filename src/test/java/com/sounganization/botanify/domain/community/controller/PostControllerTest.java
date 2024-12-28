@@ -71,7 +71,7 @@ class PostControllerTest {
     void setUp() {
         userId = 1L;
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-        reqDto = new PostReqDto("test title", "test content");
+        reqDto = new PostReqDto("test title", "test content", null);
         createdResDto = new CommonResDto(HttpStatus.CREATED,"test message");
         updatedResDto = new CommonResDto(HttpStatus.OK,"test message");
         UserDetailsImpl userDetails = new UserDetailsImpl(
@@ -81,7 +81,8 @@ class PostControllerTest {
                 "test pw",
                 "test city",
                 "test town",
-                UserRole.USER);
+                UserRole.USER,
+                "","");
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())
         );

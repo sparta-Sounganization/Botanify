@@ -1,5 +1,6 @@
 package com.sounganization.botanify.domain.chat.repository;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sounganization.botanify.domain.chat.entity.ChatRoom;
 import com.sounganization.botanify.domain.chat.entity.QChatMessage;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,5 +80,25 @@ public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
                 .fetchOne();
 
         return new PageImpl<>(rooms, pageable, total);
+    }
+
+    @Override
+    public int softDeleteEmptyRoomsOlderThan(LocalDateTime cutoffDate) {
+        QChatRoom room = QChatRoom.chatRoom;
+        QChatMessage message = QChatMessage.chatMessage;
+
+        return (int) jpaQueryFactory
+                .update(room)
+                .set(room.deletedYn, true)
+                .set(room.deletedAt, LocalDateTime.now())
+                .where(room.updatedAt.before(cutoffDate)
+                        .and(room.deletedYn.isFalse())
+                        .and(JPAExpressions
+                                .select(message.count())
+                                .from(message)
+                                .where(message.chatRoom.eq(room)
+                                        .and(message.deletedYn.isFalse()))
+                                .eq(0L)))
+                .execute();
     }
 }

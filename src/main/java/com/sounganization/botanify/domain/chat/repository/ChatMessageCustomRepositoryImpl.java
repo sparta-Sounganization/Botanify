@@ -76,4 +76,56 @@ public class ChatMessageCustomRepositoryImpl implements ChatMessageCustomReposit
 
         return new PageImpl<>(messages, pageable, total);
     }
+
+    @Override
+    public int softDeleteMessagesOlderThan(LocalDateTime cutoffDate, int batchSize) {
+        QChatMessage message = QChatMessage.chatMessage;
+
+        List<Long> messageIds = jpaQueryFactory
+                .select(message.id)
+                .from(message)
+                .where(message.createdAt.before(cutoffDate)
+                        .and(message.deletedYn.isFalse()))
+                .limit(batchSize)
+                .fetch();
+
+        if (messageIds.isEmpty()) {
+            return 0;
+        }
+
+        return (int) jpaQueryFactory
+                .update(message)
+                .set(message.deletedYn, true)
+                .set(message.deletedAt, LocalDateTime.now())
+                .where(message.id.in(messageIds))
+                .execute();
+    }
+
+    @Override
+    public List<ChatMessage> findUndeliveredMessages() {
+        QChatMessage message = QChatMessage.chatMessage;
+
+        return jpaQueryFactory
+                .selectFrom(message)
+                .where(message.delivered.isFalse()
+                        .and(message.deletedYn.isFalse())
+                        .and(message.createdAt.after(LocalDateTime.now().minusHours(24))))
+                .orderBy(message.createdAt.asc())
+                .fetch();
+    }
+
+    @Override
+    public long countActiveMessagesByRoomId(Long roomId) {
+        QChatMessage message = QChatMessage.chatMessage;
+
+        Long count = jpaQueryFactory
+                .select(message.count())
+                .from(message)
+                .where(message.chatRoom.id.eq(roomId)
+                        .and(message.deletedYn.isFalse()))
+                .fetchOne();
+
+        return count != null ? count : 0L;
+
+    }
 }

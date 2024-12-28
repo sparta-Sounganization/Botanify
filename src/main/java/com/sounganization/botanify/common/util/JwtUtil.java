@@ -55,6 +55,11 @@ public class JwtUtil {
         throw new CustomException(ExceptionStatus.UNAUTHORIZED_ACCESS);
     }
 
+    public String getCurrentUsername(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.get("username", String.class);
+    }
+
     // JWT 토큰 생성
     public String generateToken(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -67,6 +72,26 @@ public class JwtUtil {
                 .claim("town", userDetails.getTown())
                 .claim("nx", userDetails.getNx())
                 .claim("ny", userDetails.getNy())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(signingKey)
+                .compact();
+    }
+
+    public String generateToken(String userId,
+                                String username,
+                                UserRole role,
+                                String city,
+                                String town,
+                                String nx, String ny) {
+        return Jwts.builder()
+                .setSubject(userId)
+                .claim("username", username)
+                .claim("role", role)
+                .claim("city", city)
+                .claim("town", town)
+                .claim("nx", nx)
+                .claim("ny", ny)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(signingKey)
