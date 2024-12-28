@@ -41,8 +41,9 @@ public class SecurityConfig {
                                 "/ws/chat",
                                 "/ws/chat/**",
                                 "/ws/**",
+                                "/actuator/**",
                                 "/api/plant-api/**"
-                                ).permitAll()
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/{postId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/species", "/api/v1/species/{speciesId}").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")

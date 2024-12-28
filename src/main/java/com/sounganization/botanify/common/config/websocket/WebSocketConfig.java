@@ -1,5 +1,6 @@
 package com.sounganization.botanify.common.config.websocket;
 
+import com.sounganization.botanify.common.config.websocket.handler.ChatWebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

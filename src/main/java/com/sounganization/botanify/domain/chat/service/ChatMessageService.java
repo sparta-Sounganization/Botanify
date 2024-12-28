@@ -1,7 +1,10 @@
 package com.sounganization.botanify.domain.chat.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
+import com.sounganization.botanify.domain.chat.components.ChatFailureHandler;
+import com.sounganization.botanify.domain.chat.dto.req.ChatMessageReqDto;
 import com.sounganization.botanify.domain.chat.entity.ChatMessage;
 import com.sounganization.botanify.domain.chat.entity.ChatRoom;
 import com.sounganization.botanify.domain.chat.repository.ChatMessageRepository;
@@ -9,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomService chatRoomService;
+    private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
+    private final ChatFailureHandler chatFailureHandler;
 
     @Transactional
     public ChatMessage saveMessage(Long roomId, Long senderId, String content) {
@@ -34,7 +43,35 @@ public class ChatMessageService {
                 .chatRoom(chatRoom)
                 .build();
 
-        return chatMessageRepository.save(message);
+        //Redis로 메시지 발행
+        try {
+            ChatMessageReqDto messageDto = new ChatMessageReqDto(
+                    ChatMessageReqDto.MessageType.TALK,
+                    roomId,
+                    senderId,
+                    content
+            );
+            redisTemplate.convertAndSend(
+                    "chat_room_" + roomId,
+                    objectMapper.writeValueAsString(messageDto)
+            );
+        } catch (Exception e) {
+            log.error("메시지 발행 중 오류 발생: {}", e.getMessage());
+            // Redis 실패 시 fallback 처리
+            chatFailureHandler.handleRedisFailure(new ChatMessageReqDto(
+                    ChatMessageReqDto.MessageType.TALK,
+                    roomId,
+                    senderId,
+                    content
+            ));
+        }
+
+        // 비동기적으로 DB에 저장
+        return CompletableFuture.supplyAsync(() -> chatMessageRepository.save(message))
+                .exceptionally(throwable -> {
+                    log.error("메시지 저장 중 오류 발생: {}", throwable.getMessage());
+                    return message;
+                }).join();
     }
 
     @Transactional(readOnly = true)

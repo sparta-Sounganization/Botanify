@@ -31,3 +31,8 @@ aws:
     bucket: botanify-backend-bucket
   access-key: admin
   secret-key: admin
+management:
+  endpoints:
+    web:
+      exposure:
+        include: circuitbreakers,health,info,prometheus
