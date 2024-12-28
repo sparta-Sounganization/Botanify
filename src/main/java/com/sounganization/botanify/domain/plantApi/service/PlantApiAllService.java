@@ -149,12 +149,8 @@ public class PlantApiAllService {
             pageRequests.add(getSpecies(grwhstleCode, pageNo)
                     .map(XmlUtils::parseXml)
                     .flatMap(document -> parseSpeciesAndRetrieveDetails(document, codeNm)) // 각 페이지에서 상세 정보를 DTO로 반환
-                    .doOnSuccess(result -> {
-                        log.info("품종: {}, 조회 완료된 페이지: {}/{}", codeNm, currentPageNo, totalPages);
-                    })
-                    .doOnError(error -> {
-                        log.error("품종: {}, 페이지 {} 조회 중 오류 발생: {}", codeNm, currentPageNo, error.getMessage());
-                    })
+                    .doOnSuccess(result -> log.info("품종: {}, 조회 완료된 페이지: {}/{}", codeNm, currentPageNo, totalPages))
+                    .doOnError(error -> log.error("품종: {}, 페이지 {} 조회 중 오류 발생: {}", codeNm, currentPageNo, error.getMessage()))
             );
         }
         return Mono.zip(pageRequests, results -> {

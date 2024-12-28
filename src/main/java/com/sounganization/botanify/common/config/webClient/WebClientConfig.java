@@ -32,9 +32,7 @@ public class WebClientConfig {
         return WebClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.TEXT_XML_VALUE)
-                .codecs(configurer -> {
-                    configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder());
-                })
+                .codecs(configurer -> configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder()))
                 .build();
     }
 

@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -121,8 +122,7 @@ public class PlantApiEachService {
     private Mono<List<PlantListResDto>> retrieveSpeciesAllPlantList(String grwhstleCode, int totalPages) {
         List<Mono<List<PlantListResDto>>> pageRequests = new ArrayList<>();
         for (int pageNo = 1; pageNo <= totalPages; pageNo++) {
-            final int currentPageNo = pageNo;
-            pageRequests.add(getCategoryPlantList(grwhstleCode, currentPageNo)
+            pageRequests.add(getCategoryPlantList(grwhstleCode, pageNo)
                     .flatMap(response -> {
                         // 각 페이지에서 식물 리스트 파싱
                         List<PlantListResDto> plantList = parsePlantList(response);  // XML에서 식물 리스트 파싱
@@ -156,7 +156,7 @@ public class PlantApiEachService {
                 .flatMap(xmlResponse -> {
                     // XML 응답을 파싱하여 PlantApiResDto로 변환
                     PlantDetailResDto plantInfo = parsePlantInfo(xmlResponse);
-                    return Mono.just(plantInfo);
+                    return Mono.just(Objects.requireNonNull(plantInfo));
                 });
     }
 
