@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,12 +17,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
-@RequiredArgsConstructor
 public class WeatherService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
-    private final WebClient webClient;
+    private final WebClient weatherWebClient;
+    public WeatherService(@Qualifier("weatherWebClient") final WebClient weatherWebClient) {
+        this.weatherWebClient = weatherWebClient;
+    }
 
     @Value("${weather.api.key}")
     private String apiKey;
@@ -49,7 +51,7 @@ public class WeatherService {
                 .build(false) // 자동 인코딩 방지
                 .toUriString();
 
-        return webClient.get()
+        return weatherWebClient.get()
                 .uri(apiUrl)
                 .retrieve()
                 .bodyToMono(String.class)

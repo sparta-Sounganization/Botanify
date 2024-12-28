@@ -2,8 +2,8 @@ package com.sounganization.botanify.domain.plantApi.service;
 
 import com.sounganization.botanify.domain.plantApi.dto.res.PlantApiResDto;
 import com.sounganization.botanify.domain.plantApi.util.XmlUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,16 +20,19 @@ import static com.sounganization.botanify.domain.plantApi.util.XmlUtils.parseSpe
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PlantApiAllService {
-    private final WebClient webClient;
+
+    private final WebClient plantWebClient;
+    public PlantApiAllService(@Qualifier("plantWebClient") final WebClient plantWebClient) {
+        this.plantWebClient = plantWebClient;
+    }
 
     @Value("${nongsaro.api.key}")
     private String apiKey;
 
     // 품종 코드 조회
     public Mono<List<String>> getSpeciesCode() {
-        return webClient.get()
+        return plantWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/grwhstleList")
                         .queryParam("apiKey", apiKey)
@@ -45,7 +48,7 @@ public class PlantApiAllService {
 
     // 품종 코드에 대한 식물 리스트 조회
     public Mono<String> getSpecies(String grwhstleCode, int pageNo) {
-        return webClient.get()
+        return plantWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/gardenList")
                         .queryParam("apiKey", apiKey)
@@ -58,7 +61,7 @@ public class PlantApiAllService {
 
     // 식물 상세 정보 조회
     public Mono<String> getSpeciesDetail(String cntntsNo) {
-        return webClient.get()
+        return plantWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/gardenDtl")
                         .queryParam("apiKey", apiKey)

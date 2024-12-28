@@ -4,8 +4,8 @@ import com.sounganization.botanify.domain.plantApi.dto.res.CategoryResDto;
 import com.sounganization.botanify.domain.plantApi.dto.res.PlantDetailResDto;
 import com.sounganization.botanify.domain.plantApi.dto.res.PlantListResDto;
 import com.sounganization.botanify.domain.plantApi.util.XmlUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,25 +15,24 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import reactor.core.publisher.Mono;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PlantApiEachService {
 
-    private final WebClient webClient;
+    private final WebClient plantWebClient;
+    public PlantApiEachService(@Qualifier("plantWebClient") final WebClient plantWebClient) {
+        this.plantWebClient = plantWebClient;
+    }
+
     @Value("${nongsaro.api.key}")
     private String apiKey;
 
     //품종 코드 조회
     public Mono<List<CategoryResDto>> getSpeciesCategory() {
-        return webClient.get()
+        return plantWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/grwhstleList")
                         .queryParam("apiKey", apiKey)
@@ -66,7 +65,7 @@ public class PlantApiEachService {
 
     //품종 코드에 대한 식물 리스트 조회
     public Mono<String> getCategoryPlantList(String categoryCode, int pageNo) {
-        return webClient.get()
+        return plantWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/gardenList")
                         .queryParam("apiKey", apiKey)
@@ -146,7 +145,7 @@ public class PlantApiEachService {
 
 // 식물 상세 정보 조회
     public Mono<PlantDetailResDto> getPlantInfo(String cntntsNo) {
-        return webClient.get()
+        return plantWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/gardenDtl")
                         .queryParam("apiKey", apiKey)
