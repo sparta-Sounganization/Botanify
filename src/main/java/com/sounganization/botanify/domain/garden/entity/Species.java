@@ -2,10 +2,7 @@ package com.sounganization.botanify.domain.garden.entity;
 
 import com.sounganization.botanify.common.entity.Timestamped;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Objects;
 
@@ -15,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Species extends Timestamped {
-    @Id
+    @Id @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
