@@ -6,20 +6,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PlantAlarmRepository extends JpaRepository<PlantAlarm, Long> {
-    List<PlantAlarm> findByUserIdAndIsEnabledTrue(Long userId);
+public interface PlantAlarmRepository extends JpaRepository<PlantAlarm, Long>, PlantAlarmCustomRepository {
 
-    List<PlantAlarm> findByPlantIdAndUserId(Long plantId, Long userId);
+    @Query("SELECT pa FROM PlantAlarm pa JOIN FETCH pa.plant WHERE pa.userId = :userId AND pa.isEnabled = true")
+    List<PlantAlarm> findByUserIdAndIsEnabledTrue(@Param("userId") Long userId);
+
+    @Query("SELECT pa FROM PlantAlarm pa JOIN FETCH pa.plant WHERE pa.plant.id = :plantId AND pa.userId = :userId")
+    List<PlantAlarm> findByPlantIdAndUserId(@Param("plantId") Long plantId, @Param("userId") Long userId);
 
     Optional<PlantAlarm> findByIdAndUserId(Long id, Long userId);
-
-    @Query("SELECT pa FROM PlantAlarm pa WHERE pa.isEnabled = true AND pa.startDate <= :today")
-    List<PlantAlarm> findActiveAlarms(@Param("today") LocalDate today);
-
-    void deleteByPlantId(Long plantId);
 }
