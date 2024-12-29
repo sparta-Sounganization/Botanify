@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -30,8 +33,9 @@ public class WeatherService {
     @Value("${weather.api.base-url}")
     private String baseUrl;
 
+    // Mono 를 사용한 비동기 처리로 변경
     @CircuitBreaker(name = "weatherService", fallbackMethod = "fallbackGetCurrentWeather")
-    public String getCurrentWeather(String nx, String ny) {
+    public Mono<String> getCurrentWeather(String nx, String ny) {
         String baseDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = getClosestBaseTime(LocalDateTime.now());
 
@@ -54,7 +58,8 @@ public class WeatherService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(this::extractWeatherData)
-                .block();
+                .timeout(Duration.ofSeconds(3)) // 타임아웃 3초
+                .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1))); // 재시도 2회, 1초 간격
     }
 
     private String extractWeatherData(String jsonResponse) {
@@ -113,8 +118,8 @@ public class WeatherService {
     }
 
     @SuppressWarnings("unused")
-    private String fallbackGetCurrentWeather(String nx, String ny, Throwable throwable) {
-        logger.error("getCurrentWeather 메서드 호출 실패 (nx: {}, ny: {}): {}", nx, ny, throwable.getMessage(), throwable);
-        throw new CustomException(ExceptionStatus.WEATHER_SERVICE_NOT_AVAILABLE);
+    private Mono<String> fallbackGetCurrentWeather(String nx, String ny, Throwable throwable) {
+        logger.error("getCurrentWeather 메서드 호출 실패 (nx: {}, ny: {}): {}", nx, ny, throwable.getMessage());
+        return Mono.error(new CustomException(ExceptionStatus.WEATHER_SERVICE_NOT_AVAILABLE));
     }
 }

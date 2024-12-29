@@ -25,7 +25,7 @@ public record SignupReqDto(
         String username,
         @NotBlank(message = "도시는 필수 입력 값입니다.")
         String city,
-        @NotBlank(message = "동/읍/면은 필수 입력 값입니다.")
+        @NotBlank(message = "시/군/구는 필수 입력 값입니다.")
         String town,
         @NotBlank(message = "상세 주소는 필수 입력 값입니다.")
         String address,
