@@ -35,3 +35,12 @@ management:
     web:
       exposure:
         include: circuitbreakers,health,info,prometheus
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://botanify.cdg6cmqqi33c.ap-northeast-2.rds.amazonaws.com:3306/botanify?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul // RDS 엔드포인트
+    username: admin
+    password: botanify
