@@ -26,7 +26,9 @@ public class WeatherService {
     private final WebClient weatherWebClient;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public WeatherService(@Qualifier("weatherWebClient") final WebClient weatherWebClient, RedisTemplate<String, String> redisTemplate) {
+    public WeatherService(
+            @Qualifier("weatherWebClient") final WebClient weatherWebClient,
+            RedisTemplate<String, String> redisTemplate) {
         this.weatherWebClient = weatherWebClient;
         this.redisTemplate = redisTemplate;
     }
