@@ -26,6 +26,9 @@ public class WebClientConfig {
     @Value("${nongsaro.api.base-url}")
     private String baseUrl;
 
+    private static final int MAX_CONNECTIONS = 200;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 5;
+
     @Bean(name = "plantWebClient")
     public WebClient plantWebClient() {
         return WebClient.builder()
@@ -40,17 +43,17 @@ public class WebClientConfig {
 
         // 커넥션 풀 설정
         ConnectionProvider provider = ConnectionProvider.builder("weatherService")
-                .maxConnections(200) // 최대 연결 수 200
-                .pendingAcquireTimeout(Duration.ofSeconds(5)) // 대기 시간 5초
+                .maxConnections(MAX_CONNECTIONS) // 최대 연결 수 200
+                .pendingAcquireTimeout(Duration.ofSeconds(DEFAULT_TIMEOUT_SECONDS)) // 대기 시간 5초
                 .build();
 
         // HttpClient 설정
         HttpClient httpClient = HttpClient.create(provider)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // 연결 시간 초과 5초
-                .responseTimeout(Duration.ofSeconds(5)) // 응답 시간 초과 5초
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, DEFAULT_TIMEOUT_SECONDS * 1000) // 연결 시간 초과 5초
+                .responseTimeout(Duration.ofSeconds(DEFAULT_TIMEOUT_SECONDS)) // 응답 시간 초과 5초
                 .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(5)) // 읽기 시간 초과 5초
-                                .addHandlerLast(new WriteTimeoutHandler(5))) // 쓰기 시간 초과 5초
+                        conn.addHandlerLast(new ReadTimeoutHandler(DEFAULT_TIMEOUT_SECONDS)) // 읽기 시간 초과 5초
+                                .addHandlerLast(new WriteTimeoutHandler(DEFAULT_TIMEOUT_SECONDS))) // 쓰기 시간 초과 5초
                 .compress(true); // GZIP 압축 사용
 
         var circuitBreaker = circuitBreakerRegistry.circuitBreaker("weatherService");
