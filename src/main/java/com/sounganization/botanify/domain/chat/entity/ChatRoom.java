@@ -27,5 +27,6 @@ public class ChatRoom extends Timestamped {
     private Long receiverUserId;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<ChatMessage> messages = new ArrayList<>();
 }
