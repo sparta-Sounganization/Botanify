@@ -163,4 +163,9 @@ public class JwtUtil {
                 userDetails.getAuthorities()
         );
     }
+    public void configure(String secretKey, long expirationTime) {
+        this.secretKey = secretKey;
+        this.expirationTime = expirationTime;
+        init();
+    }
 }

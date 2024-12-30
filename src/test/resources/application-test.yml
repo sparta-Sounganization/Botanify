@@ -10,6 +10,18 @@ spring:
     url: jdbc:h2:mem:test
     username: sa
     password:
+  jwt:
+    secret:
+      key: "testSecretKey"
+      expiration: 3600000 # 1시간
+  redis:
+    enabled: false
+aws:
+  s3:
+    enabled: false
+  access-key: test-access-key
+  secret-key: test-secret-key
+  endpoint: http://localhost # 더미 값
 #  redis:
 #    master:
 #      host: localhost
