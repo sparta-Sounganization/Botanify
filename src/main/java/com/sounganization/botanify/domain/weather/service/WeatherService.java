@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,13 +19,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
 public class WeatherService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
-    private final WebClient webClient;
+    private final WebClient weatherWebClient;
     private final RedisTemplate<String, String> redisTemplate;
+
+    public WeatherService(@Qualifier("weatherWebClient") final WebClient weatherWebClient, RedisTemplate<String, String> redisTemplate) {
+        this.weatherWebClient = weatherWebClient;
+        this.redisTemplate = redisTemplate;
+    }
 
     @Value("${weather.api.key}")
     private String apiKey;
@@ -62,12 +66,19 @@ public class WeatherService {
                 .build(false) // 자동 인코딩 방지
                 .toUriString();
 
-        String weatherData = webClient.get()
+        String weatherData = weatherWebClient.get()
                 .uri(apiUrl)
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(this::extractWeatherData)
-                .block();
+                .blockOptional() // blockOptional() 사용
+                .orElseThrow(() -> new CustomException(ExceptionStatus.NO_WEATHER_DATA));
+
+        // null 체크 추가
+        if (weatherData == null || weatherData.trim().isEmpty()) {
+            logger.error("Weather data is null or empty for nx: {}, ny: {}", nx, ny);
+            throw new CustomException(ExceptionStatus.NO_WEATHER_DATA);
+        }
 
         // 3. Redis 에 데이터 저장 (TTL 45분 설정)
         redisTemplate.opsForValue().set(cacheKey, weatherData, 45, TimeUnit.MINUTES);

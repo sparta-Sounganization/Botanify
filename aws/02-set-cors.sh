@@ -8,8 +8,8 @@ BUCKET_NAME="botanify-backend-bucket"
 CORS_POLICY='{
   "CORSRules": [
     {
-      "AllowedOrigins": ["https://example.com"],
-      "AllowedMethods": ["GET"],
+      "AllowedOrigins": ["*"],
+      "AllowedMethods": ["GET","PUT","HEAD"],
       "AllowedHeaders": ["*"]
     }
   ]
