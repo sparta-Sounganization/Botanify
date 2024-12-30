@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -72,13 +71,5 @@ public class WebClientConfig {
                 .build();
     }
 
-    @Bean(name = "locationRestTemplate")
-    public RestTemplate locationRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory();
-        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
-        restTemplate.setUriTemplateHandler(factory);
-        return restTemplate;
-    }
 }
 
