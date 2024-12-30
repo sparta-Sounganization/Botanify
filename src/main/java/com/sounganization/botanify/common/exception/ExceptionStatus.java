@@ -68,6 +68,9 @@ public enum ExceptionStatus {
     MESSAGE_NOT_OWNED(HttpStatus.FORBIDDEN, "메시지 작성자만 삭제할 수 있습니다."),
     NOT_CHAT_ROOM_PARTICIPANT(HttpStatus.FORBIDDEN, "채팅방 참여자만 삭제할 수 있습니다."),
 
+    //OneSignal
+    NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "알림 전송에 실패했습니다"),
+
     // API
     API_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "API 호출 중 문제가 발생했습니다."),
     API_DATA_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "API 데이터 파싱 중 문제가 발생했습니다."),
