@@ -3,6 +3,7 @@ package com.sounganization.botanify.domain.community.service;
 import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
+import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
 import com.sounganization.botanify.domain.community.dto.res.CommentTempDto;
@@ -23,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,10 +69,26 @@ public class PostService {
     }
 
     // 게시글 조회 - 다건 조회
-    public Page<PostListResDto> readPosts(int page, int size) {
-        //pageable
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        Page<Post> posts = postRepository.findAllByDeletedYnFalse(pageable);
+    public Page<PostListResDto> readPosts(
+            UserDetailsImpl userDetails,
+            int page, int size, boolean local, String sortBy, String order,
+            String city, String town, String search, LocalDate dateBefore
+    ) {
+        // Pageable 생성
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        // 인가 사용자이면서 지역 게시판을 선택한 경우엔, 사용자 정보의 city, town 값으로 쿼리 인자를 덮어씌움.
+        String targetCity = city;
+        String targetTown = town;
+        if (local && Objects.nonNull(userDetails)) {
+            targetCity = userDetails.getCity();
+            targetTown = userDetails.getTown();
+        }
+
+        log.info("인가 사용자의 지역 게시판 위치 - {}:{}",targetCity,targetTown);
+
+        Page<Post> posts = postRepository.findAllByDetailedQuery(
+                pageable, sortBy, order, targetCity, targetTown, search, dateBefore);
         return posts.map(postMapper::entityToResDto);
     }
 
