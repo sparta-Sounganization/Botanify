@@ -85,7 +85,7 @@ public class PostService {
             targetTown = userDetails.getTown();
         }
 
-        log.info("인가 사용자의 지역 게시판 위치 - {}:{}",targetCity,targetTown);
+        log.debug("인가 사용자의 지역 게시판 위치 - {}:{}",targetCity,targetTown);
 
         Page<Post> posts = postRepository.findAllByDetailedQuery(
                 pageable, sortBy, order, targetCity, targetTown, search, dateBefore);
