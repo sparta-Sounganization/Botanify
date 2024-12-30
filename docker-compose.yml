@@ -1,48 +1,4 @@
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: botanify-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: botanify
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      TZ: Asia/Seoul
-    ports:
-      - "3306:3306"
-    volumes:
-      - db-data:/var/lib/mysql
-    networks:
-      - app-network
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      timeout: 20s
-      retries: 10
-    restart: always
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-
-  redis-master:
-    image: redis:7.0
-    hostname: redis-master
-    container_name: redis-master
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./db/redis/data:/data
-    networks:
-      - app-network
-    environment:
-      TZ: Asia/Seoul
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: always
-    command: redis-server --save 20 1 --loglevel warning
-
   localstack:
     image: localstack/localstack:latest
     container_name: localstack
@@ -119,8 +75,6 @@ networks:
     driver: bridge
 
 volumes:
-  db-data:
-  redis-data:
   localstack-data:
   grafana-data:
   prometheus-data:
