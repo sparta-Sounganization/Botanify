@@ -1,8 +1,10 @@
-package com.sounganization.botanify.ViewHistory;
+package com.sounganization.botanify.common.service;
 
 import com.sounganization.botanify.domain.community.entity.ViewHistory;
 import com.sounganization.botanify.domain.community.repository.ViewHistoryRepository;
-import com.sounganization.botanify.domain.community.service.SchedulerService;
+import com.sounganization.botanify.domain.garden.mapper.SpeciesMapper;
+import com.sounganization.botanify.domain.garden.repository.SpeciesRepository;
+import com.sounganization.botanify.domain.plantApi.service.PlantApiAllService;
 import jakarta.persistence.EntityManager;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,12 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ViewHistorySchedulerTest {
+class SchedulerServiceTest {
 
-    @Mock
-    private ViewHistoryRepository viewHistoryRepository;
-    @Mock
-    private EntityManager entityManager;
+    @Mock private EntityManager entityManager;
+    @Mock private ViewHistoryRepository viewHistoryRepository;
+    @Mock private PlantApiAllService plantApiAllService;
+    @Mock private SpeciesRepository speciesRepository;
+    @Mock private SpeciesMapper speciesMapper;
+
     private SchedulerService schedulerService;
     private AtomicBoolean taskExecuted;
 
@@ -37,7 +41,9 @@ public class ViewHistorySchedulerTest {
         taskExecuted = new AtomicBoolean(false);
 
         //schedulerService 생성
-        schedulerService = new SchedulerService(viewHistoryRepository, entityManager) {
+        schedulerService = new SchedulerService(
+                entityManager, viewHistoryRepository, plantApiAllService, speciesRepository, speciesMapper
+        ) {
             @Override
             public void deleteAll() {
                 super.deleteAll(); // 실제 deleteAll

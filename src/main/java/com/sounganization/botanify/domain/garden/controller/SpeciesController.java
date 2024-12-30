@@ -3,11 +3,13 @@ package com.sounganization.botanify.domain.garden.controller;
 import com.sounganization.botanify.common.dto.res.CommonResDto;
 import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.garden.dto.req.SpeciesReqDto;
+import com.sounganization.botanify.domain.garden.dto.res.SpeciesDetailResDto;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesResDto;
 import com.sounganization.botanify.domain.garden.service.SpeciesService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -32,15 +34,17 @@ public class SpeciesController {
     }
 
     @GetMapping("/species")
-    public ResponseEntity<?> getAllSpecies(
+    public ResponseEntity<Page<SpeciesResDto>> getAllSpecies(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search
     ) {
-        return ResponseEntity.ok(speciesService.readAllSpecies(page, size));
+        return ResponseEntity.ok(speciesService.readAllSpecies(page, size, search));
     }
 
+
     @GetMapping("/species/{id}")
-    public ResponseEntity<SpeciesResDto> getSpecies(@PathVariable Long id) {
+    public ResponseEntity<SpeciesDetailResDto> getSpecies(@PathVariable Long id) {
         return ResponseEntity.ok(speciesService.readSpecies(id));
     }
 

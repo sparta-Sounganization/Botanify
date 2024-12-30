@@ -89,6 +89,11 @@ dependencies {
     // Monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // xml
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
+
 }
 
 tasks.named('test') {
@@ -103,7 +108,7 @@ tasks.withType(JavaCompile) {
 }
 // java source set 에 querydsl QClass 위치 추가
 sourceSets {
-    main.java.srcDirs += [ generated ]
+    main.java.srcDirs += [generated]
 }
 // gradle clean 시에 QClass 디렉토리 삭제
 clean {
