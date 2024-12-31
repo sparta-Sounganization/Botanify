@@ -39,6 +39,9 @@ public enum ExceptionStatus {
     PLANT_NOT_FOUND(HttpStatus.NOT_FOUND, "식물을 찾을 수 없습니다."),
     PLANT_NOT_OWNED(HttpStatus.UNAUTHORIZED, "식물의 주인이 아닙니다."),
 
+    //plant_alarm
+    ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "알람을 찾을 수 없습니다."),
+
     // species
     SPECIES_NOT_FOUND(HttpStatus.NOT_FOUND, "품종을 찾을 수 없습니다."),
 
@@ -65,6 +68,9 @@ public enum ExceptionStatus {
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "메시지를 찾을 수 없습니다."),
     MESSAGE_NOT_OWNED(HttpStatus.FORBIDDEN, "메시지 작성자만 삭제할 수 있습니다."),
     NOT_CHAT_ROOM_PARTICIPANT(HttpStatus.FORBIDDEN, "채팅방 참여자만 삭제할 수 있습니다."),
+
+    //OneSignal
+    NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "알림 전송에 실패했습니다"),
 
     // API
     API_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "API 호출 중 문제가 발생했습니다."),

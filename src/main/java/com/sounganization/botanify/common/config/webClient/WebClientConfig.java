@@ -73,6 +73,5 @@ public class WebClientConfig {
                 .uriBuilderFactory(uriBuilderFactory) // URI 인코딩 모드 적용
                 .build();
     }
-
 }
 
