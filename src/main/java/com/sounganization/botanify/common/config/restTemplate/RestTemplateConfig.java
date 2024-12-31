@@ -15,4 +15,9 @@ public class RestTemplateConfig {
         restTemplate.setUriTemplateHandler(factory);
         return restTemplate;
     }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }
