@@ -15,5 +15,9 @@ public interface PlantAlarmMapper {
 
     @Mapping(source = "plant.id", target = "plantId")
     @Mapping(source = "plant.plantName", target = "plantName")
+    @Mapping(source = "nextAlarmDateTime", target = "nextAlarmDateTime")
+    @Mapping(source = "preferredTime", target = "preferredTime")
+    @Mapping(source = "alarmDays", target = "alarmDays")
+    @Mapping(source = "type", target = "type")
     PlantAlarmResDto toDto(PlantAlarm entity);
 }

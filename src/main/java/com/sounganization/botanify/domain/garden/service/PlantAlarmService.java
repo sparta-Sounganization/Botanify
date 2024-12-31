@@ -67,7 +67,12 @@ public class PlantAlarmService {
         PlantAlarm alarm = plantAlarmRepository.findByIdAndUserId(alarmId, userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.ALARM_NOT_FOUND));
 
-        alarm.update(reqDto.startDate(), reqDto.intervalDays(), reqDto.isEnabled());
+        alarm.updateSettings(
+                reqDto.nextAlarmDateTime(),
+                reqDto.preferredTime(),
+                reqDto.alarmDays(),
+                reqDto.isEnabled()
+        );
     }
 
     @Transactional
