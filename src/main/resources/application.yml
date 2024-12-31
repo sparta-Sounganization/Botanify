@@ -3,42 +3,4 @@ spring:
     name: Botanify
   profiles:
     active: dev
-  jackson:
-    time-zone: Asia/Seoul
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        show_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-  datasource:
-    url: jdbc:mysql://host.docker.internal:3306/botanify
-    username: admin
-    password: admin
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    redis:
-        host: cache-server
-        port: 6379
-aws:
-  s3:
-    endpoint: http://localhost:4566
-    bucket: botanify-backend-bucket
-  access-key: admin
-  secret-key: admin
-management:
-  endpoints:
-    web:
-      exposure:
-        include: circuitbreakers,health,info,prometheus
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-  datasource:
-    url: jdbc:mysql://botanify.cdg6cmqqi33c.ap-northeast-2.rds.amazonaws.com:3306/botanify // RDS 엔드포인트
-    username: admin
-    password: botanifyadmin
+

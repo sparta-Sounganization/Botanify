@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -38,9 +39,24 @@ public class PostController {
     //게시글 조회 - 다건조회
     @GetMapping
     public ResponseEntity<Page<PostListResDto>> readPosts(
+            @CookieValue(value = "Authorization", required = false) String token,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<PostListResDto> postListResDto = postService.readPosts(page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "false") boolean local,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String order,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String town,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) LocalDate dateBefore
+    ) {
+        UserDetailsImpl userDetails = null;
+        if (Objects.nonNull(token)) {
+            userDetails = ((UserDetailsImpl)jwtUtil.getAuthentication(token).getPrincipal());
+        }
+
+        Page<PostListResDto> postListResDto = postService.readPosts(
+                userDetails, page, size, local, sortBy, order, city, town, search, dateBefore);
         return ResponseEntity.ok(postListResDto);
     }
 
