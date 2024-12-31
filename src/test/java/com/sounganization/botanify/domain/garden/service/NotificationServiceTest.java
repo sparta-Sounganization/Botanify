@@ -5,8 +5,6 @@ import com.sounganization.botanify.common.exception.CustomException;
 import com.sounganization.botanify.common.exception.ExceptionStatus;
 import com.sounganization.botanify.common.service.NotificationService;
 import com.sounganization.botanify.domain.garden.entity.PlantAlarm;
-import com.sounganization.botanify.domain.garden.repository.PlantAlarmRepository;
-import com.sounganization.botanify.domain.garden.scheduler.PlantAlarmScheduler;
 import com.sounganization.botanify.domain.user.entity.User;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import com.sounganization.botanify.domain.user.repository.UserRepository;
@@ -33,14 +31,8 @@ class NotificationServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private PlantAlarmRepository plantAlarmRepository;
-
     @InjectMocks
     private NotificationService notificationService;
-
-    @InjectMocks
-    private PlantAlarmScheduler plantAlarmScheduler;
 
     @Test
     @DisplayName("식물 알림 전송 성공 (웹 및 모바일)")

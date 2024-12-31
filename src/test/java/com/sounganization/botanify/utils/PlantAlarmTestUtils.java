@@ -6,7 +6,10 @@ import com.sounganization.botanify.domain.user.entity.User;
 import com.sounganization.botanify.domain.user.enums.UserRole;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 
 public class PlantAlarmTestUtils {
@@ -14,7 +17,7 @@ public class PlantAlarmTestUtils {
     private PlantAlarmTestUtils() {
     }
 
-    public static List<PlantAlarm> createMixedAlarms(LocalDate today) {
+    public static List<PlantAlarm> createMixedAlarms(LocalDateTime now) {
         Plant plant1 = Plant.builder().plantName("식물1").build();
         Plant plant2 = Plant.builder().plantName("식물2").build();
         ReflectionTestUtils.setField(plant1, "id", 1L);
@@ -24,24 +27,30 @@ public class PlantAlarmTestUtils {
                 .plant(plant1)
                 .userId(1L)
                 .type(PlantAlarm.AlarmType.WATER)
-                .startDate(today.minusDays(7))
-                .intervalDays(7)
+                .nextAlarmDateTime(now.minusMinutes(5))
+                .preferredTime(now.toLocalTime())
+                .alarmDays(EnumSet.allOf(DayOfWeek.class))
                 .isEnabled(true)
                 .build();
+
+        ReflectionTestUtils.setField(dueAlarm, "id", 1L);
 
         PlantAlarm notDueAlarm = PlantAlarm.builder()
                 .plant(plant2)
                 .userId(1L)
                 .type(PlantAlarm.AlarmType.WATER)
-                .startDate(today.minusDays(3))
-                .intervalDays(7)
+                .nextAlarmDateTime(now.plusHours(1))
+                .preferredTime(now.plusHours(1).toLocalTime())
+                .alarmDays(EnumSet.allOf(DayOfWeek.class))
                 .isEnabled(true)
                 .build();
+
+        ReflectionTestUtils.setField(notDueAlarm, "id", 2L);
 
         return List.of(dueAlarm, notDueAlarm);
     }
 
-    public static List<PlantAlarm> createValidAlarms(LocalDate today) {
+    public static List<PlantAlarm> createValidAlarms(LocalDateTime now) {
         Plant plant1 = Plant.builder().plantName("식물1").build();
         Plant plant2 = Plant.builder().plantName("식물2").build();
         ReflectionTestUtils.setField(plant1, "id", 1L);
@@ -51,8 +60,9 @@ public class PlantAlarmTestUtils {
                 .plant(plant1)
                 .userId(1L)
                 .type(PlantAlarm.AlarmType.WATER)
-                .startDate(today.minusDays(7))
-                .intervalDays(7)
+                .nextAlarmDateTime(now.minusMinutes(5))
+                .preferredTime(now.toLocalTime())
+                .alarmDays(EnumSet.allOf(DayOfWeek.class))
                 .isEnabled(true)
                 .build();
 
@@ -60,8 +70,9 @@ public class PlantAlarmTestUtils {
                 .plant(plant2)
                 .userId(2L)
                 .type(PlantAlarm.AlarmType.FERTILIZER)
-                .startDate(today.minusDays(14))
-                .intervalDays(14)
+                .nextAlarmDateTime(now.minusMinutes(10))
+                .preferredTime(now.toLocalTime())
+                .alarmDays(EnumSet.allOf(DayOfWeek.class))
                 .isEnabled(true)
                 .build();
 

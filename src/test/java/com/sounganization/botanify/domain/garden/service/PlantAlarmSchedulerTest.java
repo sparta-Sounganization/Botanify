@@ -15,7 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDate;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 
 import static com.sounganization.botanify.utils.PlantAlarmTestUtils.createMixedAlarms;
@@ -38,7 +40,7 @@ class PlantAlarmSchedulerTest {
     @DisplayName("스케줄러 알림 체크 성공")
     void checkPlantAlarms_Success() {
         // Given
-        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         Plant plant = Plant.builder()
                 .plantName("테스트 식물")
                 .build();
@@ -47,8 +49,9 @@ class PlantAlarmSchedulerTest {
                 .plant(plant)
                 .userId(1L)
                 .type(PlantAlarm.AlarmType.WATER)
-                .startDate(today.minusDays(7))
-                .intervalDays(7)
+                .nextAlarmDateTime(now.minusMinutes(5))
+                .preferredTime(now.toLocalTime())
+                .alarmDays(EnumSet.allOf(DayOfWeek.class))
                 .isEnabled(true)
                 .build();
 
@@ -62,20 +65,20 @@ class PlantAlarmSchedulerTest {
         plantAlarmScheduler.checkPlantAlarms();
 
         // Then
-        verify(plantAlarmRepository).findDueAlarms(today);
+        verify(plantAlarmRepository).findDueAlarms(any(LocalDateTime.class));
         verify(notificationService).sendPlantAlarmNotification(
                 eq(1L),
                 eq("테스트 식물"),
                 eq(PlantAlarm.AlarmType.WATER),
                 eq(1L)
         );
+        verify(plantAlarmRepository).save(any(PlantAlarm.class));
     }
 
     @Test
     @DisplayName("스케줄러 알림 체크 중 예외 발생")
     void checkPlantAlarms_Exception() {
         // Given
-        LocalDate today = LocalDate.now();
         when(plantAlarmRepository.findDueAlarms(any()))
                 .thenThrow(new RuntimeException("Database error"));
 
@@ -83,12 +86,12 @@ class PlantAlarmSchedulerTest {
         plantAlarmScheduler.checkPlantAlarms();
 
         // Then
-        verify(plantAlarmRepository).findDueAlarms(today);
+        verify(plantAlarmRepository).findDueAlarms(any(LocalDateTime.class));
         verify(notificationService, never()).sendPlantAlarmNotification(
                 anyLong(),
                 anyString(),
                 any(PlantAlarm.AlarmType.class),
-                eq(1L)
+                anyLong()
         );
     }
 
@@ -96,7 +99,7 @@ class PlantAlarmSchedulerTest {
     @DisplayName("비활성화된 알람은 알림을 보내지 않음")
     void checkPlantAlarms_DisabledAlarm() {
         // Given
-        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         Plant plant = Plant.builder()
                 .plantName("테스트 식물")
                 .build();
@@ -105,8 +108,9 @@ class PlantAlarmSchedulerTest {
                 .plant(plant)
                 .userId(1L)
                 .type(PlantAlarm.AlarmType.WATER)
-                .startDate(today.minusDays(7))
-                .intervalDays(7)
+                .nextAlarmDateTime(now.minusMinutes(5))
+                .preferredTime(now.toLocalTime())
+                .alarmDays(EnumSet.allOf(DayOfWeek.class))
                 .isEnabled(false)
                 .build();
 
@@ -131,7 +135,7 @@ class PlantAlarmSchedulerTest {
     @DisplayName("알람 간격이 맞지 않으면 알림을 보내지 않음")
     void checkPlantAlarms_NotDueYet() {
         // Given
-        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         Plant plant = Plant.builder()
                 .id(1L)
                 .plantName("테스트 식물")
@@ -142,9 +146,10 @@ class PlantAlarmSchedulerTest {
                 .plant(plant)
                 .userId(1L)
                 .type(PlantAlarm.AlarmType.WATER)
-                .startDate(today.minusDays(6))  // 7일 간격인데 6일만 지남
-                .intervalDays(7)
-                .isEnabled(true)
+                .nextAlarmDateTime(now.minusMinutes(5))
+                .preferredTime(now.toLocalTime())
+                .alarmDays(EnumSet.allOf(DayOfWeek.class))
+                .isEnabled(false)
                 .build();
 
         when(plantAlarmRepository.findDueAlarms(any())).thenReturn(List.of(alarm));
@@ -165,8 +170,8 @@ class PlantAlarmSchedulerTest {
     @DisplayName("여러 알람 중 일부만 전송 시간이 된 경우")
     void checkPlantAlarms_PartialDueAlarms() {
         // Given
-        LocalDate today = LocalDate.now();
-        List<PlantAlarm> alarms = createMixedAlarms(today);
+        LocalDateTime now = LocalDateTime.now();
+        List<PlantAlarm> alarms = createMixedAlarms(now);
         when(plantAlarmRepository.findDueAlarms(any())).thenReturn(alarms);
 
         // When
@@ -174,7 +179,17 @@ class PlantAlarmSchedulerTest {
 
         // Then
         verify(notificationService, times(1)).sendPlantAlarmNotification(
-                anyLong(), anyString(), any(PlantAlarm.AlarmType.class), anyLong()
+                eq(1L),
+                eq("식물1"),
+                eq(PlantAlarm.AlarmType.WATER),
+                eq(1L)
+        );
+
+        verify(notificationService, never()).sendPlantAlarmNotification(
+                eq(2L),
+                eq("식물2"),
+                any(PlantAlarm.AlarmType.class),
+                eq(2L)
         );
     }
 
@@ -182,8 +197,8 @@ class PlantAlarmSchedulerTest {
     @DisplayName("알림 전송 중 일부 실패하는 경우")
     void checkPlantAlarms_PartialNotificationFailure() {
         // Given
-        LocalDate today = LocalDate.now();
-        List<PlantAlarm> alarms = createValidAlarms(today);
+        LocalDateTime now = LocalDateTime.now();
+        List<PlantAlarm> alarms = createValidAlarms(now);
         when(plantAlarmRepository.findDueAlarms(any())).thenReturn(alarms);
 
         doNothing()
