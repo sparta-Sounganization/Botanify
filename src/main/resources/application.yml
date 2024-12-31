@@ -12,15 +12,15 @@ spring:
     properties:
       hibernate:
         show_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
   datasource:
-    url: jdbc:mysql://localhost:3306/botanify?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://host.docker.internal:3306/botanify
     username: admin
     password: admin
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
-      master:
-        host: localhost
+        host: cache-server
         port: 6379
 aws:
   s3:

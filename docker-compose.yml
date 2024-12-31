@@ -1,4 +1,19 @@
 services:
+  api-server:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      cache-server:
+        condition: service_healthy
+  cache-server:
+    image: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
   localstack:
     image: localstack/localstack:latest
     container_name: localstack
@@ -24,57 +39,57 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    volumes:
-      - ./prometheus/config:/etc/prometheus
-      - prometheus-data:/prometheus
-    ports:
-      - 9090:9090
-    command:
-      - '--storage.tsdb.path=/prometheus'
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    restart: always
-    networks:
-      - app-network
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - 3001:3000
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-    restart: always
-    depends_on:
-      - prometheus
-    networks:
-      - app-network
-
-  node_exporter:
-    image: prom/node-exporter
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    ports:
-      - "9100:9100"
-    networks:
-      - app-network
-
+#
+#  prometheus:
+#    image: prom/prometheus
+#    container_name: prometheus
+#    volumes:
+#      - ./prometheus/config:/etc/prometheus
+#      - prometheus-data:/prometheus
+#    ports:
+#      - "9090:9090"
+#    command:
+#      - '--storage.tsdb.path=/prometheus'
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#    restart: always
+#    networks:
+#      - app-network
+#
+#  grafana:
+#    image: grafana/grafana
+#    container_name: grafana
+#    ports:
+#      - "3001:3000"
+#    volumes:
+#      - grafana-data:/var/lib/grafana
+#      - ./grafana/provisioning/:/etc/grafana/provisioning/
+#    restart: always
+#    depends_on:
+#      - prometheus
+#    networks:
+#      - app-network
+#
+#  node_exporter:
+#    image: prom/node-exporter
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+#    command:
+#      - '--path.procfs=/host/proc'
+#      - '--path.rootfs=/rootfs'
+#      - '--path.sysfs=/host/sys'
+#      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+#    ports:
+#      - "9100:9100"
+#    networks:
+#      - app-network
+#
 networks:
   app-network:
     driver: bridge
 
 volumes:
   localstack-data:
-  grafana-data:
-  prometheus-data:
+#  grafana-data:
+#  prometheus-data:
