@@ -18,8 +18,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.sounganization.botanify.utils.TestUtils.createMixedAlarms;
-import static com.sounganization.botanify.utils.TestUtils.createValidAlarms;
+import static com.sounganization.botanify.utils.PlantAlarmTestUtils.createMixedAlarms;
+import static com.sounganization.botanify.utils.PlantAlarmTestUtils.createValidAlarms;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 

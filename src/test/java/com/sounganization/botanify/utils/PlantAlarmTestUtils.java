@@ -9,9 +9,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDate;
 import java.util.List;
 
-public class TestUtils {
+public class PlantAlarmTestUtils {
 
-    private TestUtils() {
+    private PlantAlarmTestUtils() {
     }
 
     public static List<PlantAlarm> createMixedAlarms(LocalDate today) {
