@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = @Index(columnList = "city, town"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // Builder 사용을 위해 추가, 무분별한 접근을 막기 위해 추가
 public class User extends Timestamped {
     @Id
