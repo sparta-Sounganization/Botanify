@@ -53,6 +53,7 @@ public enum ExceptionStatus {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글이 존재하지 않습니다."),
     POST_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 게시글입니다."),
     UNAUTHORIZED_POST_ACCESS(HttpStatus.UNAUTHORIZED, "이 게시글에 대한 권한이 없습니다."),
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "필터 조건이 잘못되었습니다."),
 
     // comment
     INVALID_COMMENT_CONTENT(HttpStatus.BAD_REQUEST, "댓글 내용을 입력해주세요."),
