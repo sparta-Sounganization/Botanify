@@ -94,6 +94,9 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
 
+    // Email verification
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }
 
 tasks.named('test') {
