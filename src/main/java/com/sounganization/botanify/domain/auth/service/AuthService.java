@@ -30,11 +30,16 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final LocationService locationService;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional
     public ResponseEntity<CommonResDto> signup(SignupReqDto request) {
         if (userRepository.existsByEmail((request.email()))) {
             throw new CustomException(ExceptionStatus.DUPLICATED_EMAIL);
+        }
+
+        if (!emailVerificationService.isEmailVerified(request.email())) {
+            throw new CustomException(ExceptionStatus.EMAIL_NOT_VERIFIED);
         }
 
         if (!request.password().equals(request.passwordCheck())) {
@@ -58,6 +63,9 @@ public class AuthService {
 
         CommonResDto response = new CommonResDto(
                 HttpStatus.CREATED, "회원가입이 성공되었습니다.", savedUser.getId());
+
+        emailVerificationService.clearVerification(request.email());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
