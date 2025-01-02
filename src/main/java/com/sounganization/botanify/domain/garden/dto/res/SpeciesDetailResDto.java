@@ -1,6 +1,7 @@
 package com.sounganization.botanify.domain.garden.dto.res;
 
 public record SpeciesDetailResDto(
+        Long id,
         String rtnFileUrl,           // 이미지
         String codeNm,               //품종명
         String cntntsSj,             // 식물 이름
