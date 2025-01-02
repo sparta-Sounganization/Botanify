@@ -20,14 +20,24 @@ public interface SpeciesMapper {
 
     default SpeciesResDto toDto(Species species) {
         return new SpeciesResDto(
+                species.getId(),
                 species.getRtnFileUrl(),
                 species.getPlantName()
         );
     }
 
+    // 캐시에 저장된 detailed DTO 를 목록 조회에 사용하기 위한 Mapper
+    default SpeciesResDto toDto(SpeciesDetailResDto detailResDto) {
+        return new SpeciesResDto(
+                detailResDto.id(),
+                detailResDto.rtnFileUrl(),
+                detailResDto.cntntsSj()
+        );
+    }
 
     default SpeciesDetailResDto toDetailDto(Species species) {
         return new SpeciesDetailResDto(
+                species.getId(),
                 species.getRtnFileUrl(),
                 species.getPlantCode(),
                 species.getPlantName(),
