@@ -1,6 +1,5 @@
 package com.sounganization.botanify.domain.garden.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sounganization.botanify.domain.garden.dto.res.SpeciesDetailResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 public class SpeciesCacheRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private final ObjectMapper objectMapper;
 
     private static final String SPECIES_KEY = "species:table";
 
