@@ -20,6 +20,7 @@ public interface SpeciesMapper {
 
     default SpeciesResDto toDto(Species species) {
         return new SpeciesResDto(
+                species.getId(),
                 species.getRtnFileUrl(),
                 species.getPlantName()
         );
