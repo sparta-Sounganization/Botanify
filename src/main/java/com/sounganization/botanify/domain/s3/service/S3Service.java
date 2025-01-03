@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -31,6 +30,7 @@ public class S3Service {
 
     @Value("${aws.s3.bucket}") private String bucket;
     @Value("${aws.s3.endpoint}") private String endpoint;
+    @Value("${aws.s3.gateway}") private String gateway;
 
     private static final Long SIGN_LIFE_TIME = 1000*60L;    // 1분
     private static final List<String> ALLOWED_EXTENSIONS = List.of(".jpg",".jpeg",".png",".webp");
@@ -48,8 +48,8 @@ public class S3Service {
         String preSignedUrl = generatePreSignedUrl(rawKey);
 
         // 업로드 URL & 공개 조회용 URL 반환 (key 직접 URL 용으로 인코딩 후 문자열에 더하여 반환)
-        String encodedKey = URLEncoder.encode(rawKey, StandardCharsets.UTF_8);
-        return new ImageUrlResDto(preSignedUrl, String.format("%s/%s/%s", endpoint, bucket, encodedKey));
+        String encodedKey = URLEncoder.encode(rawKey, StandardCharsets.UTF_8).replace("+", "%20");
+        return new ImageUrlResDto(preSignedUrl, String.format("%s/%s/%s", gateway, bucket, encodedKey));
     }
 
     // 리스트 요청 처리용 번들 메서드
@@ -80,7 +80,9 @@ public class S3Service {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
-                .acl(ObjectCannedACL.PUBLIC_READ_WRITE)
+//                S3 실주소에서 문제가 된 2행
+//                .acl(ObjectCannedACL.PUBLIC_READ_WRITE)
+//                .contentType("image/*")
                 .build();
 
         PresignedPutObjectRequest preSignedRequest = s3Presigner.presignPutObject(p -> p
