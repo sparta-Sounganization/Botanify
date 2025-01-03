@@ -12,15 +12,22 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
-public class SpeciesRepositoryImpl implements SpeciesCustomRepository {
+public class SpeciesCustomRepositoryImpl implements SpeciesCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public Page<Species> findBySearch(Pageable pageable, String search) {
+        return this.findBySearch(pageable, search, false);
+    }
+
+    @Override
+    public Page<Species> findBySearch(Pageable pageable, String search, boolean sizeOnly) {
         QSpecies species = QSpecies.species;
 
         BooleanBuilder whereClause = new BooleanBuilder();
@@ -32,6 +39,14 @@ public class SpeciesRepositoryImpl implements SpeciesCustomRepository {
             );
         }
 
+        Long total = jpaQueryFactory.select(species.count()).from(species)
+                .where(whereClause)
+                .fetchOne();
+
+        if (sizeOnly) {
+            return new PageImpl<>(Collections.emptyList(), Pageable.unpaged(), Objects.nonNull(total) ? total : 0);
+        }
+
         List<Species> results = jpaQueryFactory.selectFrom(species)
                 .where(whereClause)
                 .offset(pageable.getOffset())
@@ -41,7 +56,7 @@ public class SpeciesRepositoryImpl implements SpeciesCustomRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(results, pageable, results.size());
+        return new PageImpl<>(results, pageable, Objects.nonNull(total) ? total : 0);
     }
 
     @Override
