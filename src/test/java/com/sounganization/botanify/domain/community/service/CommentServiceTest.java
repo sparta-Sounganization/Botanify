@@ -148,7 +148,7 @@ class CommentServiceTest {
     }
 
     @Test
-    void createReply() {
+    void createReply_success() {
         //given
         Long userId = 1L;
         Long parentCommentId = 2L;
@@ -184,7 +184,7 @@ class CommentServiceTest {
 
 
     @Test
-    void updateComment() {
+    void updateComment_success() {
         //given
         Long commentId = 1L;
         Long userId = 1L;
@@ -208,7 +208,7 @@ class CommentServiceTest {
     }
 
     @Test
-    void deleteComment() {
+    void deleteComment_success() {
         //given
         Long commentId = 1L;
         Long userId = 1L;
