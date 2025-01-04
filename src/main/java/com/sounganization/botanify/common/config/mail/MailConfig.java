@@ -30,12 +30,13 @@ public class MailConfig {
         mailSender.setPort(port);
         mailSender.setUsername(username);
         mailSender.setPassword(password);
+        mailSender.setDefaultEncoding("UTF-8");
 
         Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.smtps.auth", "true");
+        props.put("mail.smtps.ssl.enable", "true");
+        props.put("mail.smtps.ssl.trust", "smtps.hiworks.com");
         props.put("mail.transport.protocol", "smtps");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "false");
-        props.put("mail.smtp.ssl.enable", "true"); // SSL 설정
         props.put("mail.debug", "true");
 
         return mailSender;
