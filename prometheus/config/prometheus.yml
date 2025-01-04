@@ -1,20 +1,21 @@
 global:
   scrape_interval: 15s
-  scrape_timeout: 15s
-  evaluation_interval: 2m
-
-  external_labels:
-    monitor: 'codelab-monitor'
-    query_log_file: query_log_file.log
 
 scrape_configs:
-  - job_name: 'monitoring-item'
-    scrape_interval: 10s
-    scrape_timeout: 10s
-    metrics_path: '/metrics'
-    scheme: 'http'
-
+  - job_name: 'spring-1'
     static_configs:
-      - targets: ['prometheus:9090', 'node_exporter:9100']
+      - targets: ['3.39.43.235:8080']
         labels:
-          service: 'monitor'
+          application: 'spring-1'
+
+  - job_name: 'spring-2'
+    static_configs:
+      - targets: ['15.165.192.37:8080']
+        labels:
+          application: 'spring-2'
+
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['43.202.147.203:9113']
+        labels:
+          instance: 'nginx'
