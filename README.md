@@ -258,11 +258,11 @@ $java -jar Botanify-0.0.1-SNAPSHOT.jar
 
 #### 서비스 아키텍쳐
 
-![img_6.png](src/main/resources/static/아키텍쳐.png)
+![img_6.png](src/main/resources/static/images/아키텍쳐.png)
 
 #### ERD
 
-![img_7.png](src/main/resources/static/ERD.png)
+![img_7.png](src/main/resources/static/images/ERD.png)
 
 #### API
 
