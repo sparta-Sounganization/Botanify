@@ -4,12 +4,14 @@ import com.sounganization.botanify.domain.community.repository.ViewHistoryReposi
 import com.sounganization.botanify.domain.garden.entity.Species;
 import com.sounganization.botanify.domain.garden.mapper.SpeciesMapper;
 import com.sounganization.botanify.domain.garden.repository.SpeciesRepository;
+import com.sounganization.botanify.domain.garden.repository.SpeciesCacheRepository;
 import com.sounganization.botanify.domain.plantApi.service.PlantApiAllService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -28,6 +30,7 @@ public class SchedulerService {
     private final PlantApiAllService plantApiAllService;
     private final SpeciesRepository speciesRepository;
     private final SpeciesMapper speciesMapper;
+    private final SpeciesCacheRepository speciesCacheRepository;
 
     @Scheduled(cron = "0 0 00 L * ?", zone = "Asia/Seoul")
     public void deleteAll() {
@@ -37,6 +40,7 @@ public class SchedulerService {
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Transactional
     public Mono<Void> updateSpeciesTableFromAPI() {
         // API 호출로 전체 파이프라인을 시작합니다.
         return plantApiAllService.getSpeciesWithDetails()
@@ -57,11 +61,16 @@ public class SchedulerService {
                     presents.forEach(species -> map.get(species.getPlantCode()).setId(species.getId()));
 
                     // saveAll 을 호출하여 있는 값 UPDATE, 추가된 값 INSERT, 로그 출력을 수행합니다.
-                    speciesRepository.saveAll(list);
-                    log.info("식물 API 품종 - 추가:{}, 갱신:{}", list.size() - presents.size(), presents.size());
+                    List<Species> savedList = speciesRepository.saveAll(list);
+                    log.info("식물 API 품종 테이블 - 추가:{}, 갱신:{}", list.size() - presents.size(), presents.size());
+
+                    // 새로이 갱신 및 auditing 이 반영된 전체 품종 값을 캐시에도 등록합니다.
+                    speciesCacheRepository.overwriteAll(savedList.stream().map(speciesMapper::toDetailDto).toList());
+                    log.info("식물 API 캐시 저장소 - 갱신 완료");
+
                     return responses;
                 })
-                .then(Mono.fromRunnable(() -> log.info("식물 API 호출 및 Species 테이블 갱신 완료")));
+                .then(Mono.fromRunnable(() -> log.info("식물 API 최신화 동작 완료")));
     }
 
 }

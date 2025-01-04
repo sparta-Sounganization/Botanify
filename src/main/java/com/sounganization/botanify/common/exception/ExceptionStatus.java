@@ -28,6 +28,11 @@ public enum ExceptionStatus {
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     ACCOUNT_DELETED(HttpStatus.FORBIDDEN, "탈퇴된 사용자입니다."),
     USER_DETAILS_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."),
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "이메일 인증이 필요합니다."),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "잘못된 인증 코드입니다."),
+    EMAIL_VERIFICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증이 실패했습니다."),
+    VERIFICATION_CODE_RECENTLY_SENT(HttpStatus.TOO_MANY_REQUESTS, "인증 코드가 이미 전송되었습니다. 잠시 후 다시 시도해주세요."),
+    MAX_VERIFICATION_ATTEMPTS_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "인증 시도 횟수를 초과했습니다. 잠시 후 다시 시도해주세요."),
 
     // user
     DELETED_USER(HttpStatus.FORBIDDEN, "탈퇴된 사용자입니다."),

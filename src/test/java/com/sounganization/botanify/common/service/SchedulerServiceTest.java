@@ -3,6 +3,7 @@ package com.sounganization.botanify.common.service;
 import com.sounganization.botanify.domain.community.entity.ViewHistory;
 import com.sounganization.botanify.domain.community.repository.ViewHistoryRepository;
 import com.sounganization.botanify.domain.garden.mapper.SpeciesMapper;
+import com.sounganization.botanify.domain.garden.repository.SpeciesCacheRepository;
 import com.sounganization.botanify.domain.garden.repository.SpeciesRepository;
 import com.sounganization.botanify.domain.plantApi.service.PlantApiAllService;
 import jakarta.persistence.EntityManager;
@@ -31,6 +32,7 @@ class SchedulerServiceTest {
     @Mock private PlantApiAllService plantApiAllService;
     @Mock private SpeciesRepository speciesRepository;
     @Mock private SpeciesMapper speciesMapper;
+    @Mock private SpeciesCacheRepository speciesCacheRepository;
 
     private SchedulerService schedulerService;
     private AtomicBoolean taskExecuted;
@@ -42,7 +44,7 @@ class SchedulerServiceTest {
 
         //schedulerService 생성
         schedulerService = new SchedulerService(
-                entityManager, viewHistoryRepository, plantApiAllService, speciesRepository, speciesMapper
+                entityManager, viewHistoryRepository, plantApiAllService, speciesRepository, speciesMapper, speciesCacheRepository
         ) {
             @Override
             public void deleteAll() {

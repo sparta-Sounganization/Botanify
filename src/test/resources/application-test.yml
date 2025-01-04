@@ -10,6 +10,37 @@ spring:
     url: jdbc:h2:mem:test
     username: sa
     password:
+  jwt:
+    secret:
+      key: "testSecretKey"
+      expiration: 3600000 # 1시간
+  redis:
+    enabled: false
+  scheduling:
+    enabled: false
+aws:
+  s3:
+    enabled: false
+  access-key: test-access-key
+  secret-key: test-secret-key
+  endpoint: http://localhost # 더미 값
+  bucket: test-bucket
+kakao:
+  api:
+    base-url: http://localhost/test-kakao-api
+nongsaro:
+  api:
+    key: test-nongsaro-api-key
+weather:
+  api:
+    key: test-weather-api-key
+    base-url: http://test-weather-api-url.com
+species:
+  api:
+    base-url: http://test-species-api-url.com
+    key: test-species-api-key
+
+
 #  redis:
 #    master:
 #      host: localhost
