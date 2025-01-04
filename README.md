@@ -266,23 +266,9 @@ $java -jar Botanify-0.0.1-SNAPSHOT.jar
 
 #### API
 
-- 방법1 (표로 만들어서 전부 기입, 내용이 기니깐 토글 사용)
+- [API 문서 바로가기](https://documenter.getpostman.com/view/38557384/2sAYJ99dj3)
 
-- 일지 관리 API
-
-| 기능    | Method | URL                                | Request                                    | Response                                                    |
-|-------|--------|------------------------------------|--------------------------------------------|-------------------------------------------------------------|
-| 일지 작성 | POST   | `/api/v1/plants/{plantId}/diaries` | `{ "diaryId": 1 }`                         | `{ "id": 1, "content": "일지 내용", "date": "2025-01-01" }`     |
-| 일지 조회 | GET    | `/api/v1/diaries/{id}`             | `{ "diaryId": 1 }`                         | `{ "id": 1, "content": "일지 내용", "date": "2025-01-01" }`     |
-| 일지 수정 | PUT    | `/api/v1/diaries/{id}`             | `{ "diaryId": 1, "content": "수정된 일지 내용" }` | `{ "id": 1, "content": "수정된 일지 내용", "date": "2025-01-01" }` |
-| 일지 삭제 | DELETE | `/api/v1/diaries/{id}`             | `{ "diaryId": 1 }`                         | `{ "message": "일지 삭제 완료" }`                                 |
-
-- 방법2 (문서로 링크 만듬)
-
-```markdown
-- [API 문서 바로가기](https://example.com/api-docs)
-  postman에서 api 문서 만들어서 넣어도 좋을듯
-```
+  위 링크에서 API 엔드포인트, 요청/응답 예제, 그리고 파라미터에 대한 상세한 설명을 확인하고 Postman에서 직접 테스트할 수 있습니다.
 
 ### 🌿 주요기능
 
@@ -353,5 +339,5 @@ $java -jar Botanify-0.0.1-SNAPSHOT.jar
 | 장재혁 | Backend | [GitHub Link](https://github.com/34-43)          |  
 | 김동주 | Backend | [GitHub Link](https://github.com/Despereaux-MAU) |  
 | 고아라 | Backend | [GitHub Link](https://github.com/arago07)        | 
-| 소성  | Backend | [GitHub Link](https://github.com/gbognon25)      |                  |
+| 소성  | Backend | [GitHub Link](https://github.com/gbognon25)      |                  
 | 지민지 | Backend | [GitHub Link](https://github.com/JIMINJI1)       |  
