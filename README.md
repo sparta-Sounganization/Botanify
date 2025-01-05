@@ -29,6 +29,7 @@
 <p>🎥 시연연상</p>
 
 ### 🔧 기술 스택
+<hr>
 
 #### 💻 Backend
 <img src="https://img.shields.io/badge/JAVA-007396?style=flat-square&logo=Java&logoColor=white"/>
@@ -70,9 +71,10 @@
 <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion&logoColor=white"/>
 <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>
 
-<hr>
+
 
 ### ⚙️ 프로젝트 설치 및 실행법
+<hr>
 
 #### 1. **필수 요구 사항**
 프로젝트 실행 전에 아래 환경이 필요합니다.
