@@ -368,7 +368,7 @@ $java -jar Botanify-0.0.1-SNAPSHOT.jar
       <td>장재혁</td>
       <td>팀장</td>
        <td>
-      📝 <strong>Dairy Service</strong><br>
+      📝 <strong>Diary Service</strong><br>
       - 성장 일지 CRUD 기능 구현<br>
       📷 <strong>Image</strong><br>
       - S3 활용 이미지 업로드 기능 구현<br>
