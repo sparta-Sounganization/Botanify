@@ -96,6 +96,7 @@ dependencies {
 
     // Email verification
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'com.amazonaws:aws-java-sdk-ses:1.12.408'
 
 }
 

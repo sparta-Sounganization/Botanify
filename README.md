@@ -1,58 +1,66 @@
-<div align="center">
-
 ![img_5.png](src/main/resources/static/images/로고.png)
-</div>
 
-<div align="center">
-  <h2>Botanify</h2>
-  <h3>식물 성장 기록 & 정보 공유 커뮤니티 서비스</h3>
-</div>
+# Botanify
+- 식물 성장 기록 & 정보 공유 커뮤니티 서비스
+<br>
 
-### 🌱 목차
-<hr>
-
+## 🌱 목차
 - [서비스 소개](#-서비스-소개)
 - [기술 스택](#-기술-스택)
-- [설치 및 실행 방법](#-프로젝트-설치-및-실행법)
-- [프로젝트 구조 ](#프로젝트-구조 )
-- [주요 기능](#주요-기능)
-- [Developer](#Developer)
+- [프로젝트 설치 및 실행법](#-프로젝트-설치-및-실행법)
+- [프로젝트 구조](#-프로젝트-구조)
+- [주요기능](#-주요기능)
+- [Developer](#-developer)
+  
 
-### 💁‍♀️ 서비스 소개
-<hr>
-<p>🗓️ 개발기간: 2024.12.02 ~ 2025.01.07</p> 
-<p>🪴 Botanify</p>
-
+## 💁‍♀️ 서비스 소개
+🗓️ 개발기간: 2024.12.02 ~ 2025.01.07 <br>
+🪴 Botanify
 - 사용자가 자신의 식물을 관리하고, 성장 상태를 기록하며, 식물 관련 정보를 공유할 수 있도록 돕는 애플리케이션입니다.
 - 저희의 목표는 식물 성장 일지를 기록하고 정보를 공유하는 커뮤니티 서비스를 제공하여, 사용자들의 식집사 생활을 더 쉽고 재미있게 만드는 것입니다.
+<p><a href="https://youtu.be/qxtP6wpPeYA">🎥 시연영상</a></p>
 
-<p>🎥 시연연상</p>
 
-### 🔧 기술 스택
-<hr>
 
-#### Backend
-![Java](https://img.shields.io/badge/Java-17-blue)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.0-brightgreen)
-![JPA](https://img.shields.io/badge/JPA-orange)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-lightblue)
-![RestAPI](https://img.shields.io/badge/RestAPI-red)
-![Spring Security](https://img.shields.io/badge/Spring%20Security-green)
-![JWT](https://img.shields.io/badge/JWT-blue)
+## 🔧 기술 스택
+#### 💻 Backend
+<img src="https://img.shields.io/badge/JAVA-007396?style=flat-square&logo=Java&logoColor=white"/><img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=Spring-Boot&logoColor=white"/>
+<img src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=JSON%20web%20tokens&logoColor=white"/>
+<img src="https://img.shields.io/badge/JPA-6DB33F?style=flat-square&logo=Hibernate&logoColor=white"/>
+<img src="https://img.shields.io/badge/JUnit5-25A162?style=flat-square&logo=JUnit5&logoColor=white"/>
+<img src="https://img.shields.io/badge/WebClient-6DB33F?style=flat-square&logo=Spring&logoColor=white"/>
+<img src="https://img.shields.io/badge/WebSocket-010101?style=flat-square&logo=Socket.io&logoColor=white"/>
 
-#### DevOps & Tools
-![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-yellow)
-![Docker](https://img.shields.io/badge/Docker-Container-blue)
-![AWS](https://img.shields.io/badge/AWS-Cloud-orange)
-![Redis](https://img.shields.io/badge/Redis-InMemoryDB-red)
+#### ⚙️ DevOps & Infrastructure
+<img src="https://img.shields.io/badge/Jenkins-D24939?style=flat-square&logo=Jenkins&logoColor=white"/><img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"/>
+<img src="https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=Amazon%20AWS&logoColor=white"/>
+<img src="https://img.shields.io/badge/EC2-FF9900?style=flat-square&logo=Amazon%20EC2&logoColor=white"/>
+<img src="https://img.shields.io/badge/S3-569A31?style=flat-square&logo=Amazon%20S3&logoColor=white"/>
+<img src="https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=Nginx&logoColor=white"/>
+<img src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=Grafana&logoColor=white"/>
 
-#### Design & Collaboration
-![Figma](https://img.shields.io/badge/Figma-Design-orange)
-![GitHub](https://img.shields.io/badge/GitHub-VersionControl-black)
+#### 🛠 Development & Database
+<img src="https://img.shields.io/badge/IntelliJ%20IDEA-000000?style=flat-square&logo=IntelliJ%20IDEA&logoColor=white"/><img src="https://img.shields.io/badge/RDS-527FFF?style=flat-square&logo=Amazon%20RDS&logoColor=white"/>
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"/>
+<img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=Redis&logoColor=white"/>
 
-### ⚙️ 프로젝트 설치 및 실행법
-<hr>
+#### 🔍 Testing & Monitoring
+<img src="https://img.shields.io/badge/K6-7D64FF?style=flat-square&logo=k6&logoColor=white"/><img src="https://img.shields.io/badge/Artillery-000000?style=flat-square&logo=Node.js&logoColor=white"/>
+<img src="https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=Postman&logoColor=white"/>
 
+#### 🔌 External Services
+<img src="https://img.shields.io/badge/Kakao-FFCD00?style=flat-square&logo=Kakao&logoColor=black"/><img src="https://img.shields.io/badge/Google-4285F4?style=flat-square&logo=Google&logoColor=white"/>
+<img src="https://img.shields.io/badge/OneSignal-2C3E50?style=flat-square&logo=OneSignal&logoColor=white"/>
+<img src="https://img.shields.io/badge/가비아-007C99?style=flat-square&logoColor=white"/>
+<img src="https://img.shields.io/badge/하이웍스-FF3366?style=flat-square&logoColor=white"/>
+
+#### 🎨 Design & Collaboration
+<img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=white"/><img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion&logoColor=white"/>
+<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>
+
+
+
+## ⚙️ 프로젝트 설치 및 실행법
 #### 1. **필수 요구 사항**
 프로젝트 실행 전에 아래 환경이 필요합니다.
 
@@ -252,28 +260,22 @@ $./gradlew clean build
 $java -jar Botanify-0.0.1-SNAPSHOT.jar
 ```
 
-### 📁 프로젝트 구조
-
-<hr>
-
-#### 서비스 아키텍쳐
+## 📁 프로젝트 구조
+### 시스템 아키텍쳐
 
 ![img_6.png](src/main/resources/static/images/아키텍쳐.png)
 
-#### ERD
+### ERD
+![img_7.jpeg](src/main/resources/static/images/ERD.jpeg)
 
-![img_7.png](src/main/resources/static/images/ERD.png)
+### API
 
-#### API
+- <a href="https://documenter.getpostman.com/view/38557384/2sAYJ99dj3" target="_blank">API 문서 바로가기</a>
 
-- [API 문서 바로가기](https://documenter.getpostman.com/view/38557384/2sAYJ99dj3)
+위 링크에서 API 엔드포인트, 요청/응답 예제, 그리고 파라미터에 대한 상세한 설명을 확인하고 Postman에서 직접 테스트할 수 있습니다.
 
-  위 링크에서 API 엔드포인트, 요청/응답 예제, 그리고 파라미터에 대한 상세한 설명을 확인하고 Postman에서 직접 테스트할 수 있습니다.
 
-### 🌿 주요기능
-
-<hr>
-
+## 🌿 주요기능
 1. 사용자 관리
 <table>
   <tr>
@@ -330,14 +332,90 @@ $java -jar Botanify-0.0.1-SNAPSHOT.jar
 - **채팅 기능**: 다른 사용자와 1:1 소통할 수 있는 기능을 제공합니다.
 - **게시판 기능**: 사용자 간 정보 공유 및 커뮤니티 활동을 위한 게시판을 제공합니다.
 
-### 👨‍💻 Developer
 
-<hr>
-
-| 이름  | 역할      | GitHub                                           |  
-|-----|---------|--------------------------------------------------|  
-| 장재혁 | Backend | [GitHub Link](https://github.com/34-43)          |  
-| 김동주 | Backend | [GitHub Link](https://github.com/Despereaux-MAU) |  
-| 고아라 | Backend | [GitHub Link](https://github.com/arago07)        | 
-| 소성  | Backend | [GitHub Link](https://github.com/gbognon25)      |                  
-| 지민지 | Backend | [GitHub Link](https://github.com/JIMINJI1)       |  
+## 👨‍💻 Developer
+<table>
+  <thead>
+    <tr>
+      <th>이름</th>
+      <th>역할</th>
+      <th>담당 업무</th>
+      <th>GitHub</th>
+      <th>Blog link</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>장재혁</td>
+      <td>팀장</td>
+       <td>
+      📝 <strong>Diary Service</strong><br>
+      - 성장 일지 CRUD 기능 구현<br>
+      📷 <strong>Image</strong><br>
+      - S3 활용 이미지 업로드 기능 구현<br>
+      🌱 <strong> 식물관리</strong><br>
+      - 식물 OPEN API 데이터 저장 기능 구현<br>
+      - 식물 OPEN API 데이터 캐싱 처리 <br>
+      📝 <strong>테스트 코드</strong><br>
+      - 테스트 코드 초안 작성
+    </td>
+      <td><a href="https://github.com/34-43">GitHub Link</a></td>
+      <td><a href="https://mdworld.notion.site/DB-79a386824f6047bba80a7c99e4b946b5?pvs=4">Blog link</a></td>
+    </tr>
+    <tr>
+      <td>김동주</td>
+      <td>부팀장</td>
+      <td>
+      🧑‍💻 <strong>회원가입/로그인</strong><br>
+      - 이메일 회원가입/로그인 기능 구현<br>
+      - Google 소셜 회원가입/로그인 기능 구현<br>
+      - Security 인증/인가 <br>
+      🌦️ <strong>날씨 서비스</strong><br>
+      - 지도 API, 날씨 API 연동 및 날씨 정보 제공 기능 구현<br>
+      🐳 <strong>Docker Compose</strong><br>
+      - Docker Compose 환경 설정<br>
+      🔄 <strong>CI/CD</strong><br>
+      - Jenkins를 활용한 CI/CD 파이프라인 구축
+    </td>
+      <td><a href="https://github.com/Despereaux-MAU">GitHub Link</a></td>
+      <td><a href="https://despereaux.tistory.com/">Blog link</a></td>
+    </tr>
+    <tr>
+      <td>고아라</td>
+      <td>팀원</td>
+      <td>
+        🌱 <strong>품종 서비스</strong><br>
+        - 품종 CRUD 기능 구현<br>
+        📝 <strong>테스트 코드</strong><br>
+        -  테스트 코드 작성 및 커버리지 체크<br>
+        🌦️ <strong>날씨 서비스</strong><br>
+        - 위도/경도 좌표 수집
+      </td>
+      <td><a href="https://github.com/arago07">GitHub Link</a></td>
+      <td><a href="https://velog.io/@gteaclub/posts">Blog link</a></td>
+    </tr>
+    <tr>
+      <td>리칸소성 (LIKANE SO SOUNG)</td>
+      <td>팀원</td>
+      <td>
+        ✉️ <strong>User Email Authentication</strong><br> - 회원가입 시 사용자의 이메일 인증 시스템 구축<br>
+        👥 <strong>Community Service</strong><br> - 인기 게시글 캐싱 시스템 구축<br> - 댓글과 답글 기능 구현<br> - 1:1 실시간 채팅 시스템 구축<br>
+        🌱 <strong>식물 관리</strong><br> - 식물 push 알림 시스템 구축
+      </td>
+      <td><a href="https://github.com/gbognon25">GitHub Link</a></td>
+      <td><a href="https://sounglikane.tistory.com">Blog link</a></td>
+    </tr>
+    <tr>
+      <td>지민지</td>
+      <td>팀원</td>
+      <td>
+        👥 <strong>Community Service</strong><br> - 게시판 CRUD 기능 구현 <br>
+            - 게시글 조회수 어뷰징 방지 로직 설계 및 구현 <br>
+        🌱 <strong>식물관리</strong><br> - 식물 Open API 연동 및 식물 정보 검색 및 조회 기능 구현<br>
+        🔄 <strong>CI/CD</strong><br> - Jenkins를 활용한 CI 파이프라인 구축<br>
+      </td>
+      <td><a href="https://github.com/JIMINJI1">GitHub Link</a></td>
+      <td><a href="https://min-notes.tistory.com">Blog link</a></td>
+    </tr>
+  </tbody>
+</table>
