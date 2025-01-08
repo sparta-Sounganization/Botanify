@@ -29,6 +29,7 @@ public class SecurityConfig {
     private final JwtAuthorizationHandler jwtAuthorizationHandler;
     private final JwtUtil jwtUtil;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -41,10 +42,11 @@ public class SecurityConfig {
                                 "/ws/chat",
                                 "/ws/chat/**",
                                 "/ws/**",
-                                "/actuator/**"
+                                "/actuator/**",
+                                "/api/plant-api/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/{postId}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/species", "/api/v1/species/{speciesId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/species", "/api/v2/species", "/api/v1/species/{speciesId}").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -75,4 +77,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }

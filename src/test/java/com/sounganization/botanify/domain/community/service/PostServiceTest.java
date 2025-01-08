@@ -1,6 +1,7 @@
 package com.sounganization.botanify.domain.community.service;
 
 import com.sounganization.botanify.common.dto.res.CommonResDto;
+import com.sounganization.botanify.common.security.UserDetailsImpl;
 import com.sounganization.botanify.domain.community.dto.req.PostReqDto;
 import com.sounganization.botanify.domain.community.dto.req.PostUpdateReqDto;
 import com.sounganization.botanify.domain.community.dto.res.CommentTempDto;
@@ -113,20 +114,22 @@ class PostServiceTest {
         // given
         int page = 1;
         int size = 10;
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(0, 10);
         List<Post> postList = new ArrayList<>();
         postList.add(Post.builder().id(1L).build());
         Page<Post> postPage = new PageImpl<>(postList, pageable, size);
-        when(postRepository.findAllByDeletedYnFalse(any(Pageable.class))).thenReturn(postPage);
+        when(postRepository.findAllByDetailedQuery(pageable,null,null,null,null,null,null)).thenReturn(postPage);
         when(postMapper.entityToResDto(any(Post.class))).thenReturn(mock(PostListResDto.class));
 
         // when
-        Page<PostListResDto> result = postService.readPosts(page, size);
+        Page<PostListResDto> result = postService.readPosts(
+                mock(UserDetailsImpl.class),page,size,false,
+                null,null,null,null,null,null);
 
         // then
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
-        verify(postRepository).findAllByDeletedYnFalse(pageable);
+        verify(postRepository).findAllByDetailedQuery(pageable,null,null,null,null,null,null);
         verify(postMapper).entityToResDto(postList.get(0));
     }
 

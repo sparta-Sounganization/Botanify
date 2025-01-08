@@ -28,6 +28,11 @@ public enum ExceptionStatus {
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     ACCOUNT_DELETED(HttpStatus.FORBIDDEN, "탈퇴된 사용자입니다."),
     USER_DETAILS_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."),
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "이메일 인증이 필요합니다."),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "잘못된 인증 코드입니다."),
+    EMAIL_VERIFICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증이 실패했습니다."),
+    VERIFICATION_CODE_RECENTLY_SENT(HttpStatus.TOO_MANY_REQUESTS, "인증 코드가 이미 전송되었습니다. 잠시 후 다시 시도해주세요."),
+    MAX_VERIFICATION_ATTEMPTS_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "인증 시도 횟수를 초과했습니다. 잠시 후 다시 시도해주세요."),
 
     // user
     DELETED_USER(HttpStatus.FORBIDDEN, "탈퇴된 사용자입니다."),
@@ -38,6 +43,9 @@ public enum ExceptionStatus {
     // plant
     PLANT_NOT_FOUND(HttpStatus.NOT_FOUND, "식물을 찾을 수 없습니다."),
     PLANT_NOT_OWNED(HttpStatus.UNAUTHORIZED, "식물의 주인이 아닙니다."),
+
+    //plant_alarm
+    ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "알람을 찾을 수 없습니다."),
 
     // species
     SPECIES_NOT_FOUND(HttpStatus.NOT_FOUND, "품종을 찾을 수 없습니다."),
@@ -50,6 +58,7 @@ public enum ExceptionStatus {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글이 존재하지 않습니다."),
     POST_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 게시글입니다."),
     UNAUTHORIZED_POST_ACCESS(HttpStatus.UNAUTHORIZED, "이 게시글에 대한 권한이 없습니다."),
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "필터 조건이 잘못되었습니다."),
 
     // comment
     INVALID_COMMENT_CONTENT(HttpStatus.BAD_REQUEST, "댓글 내용을 입력해주세요."),
@@ -65,6 +74,9 @@ public enum ExceptionStatus {
     MESSAGE_NOT_OWNED(HttpStatus.FORBIDDEN, "메시지 작성자만 삭제할 수 있습니다."),
     NOT_CHAT_ROOM_PARTICIPANT(HttpStatus.FORBIDDEN, "채팅방 참여자만 삭제할 수 있습니다."),
 
+    //OneSignal
+    NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "알림 전송에 실패했습니다"),
+
     // API
     API_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "API 호출 중 문제가 발생했습니다."),
     API_DATA_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "API 데이터 파싱 중 문제가 발생했습니다."),
@@ -74,8 +86,13 @@ public enum ExceptionStatus {
 
     // Weather API
     WEATHER_SERVICE_NOT_AVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "현재 날씨 정보를 가져올 수 없습니다. 잠시 후 다시 시도해주세요."),
-    NO_WEATHER_DATA(HttpStatus.NOT_FOUND, "주어진 위치와 시간에 대한 기상 데이터가 없습니다.");
+    NO_WEATHER_DATA(HttpStatus.NOT_FOUND, "주어진 위치와 시간에 대한 기상 데이터가 없습니다."),
 
+    // plant API
+    PARSER_FAILED(HttpStatus.BAD_REQUEST, "XML 파싱 실패"),
+
+
+    ;
     private final HttpStatus status;
     private final String message;
 
