@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_chat_message_unique", columnList = "room_id,sender_id,content,created_at", unique = true)
+})
 public class ChatMessage extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +48,9 @@ public class ChatMessage extends Timestamped {
     @Column(nullable = false)
     @Builder.Default
     private Boolean delivered = false;
+
+    @Version
+    private Long version;
 
     public void markAsDelivered() {
         this.delivered = true;

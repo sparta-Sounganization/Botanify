@@ -17,40 +17,41 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatWebSocketHandler extends TextWebSocketHandler {
-
     private final ObjectMapper objectMapper;
     private final WebSocketChatService webSocketChatService;
     private final ConnectionFailureHandler connectionFailureHandler;
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        log.info("새로운 WebSocket 연결이 열렸습니다. 세션 ID: {}", session.getId());
-    }
-
-    @Override
     protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {
         String payload = message.getPayload();
+        log.info("WebSocket 메시지를 수신했습니다: {}", payload);
+
         ChatMessageReqDto chatMessage = objectMapper.readValue(payload, ChatMessageReqDto.class);
 
         try {
             switch (chatMessage.type()) {
                 case ENTER:
+                    log.info("사용자 {}이(가) 방 {}에 입장합니다.", chatMessage.senderId(), chatMessage.roomId());
                     webSocketChatService.handleEnterRoom(session, chatMessage.roomId(), chatMessage.senderId());
                     break;
                 case TALK:
                     if (!session.isOpen()) {
+                        log.warn("메시지를 보내는 중 세션이 종료되었습니다.");
                         connectionFailureHandler.handleConnectionFailure(chatMessage);
                         return;
                     }
+                    log.info("사용자 {}이(가) 방 {}에서 TALK 메시지를 처리 중입니다.",
+                            chatMessage.senderId(), chatMessage.roomId());
                     webSocketChatService.handleChatMessage(chatMessage);
                     break;
                 case LEAVE:
+                    log.info("사용자 {}이(가) 방 {}에서 나갑니다.", chatMessage.senderId(), chatMessage.roomId());
                     webSocketChatService.handleLeaveRoom(chatMessage.roomId(), chatMessage.senderId());
                     break;
             }
         } catch (Exception e) {
+            log.error("메시지 처리 중 오류 발생: ", e);
             handleError(session, e);
-            // 메시지 처리 중 오류 발생시 연결 실패로 처리
             if (chatMessage.type() == ChatMessageReqDto.MessageType.TALK) {
                 connectionFailureHandler.handleConnectionFailure(chatMessage);
             }

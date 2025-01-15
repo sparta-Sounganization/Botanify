@@ -54,7 +54,8 @@ public class ConnectionFailureHandler {
                 convertToDtoMessageType(message.getType()),
                 message.getChatRoom().getId(),
                 message.getSenderId(),
-                message.getContent()
+                message.getContent(),
+                ChatMessageReqDto.MessageSource.WEBSOCKET
         );
 
         try {
