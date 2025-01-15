@@ -6,7 +6,6 @@ import com.sounganization.botanify.domain.chat.entity.ChatMessage;
 import com.sounganization.botanify.domain.chat.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +17,6 @@ public class ChatFailureHandler {
     private final ChatMessageRepository chatMessageRepository;
     private final WebSocketChatService webSocketChatService;
 
-    @EventListener
     public void handleRedisFailure(ChatMessageReqDto message) {
         log.error("Redis 연결 실패 - Fallback 모드로 전환");
         webSocketChatService.handleChatMessage(message);
@@ -43,7 +41,8 @@ public class ChatFailureHandler {
                 ChatMessageReqDto.MessageType.TALK,
                 message.getChatRoom().getId(),
                 message.getSenderId(),
-                message.getContent()
+                message.getContent(),
+                ChatMessageReqDto.MessageSource.WEBSOCKET
         );
 
         try {
