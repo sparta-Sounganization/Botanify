@@ -38,7 +38,8 @@ class ChatFailureHandlerTest {
                 ChatMessageReqDto.MessageType.TALK,
                 1L,
                 1L,
-                "Test message"
+                "Test message",
+                ChatMessageReqDto.MessageSource.WEBSOCKET
         );
 
         // When

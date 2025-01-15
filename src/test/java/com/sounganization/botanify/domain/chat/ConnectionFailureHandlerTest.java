@@ -48,7 +48,8 @@ class ConnectionFailureHandlerTest {
                 ChatMessageReqDto.MessageType.TALK,
                 1L,
                 1L,
-                "Test message"
+                "Test message",
+                ChatMessageReqDto.MessageSource.WEBSOCKET
         );
 
         when(chatRoomRepository.findById(1L))
