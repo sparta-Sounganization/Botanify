@@ -1,35 +1,28 @@
-<div align="center">
-
 ![img_5.png](src/main/resources/static/images/로고.png)
-</div>
 
-<h2>Botanify</h2>
-<h3>식물 성장 기록 & 정보 공유 커뮤니티 서비스</h3>
+# Botanify
+- 식물 성장 기록 & 정보 공유 커뮤니티 서비스
+<br>
 
-### 🌱 목차
-<hr>
-
+## 🌱 목차
 - [서비스 소개](#-서비스-소개)
 - [기술 스택](#-기술-스택)
-- [설치 및 실행 방법](#-프로젝트-설치-및-실행법)
-- [프로젝트 구조 ](#프로젝트-구조 )
-- [주요 기능](#주요-기능)
-- [Developer](#Developer)
+- [프로젝트 설치 및 실행법](#-프로젝트-설치-및-실행법)
+- [프로젝트 구조 ](#-프로젝트-구조 )
+- [주요 기능](#-주요기능)
+- [Developer](#-Developer)
+  
 
-### 💁‍♀️ 서비스 소개
-<hr>
-<p>🗓️ 개발기간: 2024.12.02 ~ 2025.01.07</p> 
-<p>🪴 Botanify</p>
-
+## 💁‍♀️ 서비스 소개
+🗓️ 개발기간: 2024.12.02 ~ 2025.01.07 <br>
+🪴 Botanify
 - 사용자가 자신의 식물을 관리하고, 성장 상태를 기록하며, 식물 관련 정보를 공유할 수 있도록 돕는 애플리케이션입니다.
 - 저희의 목표는 식물 성장 일지를 기록하고 정보를 공유하는 커뮤니티 서비스를 제공하여, 사용자들의 식집사 생활을 더 쉽고 재미있게 만드는 것입니다.
-
 <p><a href="https://youtu.be/qxtP6wpPeYA">🎥 시연영상</a></p>
 
 
-### 🔧 기술 스택
-<hr>
 
+## 🔧 기술 스택
 #### 💻 Backend
 <img src="https://img.shields.io/badge/JAVA-007396?style=flat-square&logo=Java&logoColor=white"/><img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=Spring-Boot&logoColor=white"/>
 <img src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=JSON%20web%20tokens&logoColor=white"/>
@@ -67,9 +60,7 @@
 
 
 
-### ⚙️ 프로젝트 설치 및 실행법
-<hr>
-
+## ⚙️ 프로젝트 설치 및 실행법
 #### 1. **필수 요구 사항**
 프로젝트 실행 전에 아래 환경이 필요합니다.
 
@@ -269,27 +260,22 @@ $./gradlew clean build
 $java -jar Botanify-0.0.1-SNAPSHOT.jar
 ```
 
-### 📁 프로젝트 구조
-
-<hr>
-
-#### 서비스 아키텍쳐
+## 📁 프로젝트 구조
+### 시스템 아키텍쳐
 
 ![img_6.png](src/main/resources/static/images/아키텍쳐.png)
 
-#### ERD
+### ERD
 ![img_7.jpeg](src/main/resources/static/images/ERD.jpeg)
 
-#### API
+### API
 
 - <a href="https://documenter.getpostman.com/view/38557384/2sAYJ99dj3" target="_blank">API 문서 바로가기</a>
 
 위 링크에서 API 엔드포인트, 요청/응답 예제, 그리고 파라미터에 대한 상세한 설명을 확인하고 Postman에서 직접 테스트할 수 있습니다.
 
-### 🌿 주요기능
 
-<hr>
-
+## 🌿 주요기능
 1. 사용자 관리
 <table>
   <tr>
@@ -346,7 +332,8 @@ $java -jar Botanify-0.0.1-SNAPSHOT.jar
 - **채팅 기능**: 다른 사용자와 1:1 소통할 수 있는 기능을 제공합니다.
 - **게시판 기능**: 사용자 간 정보 공유 및 커뮤니티 활동을 위한 게시판을 제공합니다.
 
-### 👨‍💻 Developer
+
+## 👨‍💻 Developer
 <table>
   <thead>
     <tr>
