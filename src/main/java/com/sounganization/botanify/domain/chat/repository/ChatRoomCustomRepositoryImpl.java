@@ -21,17 +21,6 @@ public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<ChatRoom> findRoomsByUserId(Long userId) {
-        QChatRoom chatRoom = QChatRoom.chatRoom;
-
-        return jpaQueryFactory
-                .selectFrom(chatRoom)
-                .where(chatRoom.senderUserId.eq(userId)
-                        .or(chatRoom.receiverUserId.eq(userId)))
-                .fetch();
-    }
-
-    @Override
     public Optional<ChatRoom> findRoomByUsers(Long senderUserId, Long receiverUserId) {
         QChatRoom chatRoom = QChatRoom.chatRoom;
 
@@ -42,21 +31,6 @@ public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
                 .fetchFirst();
 
         return Optional.ofNullable(result);
-    }
-
-    @Override
-    public List<ChatRoom> findRoomsWithMessagesById(Long userId) {
-        QChatRoom chatRoom = QChatRoom.chatRoom;
-        QChatMessage message = QChatMessage.chatMessage;
-
-        return jpaQueryFactory
-                .selectFrom(chatRoom)
-                .distinct()
-                .leftJoin(chatRoom.messages, message)
-                .fetchJoin()
-                .where(chatRoom.senderUserId.eq(userId)
-                        .or(chatRoom.receiverUserId.eq(userId)))
-                .fetch();
     }
 
     @Override
@@ -79,7 +53,7 @@ public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
                         .or(chatRoom.receiverUserId.eq(userId)))
                 .fetchOne();
 
-        return new PageImpl<>(rooms, pageable, total);
+        return new PageImpl<>(rooms, pageable, total != null ? total : 0L);
     }
 
     @Override
